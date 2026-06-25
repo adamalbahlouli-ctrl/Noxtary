@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noxtary - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ── Tabs responsive layout ── */
+        @media (min-width: 600px) {
+            .tabs-container {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 10px;
+                overflow-x: auto;
+            }
+        }
+        @media (max-width: 599px) {
+            .tabs-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .tabs-container .tab-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="home-page">
+
+    <!-- ══ NAVBAR ══ -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="back-home" title="Back to Landing">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <img src="https://i.ibb.co/Rpkk0N6g/1000105011.png" alt="Noxtary Logo" class="mini-logo">
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search apps, mods, books...">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+        </div>
+
+        <a href="#" class="login-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Login
+        </a>
+    </nav>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <div class="content-wrapper">
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-filter="all">All</button>
+            <button class="tab-btn" data-filter="apps">Apps</button>
+            <button class="tab-btn" data-filter="books_articles">Books &amp; Articles</button>
+            <button class="tab-btn" data-filter="mods">Mods</button>
+            <button class="tab-btn" data-filter="audio">Audio</button>
+            <button class="tab-btn" data-filter="services">Services</button>
+        </div>
+
+        <!-- Cards Grid — populated by script.js renderItems() -->
+        <div class="items-grid" id="itemsGrid"></div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

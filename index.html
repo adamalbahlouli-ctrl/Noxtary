@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noxtary - Official Website</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        #space-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            background: #000008;
+        }
+    </style>
+</head>
+<body>
+    <!-- خلفية الفضاء البرمجي -->
+    <canvas id="space-canvas"></canvas>
+
+    <!-- شريط التنقل العلوي -->
+    <nav class="navbar">
+        <a href="#" class="login-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Login
+        </a>
+        <div class="translate-wrapper">
+            <button class="translate-btn" id="translateBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <span id="currentLang">EN</span>
+                <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+            <div class="lang-dropdown" id="langDropdown">
+                <button class="lang-option active" data-lang="EN" data-label="English">🇬🇧 English</button>
+                <button class="lang-option" data-lang="AR" data-label="العربية">🇸🇦 العربية</button>
+                <button class="lang-option" data-lang="FR" data-label="Français">🇫🇷 Français</button>
+                <button class="lang-option" data-lang="ZH" data-label="中文">🇨🇳 中文</button>
+                <button class="lang-option" data-lang="ES" data-label="Español">🇪🇸 Español</button>
+                <button class="lang-option" data-lang="DE" data-label="Deutsch">🇩🇪 Deutsch</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="container">
+        <div class="brand-header">
+            <div class="logo-glow-wrapper">
+                <img src="https://i.ibb.co/Rpkk0N6g/1000105011.png" alt="Noxtary Logo" class="brand-logo" />
+            </div>
+            <h1 class="brand-title">Noxtary</h1>
+        </div>
+        <p class="tagline">
+            Noxtary is a massive digital hub built to give users fast and easy access to apps, eBooks, Minecraft mods, tools, and unique digital content — all organized in one modern experience designed for discovery, creativity, and endless exploration.
+        </p>
+        <a href="home.html" class="btn">
+            <span>Get Started</span>
+            <svg w idth="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+            </svg>
+        </a>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+    (function() {
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H, mouse = { x: -9999, y: -9999 };
+
+        // ألوان الفضاء البرمجي
+        const COLORS = {
+            cyan:   '#00eaff',
+            green:  '#00ff88',
+            purple: '#bf5fff',
+            blue:   '#4488ff',
+            white:  '#ffffff',
+            orange: '#ff8800',
+        };
+
+        // كلمات الكود البرمجية تطير في الفضاء
+        const CODE_SNIPPETS = [
+            'function()', 'const x =', 'return null;', 'async/await',
+            'import {', '} from "', 'new Array()', '.then(res',
+            'npm install', 'git commit', '=> {', 'undefined',
+            'console.log', 'fetch(url)', '0x1A2B3C', 'while(true)',
+            '#!/bin/sh', 'SELECT *', 'FROM db', 'WHERE id=',
+            'if(err)', 'res.send()', '.map(fn)', '.filter(x)',
+            '404 Not', '200 OK', 'socket.io', 'WebSocket',
+            'malloc()', 'nullptr', 'std::vector', '#define',
+            '\\x00\\xFF', 'SHA-256', 'RSA-2048', 'AES/CBC',
+            'localhost', ':3000', '127.0.0.1', 'DNS lookup',
+            'Noxtary', 'v2.0.1', 'BUILD OK', 'DEPLOY ✓'
+        ];
+
+        // ---- نجوم ----
+        const STAR_COUNT = 220;
+        let stars = [];
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < STAR_COUNT; i++) {
+                stars.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: Math.random() * 1.4 + 0.3,
+                    alpha: Math.random() * 0.7 + 0.3,
+                    twinkleSpeed: Math.random() * 0.02 + 0.005,
+                    twinkleDir: Math.random() > 0.5 ? 1 : -1,
+                    color: Math.random() > 0.85
+                        ? (Math.random() > 0.5 ? COLORS.cyan : COLORS.blue)
+                        : COLORS.white
+                });
+            }
+        }
+
+        // ---- شهب (النيازك) ----
+        let meteors = [];
+
+        function spawnMeteor() {
+            const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.4;
+            const speed = Math.random() * 8 + 10;
+            const startX = Math.random() * W * 1.2 - W * 0.1;
+            meteors.push({
+                x: startX,
+                y: -20,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                len: Math.random() * 120 + 60,
+                alpha: 1,
+                color: Math.random() > 0.5 ? COLORS.cyan : COLORS.white,
+                life: 0,
+                maxLife: Math.random() * 60 + 40
+            });
+        }
+
+        // ---- خطوط الشبكة الفضائية ----
+        const GRID_NODES = 28;
+        let nodes = [];
+
+        function initNodes() {
+            nodes = [];
+            for (let i = 0; i < GRID_NODES; i++) {
+                nodes.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    r: Math.random() * 2 + 1,
+                    color: [COLORS.cyan, COLORS.green, COLORS.purple, COLORS.blue][Math.floor(Math.random() * 4)],
+                    pulse: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        // ---- نصوص الكود الطائرة ----
+        const CODE_COUNT = 22;
+        let codeTexts = [];
+
+        function initCodeTexts() {
+            codeTexts = [];
+            for (let i = 0; i < CODE_COUNT; i++) {
+                spawnCodeText(true);
+            }
+        }
+
+        function spawnCodeText(init) {
+            const snippet = CODE_SNIPPETS[Math.floor(Math.random() * CODE_SNIPPETS.length)];
+            const colors = [COLORS.cyan, COLORS.green, COLORS.purple, COLORS.blue, COLORS.orange];
+            return {
+                text: snippet,
+                x: Math.random() * W,
+                y: init ? Math.random() * H : H + 20,
+                vy: -(Math.random() * 0.5 + 0.15),
+                vx: (Math.random() - 0.5) * 0.2,
+                alpha: Math.random() * 0.5 + 0.15,
+                size: Math.random() * 7 + 9,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: (Math.random() - 0.5) * 0.2,
+                rotationSpeed: (Math.random() - 0.5) * 0.002
+            };
+        }
+
+        // ---- حلقات التموج (ripples) عند تحريك الماوس ----
+        let ripples = [];
+
+        function addRipple(x, y) {
+            ripples.push({ x, y, r: 0, maxR: 80, alpha: 0.6, color: COLORS.cyan });
+        }
+
+        // ---- resize ----
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            initStars();
+            initNodes();
+            initCodeTexts();
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // ---- mousemove ----
+        document.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        let lastRipple = 0;
+        document.addEventListener('mousemove', e => {
+            const now = Date.now();
+            if (now - lastRipple > 300) {
+                addRipple(e.clientX, e.clientY);
+                lastRipple = now;
+            }
+        });
+
+        // ---- كائنات الكوكب (دوائر زخرفية) ----
+        const ORBS = [
+            { cx: 0.85, cy: 0.15, r: 60, color: COLORS.purple, glowColor: '#bf5fff44' },
+            { cx: 0.1,  cy: 0.82, r: 40, color: COLORS.cyan,   glowColor: '#00eaff33' },
+            { cx: 0.92, cy: 0.7,  r: 28, color: COLORS.blue,   glowColor: '#4488ff33' },
+        ];
+
+        // ---- الرسم الرئيسي ----
+        let frame = 0;
+        let meteorTimer = 0;
+
+        function draw() {
+            frame++;
+            ctx.clearRect(0, 0, W, H);
+
+            // خلفية متدرجة عميقة
+            const bg = ctx.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.8);
+            bg.addColorStop(0, '#010118');
+            bg.addColorStop(0.5, '#000810');
+            bg.addColorStop(1, '#000005');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, W, H);
+
+            // ---- رسم الأكواب الكونية ----
+            for (const orb of ORBS) {
+                const ox = orb.cx * W, oy = orb.cy * H;
+                // وهج خارجي
+                const grd = ctx.createRadialGradient(ox, oy, orb.r * 0.3, ox, oy, orb.r * 2.5);
+                grd.addColorStop(0, orb.glowColor);
+                grd.addColorStop(1, 'transparent');
+                ctx.fillStyle = grd;
+                ctx.beginPath();
+                ctx.arc(ox, oy, orb.r * 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                // الدائرة الأساسية
+                ctx.beginPath();
+                ctx.arc(ox, oy, orb.r, 0, Math.PI * 2);
+                ctx.strokeStyle = orb.color + '55';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                // حلقة دوارة
+                ctx.save();
+                ctx.translate(ox, oy);
+                ctx.rotate(frame * 0.005);
+                ctx.beginPath();
+                ctx.arc(0, 0, orb.r + 14, 0, Math.PI * 1.4);
+                ctx.strokeStyle = orb.color + '88';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // ---- النجوم ----
+            for (const s of stars) {
+                s.alpha += s.twinkleSpeed * s.twinkleDir;
+                if (s.alpha > 1) { s.alpha = 1; s.twinkleDir = -1; }
+                if (s.alpha < 0.1) { s.alpha = 0.1; s.twinkleDir = 1; }
+                ctx.globalAlpha = s.alpha;
+                ctx.fillStyle = s.color;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+
+            // ---- نقاط الشبكة وخطوطها ----
+            for (const n of nodes) {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0) n.x = W; if (n.x > W) n.x = 0;
+                if (n.y < 0) n.y = H; if (n.y > H) n.y = 0;
+                n.pulse += 0.04;
+
+                // تنافر الماوس
+                const dx = n.x - mouse.x, dy = n.y - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 120) {
+                    const force = (120 - dist) / 120;
+                    n.vx += (dx / dist) * force * 0.15;
+                    n.vy += (dy / dist) * force * 0.15;
+                }
+                // تباطؤ
+                n.vx *= 0.98; n.vy *= 0.98;
+
+                // رسم الخطوط بين النقاط القريبة
+                for (const m of nodes) {
+                    const ddx = n.x - m.x, ddy = n.y - m.y;
+                    const d = Math.sqrt(ddx * ddx + ddy * ddy);
+                    if (d < 160 && d > 0) {
+                        const a = (1 - d / 160) * 0.25;
+                        ctx.globalAlpha = a;
+                        ctx.strokeStyle = n.color;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(n.x, n.y);
+                        ctx.lineTo(m.x, m.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // نبض النقطة
+                const pulse = 0.7 + Math.sin(n.pulse) * 0.3;
+                ctx.globalAlpha = pulse * 0.9;
+                ctx.fillStyle = n.color;
+                ctx.shadowColor = n.color;
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            ctx.globalAlpha = 1;
+
+            // ---- نصوص الكود ----
+            ctx.font = `${12}px 'Share Tech Mono', monospace`;
+            for (let i = codeTexts.length - 1; i >= 0; i--) {
+                const t = codeTexts[i];
+                t.x += t.vx;
+                t.y += t.vy;
+                t.rotation += t.rotationSpeed;
+
+                // تجديد إذا خرج من الشاشة
+                if (t.y < -30) {
+                    codeTexts[i] = spawnCodeText(false);
+                    continue;
+                }
+
+                ctx.save();
+                ctx.translate(t.x, t.y);
+                ctx.rotate(t.rotation);
+                ctx.globalAlpha = t.alpha;
+                ctx.fillStyle = t.color;
+                ctx.font = `${t.size}px 'Share Tech Mono', monospace`;
+                ctx.fillText(t.text, 0, 0);
+                ctx.restore();
+            }
+            ctx.globalAlpha = 1;
+
+            // ---- الشهب ----
+            meteorTimer++;
+            if (meteorTimer > 90 + Math.random() * 60) {
+                spawnMeteor();
+                meteorTimer = 0;
+            }
+
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                const m = meteors[i];
+                m.x += m.vx; m.y += m.vy;
+                m.life++;
+                m.alpha = 1 - m.life / m.maxLife;
+
+                if (m.life >= m.maxLife || m.y > H + 50) {
+                    meteors.splice(i, 1);
+                    continue;
+                }
+
+                const tailX = m.x - m.vx / Math.sqrt(m.vx * m.vx + m.vy * m.vy) * m.len;
+                const tailY = m.y - m.vy / Math.sqrt(m.vx * m.vx + m.vy * m.vy) * m.len;
+
+                const grad = ctx.createLinearGradient(tailX, tailY, m.x, m.y);
+                grad.addColorStop(0, 'transparent');
+                grad.addColorStop(1, m.color + Math.floor(m.alpha * 255).toString(16).padStart(2, '0'));
+
+                ctx.globalAlpha = m.alpha;
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(tailX, tailY);
+                ctx.lineTo(m.x, m.y);
+                ctx.stroke();
+
+                // نقطة مضيئة في الرأس
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = m.color;
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.arc(m.x, m.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            ctx.globalAlpha = 1;
+
+            // ---- حلقات التموج ----
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const rp = ripples[i];
+                rp.r += 2.5;
+                rp.alpha -= 0.018;
+                if (rp.alpha <= 0) { ripples.splice(i, 1); continue; }
+
+                ctx.globalAlpha = rp.alpha;
+                ctx.strokeStyle = rp.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+
+            // ---- خطوط أفقية الماتريكس (scanlines خفيفة) ----
+            ctx.globalAlpha = 0.025;
+            ctx.fillStyle = '#00ff88';
+            for (let y = 0; y < H; y += 4) {
+                ctx.fillRect(0, y, W, 1);
+            }
+            ctx.globalAlpha = 1;
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    })();
+    </script>
+</body>
+</html>
