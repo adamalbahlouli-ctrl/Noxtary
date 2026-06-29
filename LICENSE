@@ -1,9 +1,22 @@
--- 003_storage.sql
--- Supabase Storage buckets setup
+// ============================================================
+// NOXTARY — api.js
+// جميع عمليات الاتصال بـ Supabase
+// ============================================================
 
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('noxtary-images', 'noxtary-images', true)
-ON CONFLICT DO NOTHING;
+let productsData = [];
 
-CREATE POLICY "public_images_read" ON storage.objects
-    FOR SELECT USING (bucket_id = 'noxtary-images');
+async function fetchProducts() {
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=*`,
+        {
+            headers: {
+                'apikey':        SUPABASE_ANON,
+                'Authorization': 'Bearer ' + SUPABASE_ANON,
+                'Content-Type':  'application/json'
+            }
+        }
+    );
+    if (!response.ok) throw new Error('Supabase error — status: ' + response.status);
+    productsData = await response.json();
+    return productsData;
+}

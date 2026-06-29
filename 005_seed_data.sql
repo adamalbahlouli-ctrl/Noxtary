@@ -1,39 +1,16 @@
-// ============================================================
-// NOXTARY — auth.js
-// تسجيل الدخول والخروج (Google مستقبلاً)
-// ============================================================
+# Database — Noxtary
 
-function setupLoginModal() {
-    const loginBtn  = document.getElementById('loginBtn');
-    const loginModal = document.getElementById('loginModal');
-    const modalClose = document.getElementById('modalClose');
-    const loginForm  = document.getElementById('loginForm');
+## Stack
+- **Supabase** (PostgreSQL + RLS + Storage)
 
-    if (loginBtn && loginModal) {
-        loginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginModal.classList.add('active');
-        });
-    }
+## Migrations (run in order)
+| File | Description |
+|------|-------------|
+| 001_create_tables.sql | Main content table |
+| 002_rls_policies.sql  | Row Level Security |
+| 003_storage.sql       | Image storage buckets |
+| 004_indexes.sql       | Performance indexes |
+| 005_seed_data.sql     | Development seed data |
 
-    if (modalClose && loginModal) {
-        modalClose.addEventListener('click', () => {
-            loginModal.classList.remove('active');
-        });
-
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
-                loginModal.classList.remove('active');
-            }
-        });
-    }
-
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('cyberUser')?.value || 'Operator';
-            alert(`[CONNECTION ESTABLISHED]\nWelcome back, ${username}. Access granted.`);
-            loginModal.classList.remove('active');
-        });
-    }
-}
+## Column Reference
+See `001_create_tables.sql` for the full schema.

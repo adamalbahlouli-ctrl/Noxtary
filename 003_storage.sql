@@ -1,29 +1,6 @@
-// ============================================================
-// NOXTARY — home.js
-// منطق الصفحة الرئيسية
-// ============================================================
+-- 004_indexes.sql
+-- Performance indexes
 
-function initHomePage() {
-    const itemsGrid   = document.getElementById('itemsGrid');
-    const tabBtns     = document.querySelectorAll('.tab-btn');
-    const searchInput = document.getElementById('searchInput');
-
-    if (!itemsGrid) return;
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderItems(btn.dataset.filter, searchInput ? searchInput.value : '');
-        });
-    });
-
-    if (searchInput) {
-        searchInput.addEventListener('input', e => {
-            const activeFilter = document.querySelector('.tab-btn.active')?.dataset.filter || 'all';
-            renderItems(activeFilter, e.target.value);
-        });
-    }
-
-    renderItems();
-}
+CREATE INDEX IF NOT EXISTS idx_apps_type     ON apps (type);
+CREATE INDEX IF NOT EXISTS idx_apps_app_id   ON apps (app_id);
+CREATE INDEX IF NOT EXISTS idx_apps_category ON apps (category);

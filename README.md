@@ -1,100 +1,168 @@
-// ============================================================
-// NOXTARY — utils.js
-// الدوال المشتركة
-// ============================================================
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noxtary - Home</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-function getTypeConfig(type) {
-    return TYPE_CONFIG[type] || { color: '#64b5f6', label: (type || '').toUpperCase(), icon: '◈' };
-}
-
-function getTranslation(key, defaultVal) {
-    const currentLang = localStorage.getItem('noxtary_lang') || 'EN';
-    return TRANSLATIONS[currentLang]?.[key] || defaultVal || key;
-}
-
-function applyTranslations(lang) {
-    const dict = TRANSLATIONS[lang] || TRANSLATIONS.EN;
-
-    if (lang === 'AR') {
-        document.documentElement.setAttribute('dir', 'rtl');
-        document.documentElement.setAttribute('lang', 'ar');
-    } else {
-        document.documentElement.setAttribute('dir', 'ltr');
-        document.documentElement.setAttribute('lang', 'en');
-    }
-
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-            if (el.children.length > 0) {
-                let textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
-                if (textNode) {
-                    textNode.nodeValue = dict[key];
-                } else {
-                    el.textContent = dict[key];
-                }
-            } else {
-                el.textContent = dict[key];
+    <style>
+        /* ── Tabs responsive layout ── */
+        @media (min-width: 600px) {
+            .tabs-container {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 10px;
+                overflow-x: auto;
             }
         }
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (dict[key]) {
-            el.setAttribute('placeholder', dict[key]);
+        @media (max-width: 599px) {
+            .tabs-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .tabs-container .tab-btn {
+                width: 100%;
+                text-align: center;
+            }
         }
-    });
-}
+    </style>
+</head>
 
-function applyTheme(themeName) {
-    document.body.classList.remove('theme-cyber-dark', 'theme-neon-purple', 'theme-emerald-green', 'theme-sunset-orange', 'theme-neo-light');
-    document.body.classList.add('theme-' + themeName);
-    localStorage.setItem('noxtary_theme', themeName);
+<body class="home-page">
 
-    document.querySelectorAll('.theme-option').forEach(opt => {
-        if (opt.getAttribute('data-theme') === themeName) {
-            opt.classList.add('active');
-        } else {
-            opt.classList.remove('active');
-        }
-    });
+    <!-- ══ NAVBAR ══ -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="back-home" title="Back to Landing">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <img src="https://i.ibb.co/Rpkk0N6g/1000105011.png" alt="Noxtary Logo" class="mini-logo">
+        </div>
 
-    const label = document.getElementById('currentTheme');
-    if (label) {
-        const themeOptionText = document.querySelector(`.theme-option[data-theme="${themeName}"]`)?.textContent || themeName;
-        label.textContent = themeOptionText.trim();
-    }
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search apps, mods, books..." data-i18n-placeholder="search_placeholder">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+        </div>
 
-    if (window.spaceColors && THEME_CANVAS_COLORS[themeName]) {
-        const themeColors = THEME_CANVAS_COLORS[themeName];
-        Object.keys(themeColors).forEach(c => {
-            window.spaceColors[c] = themeColors[c];
-        });
-    }
-}
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <!-- Theme Switcher -->
+            <div class="theme-wrapper">
+                <button class="theme-btn" id="themeBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <span id="currentTheme" data-i18n="theme">Theme</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="theme-dropdown" id="themeDropdown">
+                    <button class="theme-option" data-theme="cyber-dark"><span class="theme-dot" style="background:#00d4ff"></span>Cyber Dark</button>
+                    <button class="theme-option" data-theme="neon-purple"><span class="theme-dot" style="background:#a855f7"></span>Neon Purple</button>
+                    <button class="theme-option" data-theme="emerald-green"><span class="theme-dot" style="background:#22c55e"></span>Emerald Green</button>
+                    <button class="theme-option" data-theme="sunset-orange"><span class="theme-dot" style="background:#f97316"></span>Sunset Orange</button>
+                    <button class="theme-option" data-theme="neo-light"><span class="theme-dot" style="background:#3b82f6; border-color:#000"></span>Neo Light</button>
+                </div>
+            </div>
 
-function viewProduct(productId) {
-    if (!productId) return;
-    window.location.href = 'product.html?id=' + productId;
-}
+            <!-- Translate -->
+            <div class="translate-wrapper">
+                <button class="translate-btn" id="translateBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span id="currentLang">EN</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="EN" data-label="English">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="AR" data-label="العربية">🇸🇦 العربية</button>
+                </div>
+            </div>
 
-function shareProduct(title) {
-    if (navigator.share) {
-        navigator.share({ title: title + ' — NOXTARY', url: window.location.href }).catch(() => {});
-    } else {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            const toast = document.getElementById('pdCopyToast');
-            if (!toast) return;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }).catch(() => {
-            const el = document.createElement('textarea');
-            el.value = window.location.href;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-        });
-    }
-}
+            <a href="#" class="login-btn" id="loginBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span data-i18n="login">Login</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <div class="content-wrapper">
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-filter="all" data-i18n="tab_all">All</button>
+            <button class="tab-btn" data-filter="apps" data-i18n="tab_apps">Apps</button>
+            <button class="tab-btn" data-filter="books_articles" data-i18n="tab_books_articles">Books &amp; Articles</button>
+            <button class="tab-btn" data-filter="mods" data-i18n="tab_mods">Mods</button>
+            <button class="tab-btn" data-filter="audio" data-i18n="tab_audio">Audio</button>
+            <button class="tab-btn" data-filter="services" data-i18n="tab_services">Services</button>
+        </div>
+
+        <!-- Cards Grid — populated by script.js renderItems() -->
+        <div class="items-grid" id="itemsGrid"></div>
+
+    </div>
+
+    <!-- Login Modal overlay -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="cyber-modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h2 class="modal-title" data-i18n="login_title">Cyber Authenticate</h2>
+            <form class="modal-form" id="loginForm">
+                <div class="form-group">
+                    <label for="cyberUser" data-i18n="username">Access Identity</label>
+                    <input type="text" id="cyberUser" class="cyber-input" placeholder="User / ID" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="cyberPass" data-i18n="password">Security Code</label>
+                    <input type="password" id="cyberPass" class="cyber-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="cyber-btn" data-i18n="sign_in">Establish Link</button>
+            </form>
+            <div class="modal-footer">
+                <span data-i18n="no_account">New operator?</span> <a href="#" data-i18n="contact_admin">Contact admin</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/cards.js"></script>
+    <script src="assets/js/home.js"></script>
+    <script src="assets/js/product.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
