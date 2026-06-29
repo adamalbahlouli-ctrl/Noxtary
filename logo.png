@@ -1,9 +1,0 @@
--- 003_storage.sql
--- Supabase Storage buckets setup
-
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('noxtary-images', 'noxtary-images', true)
-ON CONFLICT DO NOTHING;
-
-CREATE POLICY "public_images_read" ON storage.objects
-    FOR SELECT USING (bucket_id = 'noxtary-images');
