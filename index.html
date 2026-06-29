@@ -22,32 +22,59 @@
 
     <!-- شريط التنقل العلوي -->
     <nav class="navbar">
-        <a href="#" class="login-btn">
+        <a href="#" class="login-btn" id="loginBtn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
             </svg>
-            Login
+            <span data-i18n="login">Login</span>
         </a>
-        <div class="translate-wrapper">
-            <button class="translate-btn" id="translateBtn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                <span id="currentLang">EN</span>
-                <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="6 9 12 15 18 9"/>
-                </svg>
-            </button>
-            <div class="lang-dropdown" id="langDropdown">
-                <button class="lang-option active" data-lang="EN" data-label="English">🇬🇧 English</button>
-                <button class="lang-option" data-lang="AR" data-label="العربية">🇸🇦 العربية</button>
-                <button class="lang-option" data-lang="FR" data-label="Français">🇫🇷 Français</button>
-                <button class="lang-option" data-lang="ZH" data-label="中文">🇨🇳 中文</button>
-                <button class="lang-option" data-lang="ES" data-label="Español">🇪🇸 Español</button>
-                <button class="lang-option" data-lang="DE" data-label="Deutsch">🇩🇪 Deutsch</button>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <!-- Theme Switcher -->
+            <div class="theme-wrapper">
+                <button class="theme-btn" id="themeBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <span id="currentTheme" data-i18n="theme">Theme</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="theme-dropdown" id="themeDropdown">
+                    <button class="theme-option" data-theme="cyber-dark"><span class="theme-dot" style="background:#00d4ff"></span>Cyber Dark</button>
+                    <button class="theme-option" data-theme="neon-purple"><span class="theme-dot" style="background:#a855f7"></span>Neon Purple</button>
+                    <button class="theme-option" data-theme="emerald-green"><span class="theme-dot" style="background:#22c55e"></span>Emerald Green</button>
+                    <button class="theme-option" data-theme="sunset-orange"><span class="theme-dot" style="background:#f97316"></span>Sunset Orange</button>
+                    <button class="theme-option" data-theme="neo-light"><span class="theme-dot" style="background:#3b82f6; border-color:#000"></span>Neo Light</button>
+                </div>
+            </div>
+
+            <!-- Translate -->
+            <div class="translate-wrapper">
+                <button class="translate-btn" id="translateBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span id="currentLang">EN</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="EN" data-label="English">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="AR" data-label="العربية">🇸🇦 العربية</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -58,14 +85,14 @@
             <div class="logo-glow-wrapper">
                 <img src="https://i.ibb.co/Rpkk0N6g/1000105011.png" alt="Noxtary Logo" class="brand-logo" />
             </div>
-            <h1 class="brand-title">Noxtary</h1>
+            <h1 class="brand-title" data-i18n="brand_title">Noxtary</h1>
         </div>
-        <p class="tagline">
+        <p class="tagline" data-i18n="tagline">
             Noxtary is a massive digital hub built to give users fast and easy access to apps, eBooks, Minecraft mods, tools, and unique digital content — all organized in one modern experience designed for discovery, creativity, and endless exploration.
         </p>
-        <a href="home.html" class="btn">
-            <span>Get Started</span>
-            <svg w idth="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <a href="home.html" class="btn" id="getStartedBtn">
+            <span data-i18n="get_started">Get Started</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/>
                 <polyline points="12 5 19 12 12 19"/>
             </svg>
@@ -80,7 +107,7 @@
         let W, H, mouse = { x: -9999, y: -9999 };
 
         // ألوان الفضاء البرمجي
-        const COLORS = {
+        let COLORS = {
             cyan:   '#00eaff',
             green:  '#00ff88',
             purple: '#bf5fff',
@@ -88,6 +115,7 @@
             white:  '#ffffff',
             orange: '#ff8800',
         };
+        window.spaceColors = COLORS;
 
         // كلمات الكود البرمجية تطير في الفضاء
         const CODE_SNIPPETS = [
@@ -437,5 +465,29 @@
         draw();
     })();
     </script>
+
+    <!-- Login Modal overlay -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="cyber-modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h2 class="modal-title" data-i18n="login_title">Cyber Authenticate</h2>
+            <form class="modal-form" id="loginForm">
+                <div class="form-group">
+                    <label for="cyberUser" data-i18n="username">Access Identity</label>
+                    <input type="text" id="cyberUser" class="cyber-input" placeholder="User / ID" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="cyberPass" data-i18n="password">Security Code</label>
+                    <input type="password" id="cyberPass" class="cyber-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="cyber-btn" data-i18n="sign_in">Establish Link</button>
+            </form>
+            <div class="modal-footer">
+                <span data-i18n="no_account">New operator?</span> <a href="#" data-i18n="contact_admin">Contact admin</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

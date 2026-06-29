@@ -1,0 +1,103 @@
+/* =====================================================
+   RESPONSIVE STYLESHEET - responsive.css
+   ===================================================== */
+
+@media (min-width: 600px) {
+    .tabs-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 10px;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 599px) {
+    .tabs-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .tabs-container .tab-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .brand-title    { font-size: 2.5rem; }
+    .brand-logo     { width: 52px; height: 52px; }
+    .brand-header   { gap: 12px; }
+    .tagline        { font-size: 0.95rem; padding: 0 10px; }
+    .btn            { padding: 13px 32px; font-size: 0.85rem; }
+    .login-btn      { padding: 7px 14px; font-size: 0.7rem; }
+    .translate-btn  { padding: 7px 12px; font-size: 0.7rem; }
+
+    .items-grid--ba     { grid-template-columns: repeat(2, 1fr); }
+    .items-grid--covers { grid-template-columns: repeat(2, 1fr); }
+    .items-grid--apps   { grid-template-columns: repeat(2, 1fr); }
+
+    .nc-mod, .nc-service {
+        flex-wrap: wrap;
+    }
+    .nc-mod__actions, .nc-service__actions {
+        width: 100%;
+    }
+    .nc-mod__actions .nc-btn,
+    .nc-service__actions .nc-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-title    { font-size: 2rem; letter-spacing: 2px; }
+    .brand-logo     { width: 44px; height: 44px; }
+    .navbar         { padding: 12px 14px; gap: 8px; }
+    .search-container { max-width: none; }
+    .content-wrapper  { padding: 90px 14px 40px; }
+
+    .items-grid--apps {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    .items-grid--ba {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .items-grid--covers {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .nc-app, .nc-ba__body { padding: 14px; }
+    .nc-card__title { font-size: 0.85rem; }
+
+    .nc-btn {
+        font-size: 0.66rem;
+        padding: 8px 10px;
+        letter-spacing: 0.02em;
+        gap: 4px;
+    }
+
+    .pd-header        { flex-direction: column; align-items: flex-start; }
+    .pd-app-icon      { width: 88px; height: 88px; }
+    .pd-app-name      { font-size: 1.25rem; }
+
+    .pd-actions-row     { flex-direction: column; }
+    .pd-actions-row > * { width: 100%; justify-content: center; text-align: center; }
+
+    .pd-screenshot    { height: 220px; }
+    .pd-pdf-frame     { height: 60vh; min-height: 320px; }
+    .lb-arrow         { width: 38px; height: 38px; font-size: 0.9rem; }
+    .lb-left          { left: 8px; }
+    .lb-right         { right: 8px; }
+}
+
+@media (max-width: 360px) {
+    .brand-title { font-size: 1.7rem; }
+    .items-grid--apps,
+    .items-grid--ba,
+    .items-grid--covers {
+        grid-template-columns: 1fr;
+    }
+}
