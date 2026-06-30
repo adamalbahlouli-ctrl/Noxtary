@@ -162,16 +162,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
-    padding: 14px 16px;
+    padding: 8px 14px;
     background: var(--nav-bg);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid rgba(30,136,229,0.18);
     box-sizing: border-box;
     overflow-x: auto;
     overflow-y: hidden;
+    /* Smooth hide/show on scroll */
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.35s ease,
+                box-shadow 0.35s ease;
+}
+
+/* Navbar hidden state — slides up out of view */
+.navbar--hidden {
+    transform: translateY(-110%);
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: none;
 }
 
 .nav-left {
@@ -282,6 +294,73 @@ body {
 .lang-option:hover, .lang-option.active {
     background: rgba(21,101,192,0.3);
     color: #fff;
+}
+
+/* =====================================================
+   THEME BUTTON
+   ===================================================== */
+.theme-wrapper { position: relative; }
+
+.theme-btn-instant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(21, 101, 192, 0.18);
+    color: var(--blue-accent);
+    border: 1px solid rgba(66, 165, 245, 0.35);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    flex-shrink: 0;
+}
+.theme-btn-instant:hover {
+    background: rgba(21, 101, 192, 0.4);
+    border-color: var(--blue-shine);
+    color: #fff;
+    box-shadow: 0 0 18px var(--logo-glow);
+    transform: rotate(20deg);
+}
+.theme-btn-instant:active {
+    transform: rotate(20deg) scale(0.95);
+}
+.theme-btn-instant svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.theme-btn-instant .sun-icon  { display: block; }
+.theme-btn-instant .moon-icon { display: none; }
+
+/* Light mode: dark & visible button */
+body.theme-neo-light .theme-btn-instant {
+    background: rgba(17, 24, 39, 0.1);
+    color: #111827;
+    border: 1.5px solid rgba(17, 24, 39, 0.35);
+}
+body.theme-neo-light .theme-btn-instant:hover {
+    background: rgba(17, 24, 39, 0.22);
+    border-color: #1d4ed8;
+    color: #1d4ed8;
+    box-shadow: 0 0 14px rgba(37, 99, 235, 0.35);
+}
+
+/* neo-light overrides for other buttons */
+body.theme-neo-light .translate-btn,
+body.theme-neo-light .login-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #111827;
+}
+body.theme-neo-light .translate-btn:hover,
+body.theme-neo-light .login-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--blue-bright);
+}
+body.theme-neo-light .navbar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* =====================================================
