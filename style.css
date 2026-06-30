@@ -1747,60 +1747,84 @@ body {
 
 @media (max-width: 480px) {
     .navbar { 
-        padding: 8px 10px; 
+        padding: 6px 8px; 
         gap: 6px; 
-        flex-wrap: wrap-reverse;
+        flex-wrap: nowrap;
+        overflow: visible;
     }
     .nav-left {
-        gap: 8px;
-        order: 2;
+        gap: 6px;
+        order: 0;
     }
     .search-container {
-        order: 1;
-        flex: 1 1 100%;
-        min-width: 100%;
-        margin-bottom: 4px;
+        order: 0;
+        flex: 1 1 auto;
+        min-width: 0;
+        margin-bottom: 0;
     }
     .search-container input {
-        padding: 6px 30px 6px 10px;
-        font-size: 0.8rem;
+        padding: 6px 28px 6px 8px;
+        font-size: 0.78rem;
+        height: 32px;
     }
     .search-icon {
-        width: 14px;
-        height: 14px;
-    }
-    .login-btn {
-        padding: 6px 10px;
-        font-size: 0.6rem;
-        gap: 3px;
-    }
-    .login-btn svg {
-        width: 11px;
-        height: 11px;
-    }
-    .translate-btn {
-        padding: 6px 8px;
-        font-size: 0.6rem;
-        gap: 3px;
-    }
-    .translate-btn svg {
         width: 12px;
         height: 12px;
+        right: 10px;
     }
-    .translate-btn span {
+    .navbar > div:last-child {
+        display: flex;
+        gap: 6px !important;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .login-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+    }
+    .login-btn span {
+        display: none;
+    }
+    .login-btn svg {
+        width: 13px;
+        height: 13px;
+    }
+    .translate-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+    }
+    .translate-btn svg {
+        width: 13px;
+        height: 13px;
+    }
+    .translate-btn span,
+    .translate-btn .chevron {
         display: none;
     }
     .theme-btn-instant {
         width: 32px;
         height: 32px;
+        min-width: 32px;
     }
     .theme-btn-instant svg {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
     .mini-logo {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
     }
     .back-home svg {
         width: 18px;
@@ -1809,25 +1833,12 @@ body {
     .brand-title-hero { font-size: 2rem; letter-spacing: 1.5px; }
     .brand-logo-hero { width: 52px; height: 52px; }
     .logo-glow-wrapper-hero::before { inset: -8px; }
-    .content-wrapper { padding: 90px 14px 40px; }
+    .content-wrapper { padding: 80px 14px 40px; }
     .container { padding: 80px 14px 60px; }
     .hero-panel { padding: 18px; }
     .hero-panel--main h2 { font-size: 1.15rem; }
     .hero-badges-subtitle { gap: 6px; margin-top: 4px; }
     .hero-pill-subtitle { font-size: 0.62rem; padding: 4px 8px; }
-    .catalog-hero {
-        padding: 12px 14px;
-        margin-bottom: 14px;
-        gap: 10px;
-    }
-    .catalog-hero h2 {
-        font-size: 0.9rem;
-        line-height: 1.3;
-    }
-    .catalog-hero p {
-        font-size: 0.8rem;
-        line-height: 1.4;
-    }
 
     /* FIXED: عمود واحد لكاردات Apps و Books/Articles على الهاتف —
        عمودان كانا يضيّقان الكارت لدرجة قطع الزر بصرياً */
