@@ -1064,3 +1064,61 @@ body.theme-neo-light .navbar {
         gap: 14px;
     }
 }
+
+/* ══ USER PROFILE DROPDOWN ══ */
+#userDropdown {
+    display: none;
+    position: fixed;
+    min-width: 200px;
+    padding: 8px;
+    background: rgba(6,14,32,0.97);
+    border: 1px solid rgba(66,165,245,0.3);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px rgba(21,101,192,0.2);
+    backdrop-filter: blur(20px);
+    z-index: 10000;
+    animation: dropDown 0.2s ease;
+}
+
+#userDropdown.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-dropdown-item {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.75);
+    padding: 9px 14px;
+    border-radius: 9px;
+    font-size: 0.88rem;
+    font-family: var(--font-body);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[dir="rtl"] .user-dropdown-item {
+    text-align: right;
+}
+
+.user-dropdown-item:hover {
+    background: rgba(21,101,192,0.3);
+    color: #fff;
+}
+
+@media (max-width: 600px) {
+    #userDropdown {
+        min-width: min(90vw, 240px);
+    }
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

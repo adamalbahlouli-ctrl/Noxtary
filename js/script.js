@@ -10,8 +10,11 @@
 const SUPABASE_URL   = 'https://sbwfrigdhivipmmkzgag.supabase.co';
 const SUPABASE_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNid2ZyaWdkaGl2aXBtbWt6Z2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNzEzNzIsImV4cCI6MjA5NDg0NzM3Mn0.tKhZOKyOjBZkyh6lJ22A77xd2TPjns3vtNaM1W5pPO8';
 const SUPABASE_TABLE = 'apps';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let productsData = [];
+let currentSession = null;
+let authListenerInitialized = false;
 
 // ─────────────────────────────────────────────
 // TYPE CONFIG — نظام الهوية البصرية
@@ -876,35 +879,175 @@ function setupLoginModal() {
     const loginBtn = document.getElementById('loginBtn');
     const loginModal = document.getElementById('loginModal');
     const modalClose = document.getElementById('modalClose');
-    const loginForm = document.getElementById('loginForm');
-    
-    if (loginBtn && loginModal) {
-        loginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginModal.classList.add('active');
-        });
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
+
+    if (!loginBtn) console.warn("NOXTARY Auth: Element #loginBtn not found on this page.");
+    if (!loginModal) console.warn("NOXTARY Auth: Element #loginModal not found on this page.");
+    if (!modalClose) console.warn("NOXTARY Auth: Element #modalClose not found on this page.");
+    if (!googleSignInBtn) console.warn("NOXTARY Auth: Element #googleSignInBtn not found on this page.");
+
+    if (loginBtn) {
+        if (!loginBtn.dataset.listenerInitialized) {
+            loginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (currentSession && currentSession.user) {
+                    const dropdown = document.getElementById('userDropdownMenu');
+                    if (dropdown) {
+                        dropdown.classList.toggle('show');
+                    } else {
+                        console.warn("NOXTARY Auth: Element #userDropdownMenu not found when trying to toggle.");
+                    }
+                } else {
+                    if (loginModal) {
+                        loginModal.classList.add('active');
+                    }
+                }
+            });
+            loginBtn.dataset.listenerInitialized = "true";
+        }
     }
     
     if (modalClose && loginModal) {
-        modalClose.addEventListener('click', () => {
-            loginModal.classList.remove('active');
-        });
-        
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
+        if (!modalClose.dataset.listenerInitialized) {
+            modalClose.addEventListener('click', () => {
                 loginModal.classList.remove('active');
-            }
-        });
+            });
+            modalClose.dataset.listenerInitialized = "true";
+        }
+        
+        if (!loginModal.dataset.listenerInitialized) {
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    loginModal.classList.remove('active');
+                }
+            });
+            loginModal.dataset.listenerInitialized = "true";
+        }
     }
     
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('cyberUser')?.value || 'Operator';
-            alert(`[CONNECTION ESTABLISHED]\nWelcome back, ${username}. Access granted.`);
-            loginModal.classList.remove('active');
-        });
+    if (googleSignInBtn) {
+        if (!googleSignInBtn.dataset.listenerInitialized) {
+            googleSignInBtn.addEventListener('click', () => {
+                signInWithGoogle();
+            });
+            googleSignInBtn.dataset.listenerInitialized = "true";
+        }
     }
+
+    // Close user dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('userDropdownMenu');
+        if (dropdown && dropdown.classList.contains('show')) {
+            if (loginBtn && !loginBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+}
+
+// تسجيل الدخول عبر Google
+async function signInWithGoogle() {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: window.location.href
+        }
+    });
+    if (error) {
+        console.error('خطأ في تسجيل الدخول:', error.message);
+        alert('حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.');
+    }
+}
+
+// مراقبة حالة تسجيل الدخول باستمرار
+function setupAuthListener() {
+    if (authListenerInitialized) return;
+    authListenerInitialized = true;
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        updateAuthUI(session);
+    });
+
+    // تحقق فورًا عند تحميل الصفحة إذا كان هناك جلسة فعالة
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        updateAuthUI(session);
+    });
+}
+
+// تحديث الواجهة حسب حالة تسجيل الدخول
+function updateAuthUI(session) {
+    currentSession = session;
+    const loginBtn = document.getElementById('loginBtn');
+    const loginModal = document.getElementById('loginModal');
+    
+    if (!loginBtn) {
+        console.warn("NOXTARY Auth UI: Element #loginBtn not found on this page.");
+        return;
+    }
+
+    // Wrap the loginBtn in a relative container if not already wrapped
+    let wrapper = loginBtn.parentElement;
+    if (!wrapper.classList.contains('login-wrapper')) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'login-wrapper';
+        loginBtn.parentNode.insertBefore(wrapper, loginBtn);
+        wrapper.appendChild(loginBtn);
+    }
+
+    // Check if dropdown menu exists, if not create it
+    let dropdown = document.getElementById('userDropdownMenu');
+    if (!dropdown && session && session.user) {
+        dropdown = document.createElement('div');
+        dropdown.id = 'userDropdownMenu';
+        dropdown.className = 'user-dropdown-menu';
+        dropdown.innerHTML = `
+            <button class="user-dropdown-item" id="logoutBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span data-i18n="logout">تسجيل الخروج / Logout</span>
+            </button>
+        `;
+        wrapper.appendChild(dropdown);
+
+        // Bind click on the logout button
+        const logoutBtn = dropdown.querySelector('#logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                signOut();
+                dropdown.classList.remove('show');
+            });
+        }
+    }
+
+    if (session && session.user) {
+        // المستخدم مسجل دخول
+        const name = session.user.user_metadata?.full_name || session.user.email || 'User';
+        loginBtn.innerHTML = `<span>👤 ${name}</span>`;
+        if (loginModal) loginModal.classList.remove('active');
+    } else {
+        // المستخدم غير مسجل دخول
+        loginBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span data-i18n="login">Login</span>`;
+        if (dropdown) {
+            dropdown.classList.remove('show');
+            dropdown.remove();
+        }
+    }
+}
+
+// تسجيل الخروج
+async function signOut() {
+    await supabaseClient.auth.signOut();
 }
 
 function setupNavbarScrollBehavior() {
@@ -958,6 +1101,7 @@ function initializeCore() {
     // 3. Setup Triggers
     setupDropdowns();
     setupLoginModal();
+    setupAuthListener();
 
     // 4. Navbar hide-on-scroll
     setupNavbarScrollBehavior();

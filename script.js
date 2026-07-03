@@ -10,8 +10,11 @@
 const SUPABASE_URL   = 'https://sbwfrigdhivipmmkzgag.supabase.co';
 const SUPABASE_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNid2ZyaWdkaGl2aXBtbWt6Z2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNzEzNzIsImV4cCI6MjA5NDg0NzM3Mn0.tKhZOKyOjBZkyh6lJ22A77xd2TPjns3vtNaM1W5pPO8';
 const SUPABASE_TABLE = 'apps';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let productsData = [];
+let currentSession = null;
+let authListenerInitialized = false;
 
 // ─────────────────────────────────────────────
 // TYPE CONFIG — نظام الهوية البصرية
@@ -872,39 +875,177 @@ function setupDropdowns() {
     setupLanguageDropdown();
 }
 
+function positionUserDropdown() {
+    const loginBtn = document.getElementById('loginBtn');
+    const dropdown = document.getElementById('userDropdown');
+    if (!loginBtn || !dropdown) return;
+
+    const rect = loginBtn.getBoundingClientRect();
+    const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
+
+    dropdown.style.top = `${rect.bottom + 8}px`;
+    if (isRtl) {
+        dropdown.style.left = `${rect.left}px`;
+        dropdown.style.right = 'auto';
+    } else {
+        dropdown.style.right = `${window.innerWidth - rect.right}px`;
+        dropdown.style.left = 'auto';
+    }
+}
+
+function toggleUserDropdown() {
+    const loginBtn = document.getElementById('loginBtn');
+    const dropdown = document.getElementById('userDropdown');
+    if (!loginBtn || !dropdown) return;
+
+    if (!currentSession || !currentSession.user) {
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.classList.add('active');
+        return;
+    }
+
+    positionUserDropdown();
+    dropdown.classList.toggle('show');
+}
+
 function setupLoginModal() {
     const loginBtn = document.getElementById('loginBtn');
     const loginModal = document.getElementById('loginModal');
     const modalClose = document.getElementById('modalClose');
-    const loginForm = document.getElementById('loginForm');
-    
-    if (loginBtn && loginModal) {
-        loginBtn.addEventListener('click', (e) => {
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!loginBtn) console.warn("NOXTARY Auth: Element #loginBtn not found on this page.");
+    if (!loginModal) console.warn("NOXTARY Auth: Element #loginModal not found on this page.");
+    if (!modalClose) console.warn("NOXTARY Auth: Element #modalClose not found on this page.");
+    if (!googleSignInBtn) console.warn("NOXTARY Auth: Element #googleSignInBtn not found on this page.");
+    if (!logoutBtn) console.warn("NOXTARY Auth: Element #logoutBtn not found on this page.");
+
+    if (loginBtn) {
+        if (!loginBtn.dataset.listenerInitialized) {
+            loginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (currentSession && currentSession.user) {
+                    toggleUserDropdown();
+                } else {
+                    if (loginModal) {
+                        loginModal.classList.add('active');
+                    }
+                }
+            });
+            loginBtn.dataset.listenerInitialized = "true";
+        }
+    }
+
+    if (logoutBtn && !logoutBtn.dataset.listenerInitialized) {
+        logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            loginModal.classList.add('active');
+            e.stopPropagation();
+            signOut();
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) dropdown.classList.remove('show');
         });
+        logoutBtn.dataset.listenerInitialized = "true";
     }
     
     if (modalClose && loginModal) {
-        modalClose.addEventListener('click', () => {
-            loginModal.classList.remove('active');
-        });
-        
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
+        if (!modalClose.dataset.listenerInitialized) {
+            modalClose.addEventListener('click', () => {
                 loginModal.classList.remove('active');
-            }
-        });
+            });
+            modalClose.dataset.listenerInitialized = "true";
+        }
+        
+        if (!loginModal.dataset.listenerInitialized) {
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    loginModal.classList.remove('active');
+                }
+            });
+            loginModal.dataset.listenerInitialized = "true";
+        }
     }
     
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('cyberUser')?.value || 'Operator';
-            alert(`[CONNECTION ESTABLISHED]\nWelcome back, ${username}. Access granted.`);
-            loginModal.classList.remove('active');
-        });
+    if (googleSignInBtn) {
+        if (!googleSignInBtn.dataset.listenerInitialized) {
+            googleSignInBtn.addEventListener('click', () => {
+                signInWithGoogle();
+            });
+            googleSignInBtn.dataset.listenerInitialized = "true";
+        }
     }
+
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown && dropdown.classList.contains('show')) {
+            if (loginBtn && !loginBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        }
+    });
+}
+
+// تسجيل الدخول عبر Google
+async function signInWithGoogle() {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: window.location.href
+        }
+    });
+    if (error) {
+        console.error('خطأ في تسجيل الدخول:', error.message);
+        alert('حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.');
+    }
+}
+
+// مراقبة حالة تسجيل الدخول باستمرار
+function setupAuthListener() {
+    if (authListenerInitialized) return;
+    authListenerInitialized = true;
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        updateAuthUI(session);
+    });
+
+    // تحقق فورًا عند تحميل الصفحة إذا كان هناك جلسة فعالة
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        updateAuthUI(session);
+    });
+}
+
+// تحديث الواجهة حسب حالة تسجيل الدخول
+function updateAuthUI(session) {
+    currentSession = session;
+    const loginBtn = document.getElementById('loginBtn');
+    const loginModal = document.getElementById('loginModal');
+    const dropdown = document.getElementById('userDropdown');
+    
+    if (!loginBtn) {
+        console.warn("NOXTARY Auth UI: Element #loginBtn not found on this page.");
+        return;
+    }
+
+    if (session && session.user) {
+        const name = session.user.user_metadata?.full_name || session.user.email || 'User';
+        loginBtn.innerHTML = `<span>👤 ${name}</span>`;
+        if (loginModal) loginModal.classList.remove('active');
+        if (dropdown) dropdown.classList.remove('show');
+    } else {
+        loginBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span data-i18n="login">Login</span>`;
+        if (dropdown) dropdown.classList.remove('show');
+    }
+}
+
+// تسجيل الخروج
+async function signOut() {
+    await supabaseClient.auth.signOut();
 }
 
 function setupNavbarScrollBehavior() {
@@ -958,6 +1099,7 @@ function initializeCore() {
     // 3. Setup Triggers
     setupDropdowns();
     setupLoginModal();
+    setupAuthListener();
 
     // 4. Navbar hide-on-scroll
     setupNavbarScrollBehavior();
