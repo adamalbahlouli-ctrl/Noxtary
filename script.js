@@ -385,7 +385,39 @@ function viewProduct(productId) {
 
 
 // ─────────────────────────────────────────────
-// 6. PRODUCT PAGE — Detail Loader
+// 6. PRODUCT PAGE — Download Handler
+// ─────────────────────────────────────────────
+async function handleDownloadClick(appId, btnElement) {
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '⏳ ...';
+    btnElement.style.pointerEvents = 'none';
+
+    const { data, error } = await supabaseClient.rpc('get_download_url', { p_app_id: appId });
+
+    btnElement.innerHTML = originalText;
+    btnElement.style.pointerEvents = 'auto';
+
+    if (error) {
+        if (error.message.includes('اشتراك مطلوب')) {
+            alert('هذا المحتوى مدفوع. يرجى الاشتراك أولًا للتحميل.');
+        } else if (error.message.includes('تسجيل الدخول')) {
+            alert('يرجى تسجيل الدخول أولًا.');
+            document.getElementById('loginModal')?.classList.add('active');
+        } else {
+            alert('حدث خطأ، حاول مرة أخرى.');
+        }
+        return;
+    }
+
+    if (data) {
+        window.open(data, '_blank', 'noopener');
+    } else {
+        alert('الرابط غير متوفر حاليًا.');
+    }
+}
+
+// ─────────────────────────────────────────────
+// 7. PRODUCT PAGE — Detail Loader
 // ─────────────────────────────────────────────
 function loadProductDetails() {
     const container = document.getElementById('product-load-container');
@@ -447,9 +479,9 @@ function loadProductDetails() {
                 <a href="#pdfViewer" onclick="document.querySelector('.pd-pdf-wrap').scrollIntoView({behavior:'smooth'})" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📖 ${getTranslation('read_now', 'Read Now')}
                 </a>
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download', 'Download')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -464,12 +496,12 @@ function loadProductDetails() {
     } else if (product.type === 'audio') {
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     ▶ ${getTranslation('listen_now', 'Listen Now')}
-                </a>
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
+                </button>
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download', 'Download')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -477,9 +509,9 @@ function loadProductDetails() {
     } else if (product.type === 'services') {
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     💬 ${getTranslation('contact_order', 'Contact / Order')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -487,9 +519,9 @@ function loadProductDetails() {
     } else {
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download_now', 'Download Now')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>

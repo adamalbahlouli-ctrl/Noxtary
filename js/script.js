@@ -385,7 +385,39 @@ function viewProduct(productId) {
 
 
 // ─────────────────────────────────────────────
-// 6. PRODUCT PAGE — Detail Loader
+// 6. PRODUCT PAGE — Download Handler
+// ─────────────────────────────────────────────
+async function handleDownloadClick(appId, btnElement) {
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '⏳ ...';
+    btnElement.style.pointerEvents = 'none';
+
+    const { data, error } = await supabaseClient.rpc('get_download_url', { p_app_id: appId });
+
+    btnElement.innerHTML = originalText;
+    btnElement.style.pointerEvents = 'auto';
+
+    if (error) {
+        if (error.message.includes('اشتراك مطلوب')) {
+            alert('هذا المحتوى مدفوع. يرجى الاشتراك أولًا للتحميل.');
+        } else if (error.message.includes('تسجيل الدخول')) {
+            alert('يرجى تسجيل الدخول أولًا.');
+            document.getElementById('loginModal')?.classList.add('active');
+        } else {
+            alert('حدث خطأ، حاول مرة أخرى.');
+        }
+        return;
+    }
+
+    if (data) {
+        window.open(data, '_blank', 'noopener');
+    } else {
+        alert('الرابط غير متوفر حاليًا.');
+    }
+}
+
+// ─────────────────────────────────────────────
+// 7. PRODUCT PAGE — Detail Loader
 // ─────────────────────────────────────────────
 function loadProductDetails() {
     const container = document.getElementById('product-load-container');
@@ -447,9 +479,9 @@ function loadProductDetails() {
                 <a href="#pdfViewer" onclick="document.querySelector('.pd-pdf-wrap').scrollIntoView({behavior:'smooth'})" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📖 ${getTranslation('read_now', 'Read Now')}
                 </a>
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download', 'Download')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -464,12 +496,12 @@ function loadProductDetails() {
     } else if (product.type === 'audio') {
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     ▶ ${getTranslation('listen_now', 'Listen Now')}
-                </a>
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
+                </button>
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download', 'Download')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -477,9 +509,9 @@ function loadProductDetails() {
     } else if (product.type === 'services') {
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     💬 ${getTranslation('contact_order', 'Contact / Order')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -487,9 +519,9 @@ function loadProductDetails() {
     } else {
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="${product.downloadUrl}" target="_blank" rel="noopener" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download_now', 'Download Now')}
-                </a>
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -875,16 +907,51 @@ function setupDropdowns() {
     setupLanguageDropdown();
 }
 
+function positionUserDropdown() {
+    const loginBtn = document.getElementById('loginBtn');
+    const dropdown = document.getElementById('userDropdown');
+    if (!loginBtn || !dropdown) return;
+
+    const rect = loginBtn.getBoundingClientRect();
+    const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
+
+    dropdown.style.top = `${rect.bottom + 8}px`;
+    if (isRtl) {
+        dropdown.style.left = `${rect.left}px`;
+        dropdown.style.right = 'auto';
+    } else {
+        dropdown.style.right = `${window.innerWidth - rect.right}px`;
+        dropdown.style.left = 'auto';
+    }
+}
+
+function toggleUserDropdown() {
+    const loginBtn = document.getElementById('loginBtn');
+    const dropdown = document.getElementById('userDropdown');
+    if (!loginBtn || !dropdown) return;
+
+    if (!currentSession || !currentSession.user) {
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.classList.add('active');
+        return;
+    }
+
+    positionUserDropdown();
+    dropdown.classList.toggle('show');
+}
+
 function setupLoginModal() {
     const loginBtn = document.getElementById('loginBtn');
     const loginModal = document.getElementById('loginModal');
     const modalClose = document.getElementById('modalClose');
     const googleSignInBtn = document.getElementById('googleSignInBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     if (!loginBtn) console.warn("NOXTARY Auth: Element #loginBtn not found on this page.");
     if (!loginModal) console.warn("NOXTARY Auth: Element #loginModal not found on this page.");
     if (!modalClose) console.warn("NOXTARY Auth: Element #modalClose not found on this page.");
     if (!googleSignInBtn) console.warn("NOXTARY Auth: Element #googleSignInBtn not found on this page.");
+    if (!logoutBtn) console.warn("NOXTARY Auth: Element #logoutBtn not found on this page.");
 
     if (loginBtn) {
         if (!loginBtn.dataset.listenerInitialized) {
@@ -892,12 +959,7 @@ function setupLoginModal() {
                 e.preventDefault();
                 e.stopPropagation();
                 if (currentSession && currentSession.user) {
-                    const dropdown = document.getElementById('userDropdownMenu');
-                    if (dropdown) {
-                        dropdown.classList.toggle('show');
-                    } else {
-                        console.warn("NOXTARY Auth: Element #userDropdownMenu not found when trying to toggle.");
-                    }
+                    toggleUserDropdown();
                 } else {
                     if (loginModal) {
                         loginModal.classList.add('active');
@@ -906,6 +968,17 @@ function setupLoginModal() {
             });
             loginBtn.dataset.listenerInitialized = "true";
         }
+    }
+
+    if (logoutBtn && !logoutBtn.dataset.listenerInitialized) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            signOut();
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+        });
+        logoutBtn.dataset.listenerInitialized = "true";
     }
     
     if (modalClose && loginModal) {
@@ -935,9 +1008,8 @@ function setupLoginModal() {
         }
     }
 
-    // Close user dropdown when clicking outside
     document.addEventListener('click', (e) => {
-        const dropdown = document.getElementById('userDropdownMenu');
+        const dropdown = document.getElementById('userDropdown');
         if (dropdown && dropdown.classList.contains('show')) {
             if (loginBtn && !loginBtn.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('show');
@@ -980,68 +1052,26 @@ function updateAuthUI(session) {
     currentSession = session;
     const loginBtn = document.getElementById('loginBtn');
     const loginModal = document.getElementById('loginModal');
+    const dropdown = document.getElementById('userDropdown');
     
     if (!loginBtn) {
         console.warn("NOXTARY Auth UI: Element #loginBtn not found on this page.");
         return;
     }
 
-    // Wrap the loginBtn in a relative container if not already wrapped
-    let wrapper = loginBtn.parentElement;
-    if (!wrapper.classList.contains('login-wrapper')) {
-        wrapper = document.createElement('div');
-        wrapper.className = 'login-wrapper';
-        loginBtn.parentNode.insertBefore(wrapper, loginBtn);
-        wrapper.appendChild(loginBtn);
-    }
-
-    // Check if dropdown menu exists, if not create it
-    let dropdown = document.getElementById('userDropdownMenu');
-    if (!dropdown && session && session.user) {
-        dropdown = document.createElement('div');
-        dropdown.id = 'userDropdownMenu';
-        dropdown.className = 'user-dropdown-menu';
-        dropdown.innerHTML = `
-            <button class="user-dropdown-item" id="logoutBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-                <span data-i18n="logout">تسجيل الخروج / Logout</span>
-            </button>
-        `;
-        wrapper.appendChild(dropdown);
-
-        // Bind click on the logout button
-        const logoutBtn = dropdown.querySelector('#logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                signOut();
-                dropdown.classList.remove('show');
-            });
-        }
-    }
-
     if (session && session.user) {
-        // المستخدم مسجل دخول
         const name = session.user.user_metadata?.full_name || session.user.email || 'User';
         loginBtn.innerHTML = `<span>👤 ${name}</span>`;
         if (loginModal) loginModal.classList.remove('active');
+        if (dropdown) dropdown.classList.remove('show');
     } else {
-        // المستخدم غير مسجل دخول
         loginBtn.innerHTML = `
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
             </svg>
             <span data-i18n="login">Login</span>`;
-        if (dropdown) {
-            dropdown.classList.remove('show');
-            dropdown.remove();
-        }
+        if (dropdown) dropdown.classList.remove('show');
     }
 }
 
