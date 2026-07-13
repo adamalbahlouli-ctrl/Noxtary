@@ -29,6 +29,49 @@
                 text-align: center;
             }
         }
+
+        /* ── Footer Styles ── */
+        .site-footer {
+            width: 100%;
+            border-top: 1px solid rgba(66, 165, 245, 0.12);
+            padding: 32px 24px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+            margin-top: 40px;
+            box-sizing: border-box;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted, rgba(255, 255, 255, 0.55));
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            transition: color 0.25s ease;
+        }
+        .footer-links a:hover {
+            color: var(--blue-accent, #64b5f6);
+        }
+
+        .footer-sep {
+            color: rgba(255, 255, 255, 0.18);
+            font-size: 0.75rem;
+        }
+
+        .footer-copy {
+            color: var(--text-muted, rgba(255, 255, 255, 0.55));
+            font-size: 0.78rem;
+            font-family: var(--font-body, 'Cairo', sans-serif);
+        }
     </style>
 </head>
 
@@ -138,6 +181,20 @@
         <div class="items-grid" id="itemsGrid"></div>
 
     </div>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="terms.html" data-i18n="terms_of_service">Terms of Service</a>
+            <span class="footer-sep">·</span>
+            <a href="privacy.html" data-i18n="privacy_policy">Privacy Policy</a>
+            <span class="footer-sep">·</span>
+            <a href="refund.html" data-i18n="refund_policy">Refund Policy</a>
+            <span class="footer-sep">·</span>
+            <a href="mailto:Noxtary.contact@gmail.com" data-i18n="contact_us">Contact Us</a>
+        </div>
+        <p class="footer-copy" data-i18n="all_rights_reserved">© 2026 Noxtary. All rights reserved.</p>
+    </footer>
 
     <!-- Login Modal overlay -->
     <div class="modal-overlay" id="loginModal">

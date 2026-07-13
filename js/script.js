@@ -678,7 +678,12 @@ const TRANSLATIONS = {
         download_now: "📥 Download Now",
         about: "About",
         screenshots: "Screenshots",
-        view: "View"
+        view: "View",
+        terms_of_service: "Terms of Service",
+        privacy_policy: "Privacy Policy",
+        refund_policy: "Refund Policy",
+        contact_us: "Contact Us",
+        all_rights_reserved: "© 2026 Noxtary. All rights reserved."
     },
     AR: {
         login: "تسجيل الدخول",
@@ -709,7 +714,12 @@ const TRANSLATIONS = {
         download_now: "📥 تنزيل الآن",
         about: "حول",
         screenshots: "لقطات الشاشة",
-        view: "عرض"
+        view: "عرض",
+        terms_of_service: "شروط الخدمة",
+        privacy_policy: "سياسة الخصوصية",
+        refund_policy: "سياسة الاسترجاع",
+        contact_us: "اتصل بنا",
+        all_rights_reserved: "© 2026 نوكستاري. جميع الحقوق محفوظة."
     }
 };
 

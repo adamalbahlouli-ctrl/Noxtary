@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noxtary - Privacy Policy</title>
+    <meta name="description" content="Learn how Noxtary collects, uses, and protects your personal data in accordance with our Privacy Policy.">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ── Legal Page Layout ── */
+        .legal-wrapper {
+            width: 100%;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 110px 24px 80px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .legal-header {
+            text-align: center;
+            margin-bottom: 52px;
+        }
+
+        .legal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 999px;
+            background: rgba(21,101,192,0.18);
+            border: 1px solid rgba(66,165,245,0.3);
+            color: var(--blue-accent);
+            font-family: var(--font-title);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .legal-title {
+            font-family: var(--font-title);
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            color: var(--blue-accent);
+            letter-spacing: 2px;
+            text-shadow:
+                0 0 18px rgba(21,101,192,0.8),
+                0 0 40px rgba(30,136,229,0.5);
+            margin-bottom: 14px;
+            line-height: 1.2;
+        }
+
+        .legal-meta {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            letter-spacing: 0.5px;
+        }
+
+        .legal-divider {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Section cards */
+        .legal-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(66,165,245,0.15);
+            border-radius: 20px;
+            padding: 32px 36px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--card-shadow);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .legal-section:hover {
+            border-color: rgba(66,165,245,0.3);
+            box-shadow: 0 8px 32px rgba(21,101,192,0.18);
+        }
+
+        .legal-section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(21,101,192,0.25);
+            border: 1px solid rgba(66,165,245,0.3);
+            color: var(--blue-accent);
+            font-family: var(--font-title);
+            font-size: 0.72rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .legal-section-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .legal-section h2 {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--blue-shine);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .legal-section p,
+        .legal-section li {
+            color: var(--text-color);
+            font-size: 0.96rem;
+            line-height: 1.85;
+            font-family: var(--font-body);
+        }
+
+        .legal-section ul,
+        .legal-section ol {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .legal-section li {
+            margin-bottom: 8px;
+        }
+
+        .legal-section li::marker {
+            color: var(--blue-accent);
+        }
+
+        .legal-highlight {
+            display: inline-block;
+            background: rgba(21,101,192,0.14);
+            border: 1px solid rgba(66,165,245,0.2);
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-top: 12px;
+            color: var(--blue-accent);
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: rgba(21,101,192,0.2);
+            color: var(--blue-accent);
+            font-family: var(--font-title);
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            text-align: left;
+            border: 1px solid rgba(66,165,245,0.15);
+        }
+
+        .data-table td {
+            padding: 10px 14px;
+            border: 1px solid rgba(66,165,245,0.1);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            vertical-align: top;
+            line-height: 1.6;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(21,101,192,0.06);
+        }
+
+        /* Back link */
+        .legal-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--blue-accent);
+            text-decoration: none;
+            font-family: var(--font-title);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+            transition: color 0.3s ease;
+        }
+        .legal-back:hover { color: var(--blue-shine); }
+
+        /* Footer */
+        .site-footer {
+            width: 100%;
+            border-top: 1px solid rgba(66,165,245,0.12);
+            padding: 32px 24px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-family: var(--font-body);
+            transition: color 0.25s ease;
+        }
+        .footer-links a:hover { color: var(--blue-accent); }
+        .footer-links a.footer-active { color: var(--blue-accent); }
+
+        .footer-sep {
+            color: rgba(255,255,255,0.18);
+            font-size: 0.75rem;
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        @media (max-width: 600px) {
+            .legal-wrapper  { padding: 100px 16px 60px; }
+            .legal-section  { padding: 22px 20px; }
+            .data-table     { font-size: 0.8rem; }
+            .data-table th,
+            .data-table td  { padding: 8px 10px; }
+        }
+    </style>
+</head>
+
+<body class="home-page">
+
+    <!-- ══ NAVBAR ══ -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="back-home" title="Back to Home">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <img src="https://i.ibb.co/Rpkk0N6g/1000105011.png" alt="Noxtary Logo" class="mini-logo">
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <!-- Theme Switcher -->
+            <div class="theme-wrapper">
+                <button class="theme-btn-instant" id="themeBtn" title="Toggle theme" data-current="cyber-dark">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sun-icon">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="moon-icon">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Translate -->
+            <div class="translate-wrapper">
+                <button class="translate-btn" id="translateBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span id="currentLang">EN</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="EN" data-label="English">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="AR" data-label="العربية">🇸🇦 العربية</button>
+                </div>
+            </div>
+
+            <a href="#" class="login-btn" id="loginBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span data-i18n="login">Login</span>
+            </a>
+        </div>
+    </nav>
+
+    <div id="userDropdown" class="user-dropdown" aria-label="User actions">
+        <button class="user-dropdown-item" id="logoutBtn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span data-i18n="logout">تسجيل الخروج / Logout</span>
+        </button>
+    </div>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <main class="legal-wrapper">
+
+        <a href="home.html" class="legal-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Store
+        </a>
+
+        <div class="legal-header">
+            <div class="legal-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Legal Document
+            </div>
+            <h1 class="legal-title">Privacy Policy</h1>
+            <p class="legal-meta">Last updated: July 2026 &nbsp;·&nbsp; Applies to all Noxtary users</p>
+            <div class="legal-divider"></div>
+        </div>
+
+        <!-- Section 1 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">01</span>
+                <h2>Introduction</h2>
+            </div>
+            <p>Noxtary ("we", "us", or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our platform and use our services.</p>
+            <p style="margin-top: 12px;">Please read this policy carefully. If you disagree with its terms, please discontinue use of the platform. By continuing to use Noxtary, you consent to the data practices described in this policy.</p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">02</span>
+                <h2>Data We Collect</h2>
+            </div>
+            <p>We collect the following categories of personal information through our authentication and account management system (powered by Supabase):</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Examples</th>
+                        <th>Collection Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Identity Data</strong></td>
+                        <td>Full name, profile picture</td>
+                        <td>Google Sign-In via Supabase</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contact Data</strong></td>
+                        <td>Email address</td>
+                        <td>Google account authentication</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Account Data</strong></td>
+                        <td>User ID, authentication tokens, account creation date</td>
+                        <td>Automatically generated by Supabase</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Usage Data</strong></td>
+                        <td>Pages visited, content accessed, purchase history</td>
+                        <td>Automatically collected during platform use</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Technical Data</strong></td>
+                        <td>IP address, browser type, device information</td>
+                        <td>Automatically collected by web servers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">03</span>
+                <h2>How We Use Your Data</h2>
+            </div>
+            <p>We use the collected information for the following purposes:</p>
+            <ul>
+                <li><strong>Account Management:</strong> To create and manage your account, authenticate your identity, and provide access to the platform</li>
+                <li><strong>Service Delivery:</strong> To process transactions, deliver purchased digital content, and manage subscriptions</li>
+                <li><strong>Customer Support:</strong> To respond to your inquiries, resolve disputes, and address technical issues</li>
+                <li><strong>Security:</strong> To detect, prevent, and investigate fraudulent activity, unauthorized access, and other security incidents</li>
+                <li><strong>Platform Improvement:</strong> To analyze usage patterns and improve our content offerings and user experience</li>
+                <li><strong>Legal Compliance:</strong> To comply with applicable laws, regulations, and legal processes</li>
+            </ul>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">04</span>
+                <h2>Data Sharing with Third Parties</h2>
+            </div>
+            <p>We do <strong>not</strong> sell, trade, or rent your personal information to third parties. We may share your data only in the following limited circumstances:</p>
+            <ul>
+                <li><strong>Supabase (Infrastructure Provider):</strong> Our authentication and database services are powered by Supabase, which processes account data on our behalf as a technical service provider. Supabase is bound by its own privacy policy and data processing agreements.</li>
+                <li><strong>Google (Authentication Provider):</strong> When you sign in with Google, Google provides us with your basic profile information. Google's privacy policy governs how Google collects and processes your data during authentication.</li>
+                <li><strong>Legal Requirements:</strong> We may disclose your information if required by law, court order, or governmental authority.</li>
+                <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, your data may be transferred to the successor entity.</li>
+            </ul>
+            <div class="legal-highlight">
+                🔒 We never sell your personal data to advertisers or data brokers.
+            </div>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">05</span>
+                <h2>Data Security</h2>
+            </div>
+            <p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction. These measures include:</p>
+            <ul>
+                <li>Encrypted data transmission using HTTPS/TLS protocols</li>
+                <li>Secure authentication managed by Supabase with industry-standard security practices</li>
+                <li>Limited access to personal data by authorized personnel only</li>
+                <li>Regular security reviews of our platform and infrastructure</li>
+            </ul>
+            <p style="margin-top: 12px;">While we strive to use commercially acceptable means to protect your information, no method of transmission over the internet or electronic storage is 100% secure. We cannot guarantee absolute security.</p>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">06</span>
+                <h2>Your Rights</h2>
+            </div>
+            <p>You have the following rights regarding your personal data:</p>
+            <ul>
+                <li><strong>Access:</strong> Request a copy of the personal data we hold about you</li>
+                <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data</li>
+                <li><strong>Deletion:</strong> Request deletion of your personal data and account</li>
+                <li><strong>Portability:</strong> Request your data in a structured, machine-readable format</li>
+                <li><strong>Objection:</strong> Object to certain processing of your personal data</li>
+                <li><strong>Restriction:</strong> Request restriction of processing in certain circumstances</li>
+            </ul>
+            <p style="margin-top: 12px;">To exercise any of these rights, please contact us at:</p>
+            <div class="legal-highlight">
+                📧 <strong>Noxtary.contact@gmail.com</strong><br>
+                <span style="font-size: 0.85rem; opacity: 0.85;">We will respond to your request within 30 days.</span>
+            </div>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">07</span>
+                <h2>Cookies &amp; Tracking</h2>
+            </div>
+            <p>Noxtary uses minimal cookies and local storage to provide a functional experience:</p>
+            <ul>
+                <li><strong>Authentication Cookies:</strong> Session tokens stored by Supabase to keep you logged in across visits</li>
+                <li><strong>Preference Storage:</strong> Local storage is used to remember your theme and language preferences</li>
+                <li><strong>Essential Functionality:</strong> These are strictly necessary cookies required for the platform to function correctly</li>
+            </ul>
+            <p style="margin-top: 12px;">We do <strong>not</strong> use third-party advertising cookies, tracking pixels, or behavioral analytics cookies at this time. You can clear cookies through your browser settings at any time, though this may affect your experience.</p>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">08</span>
+                <h2>Data Retention</h2>
+            </div>
+            <p>We retain your personal data for as long as your account is active or as needed to provide you with our services. Specifically:</p>
+            <ul>
+                <li>Account data is retained for the duration of your account's existence</li>
+                <li>Purchase and transaction records may be retained for up to 5 years for legal and accounting purposes</li>
+                <li>Upon account deletion, we will erase your personal data within 30 days, unless retention is required by law</li>
+            </ul>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="legal-section">
+            <div class="legal-section-head">
+                <span class="legal-section-number">09</span>
+                <h2>Contact &amp; Updates</h2>
+            </div>
+            <p>We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. We will notify you of significant changes by updating the date at the top of this page and, where appropriate, via email.</p>
+            <p style="margin-top: 12px;">If you have any questions, concerns, or requests regarding this Privacy Policy, please contact our team at:</p>
+            <div class="legal-highlight">
+                📧 <strong>Noxtary.contact@gmail.com</strong>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="terms.html">Terms of Service</a>
+            <span class="footer-sep">·</span>
+            <a href="privacy.html" class="footer-active">Privacy Policy</a>
+            <span class="footer-sep">·</span>
+            <a href="refund.html">Refund Policy</a>
+            <span class="footer-sep">·</span>
+            <a href="mailto:Noxtary.contact@gmail.com">Contact Us</a>
+        </div>
+        <p class="footer-copy">© 2026 Noxtary. All rights reserved.</p>
+    </footer>
+
+    <!-- Login Modal overlay -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="cyber-modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h2 class="modal-title" data-i18n="login_title">Cyber Authenticate</h2>
+            <button class="cyber-btn" id="googleSignInBtn" type="button" style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span data-i18n="sign_in_google">Sign in with Google</span>
+            </button>
+            <div class="modal-footer">
+                <span data-i18n="no_account">New operator?</span> <a href="#" data-i18n="contact_admin">Contact admin</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
