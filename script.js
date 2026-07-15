@@ -556,20 +556,10 @@ function loadProductDetails() {
                 </div>
             </div>`;
     } else if (product.type === 'books') {
-        // كتاب عادي: عارض PDF يُحمَّل ديناميكيًا عبر RPC (لا يعتمد على product.downloadUrl)
-        viewerHTML = `
-            <div class="pd-pdf-section" id="regularPdfSection">
-                <h3 class="pd-section-title">${getTranslation('read_online', 'Read Online')}</h3>
-                <div class="pd-pdf-wrap" id="regularPdfWrap">
-                    <div class="pdf-loading-placeholder" id="pdfPlaceholder" style="display:flex; align-items:center; justify-content:center; height:200px; color:var(--blue-accent); font-family:'Orbitron',sans-serif; font-size:0.8rem; letter-spacing:2px;">
-                        📖 Press "Read Now" to load the book...
-                    </div>
-                    <iframe id="regularPdfFrame" src="" class="pd-pdf-frame" loading="lazy" style="display:none"></iframe>
-                </div>
-            </div>`;
+        // كتاب عادي: لا عارض تلقائي — يُبنى فقط عند الضغط على "Read Now" عبر handleReadOnline
         actionsHTML = `
             <div class="pd-actions-row">
-                <button id="readNowBtn" onclick="handleReadOnlineClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleReadOnline('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📖 ${getTranslation('read_now', 'Read Now')}
                 </button>
                 <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
@@ -686,10 +676,10 @@ function loadProductDetails() {
 }
 
 // ─────────────────────────────────────────────
-// 6c. REGULAR BOOK — Read Online via RPC
-// يستبدل الاعتماد على product.downloadUrl المحذوف
+// 6c. REGULAR BOOK — Read Online (lazy, on-demand)
+// يحقن عارض PDF فقط بعد نجاح استدعاء RPC
 // ─────────────────────────────────────────────
-async function handleReadOnlineClick(appId, btnElement) {
+async function handleReadOnline(appId, btnElement) {
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '⏳ ...';
     btnElement.style.pointerEvents = 'none';
@@ -703,7 +693,7 @@ async function handleReadOnlineClick(appId, btnElement) {
         if (error.message.includes('اشتراك مطلوب')) {
             alert('هذا المحتوى مدفوع. يرجى الاشتراك أولًا للقراءة.');
         } else if (error.message.includes('تسجيل الدخول')) {
-            alert('يجب تسجيل الدخول أولاً.');
+            alert('يرجى تسجيل الدخول أولًا.');
             document.getElementById('loginModal')?.classList.add('active');
         } else {
             alert('حدث خطأ، حاول مرة أخرى.');
@@ -716,20 +706,22 @@ async function handleReadOnlineClick(appId, btnElement) {
         return;
     }
 
-    // تعبئة الـ iframe ديناميكيًا بعد نجاح RPC
-    const placeholder = document.getElementById('pdfPlaceholder');
-    const frame = document.getElementById('regularPdfFrame');
-    const section = document.getElementById('regularPdfSection');
-    if (frame) {
-        frame.src = data + '#toolbar=1';
-        frame.style.display = 'block';
-        if (placeholder) placeholder.style.display = 'none';
-        // تعطيل الزر بعد التحميل الناجح
-        btnElement.innerHTML = '✅ Loaded';
-        btnElement.style.pointerEvents = 'none';
-        btnElement.style.opacity = '0.7';
-        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // حقن عارض PDF ديناميكيًا (يُنشأ مرة واحدة فقط، يُحدَّث إن وُجد)
+    let viewerContainer = document.getElementById('inlinePdfViewer');
+    if (!viewerContainer) {
+        viewerContainer = document.createElement('div');
+        viewerContainer.id = 'inlinePdfViewer';
+        viewerContainer.className = 'pd-pdf-section';
+        viewerContainer.innerHTML = `
+            <h3 class="pd-section-title">📖 Read Online</h3>
+            <div class="pd-pdf-wrap">
+                <iframe src="${data}#toolbar=1" class="pd-pdf-frame" loading="lazy"></iframe>
+            </div>`;
+        btnElement.closest('.pd-actions-row')?.insertAdjacentElement('afterend', viewerContainer);
+    } else {
+        viewerContainer.querySelector('iframe').src = `${data}#toolbar=1`;
     }
+    viewerContainer.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ─────────────────────────────────────────────
