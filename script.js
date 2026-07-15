@@ -23,6 +23,7 @@ let authListenerInitialized = false;
 const TYPE_CONFIG = {
     apps:      { color: '#00d4ff', label: 'APP',     icon: '⬡' },
     books:     { color: '#a855f7', label: 'BOOK',    icon: '▣' },
+    manga:     { color: '#e040fb', label: 'MANGA',   icon: '◉' },
     mods:      { color: '#f97316', label: 'MOD',     icon: '⚙' },
     articles:  { color: '#22c55e', label: 'ARTICLE', icon: '✦' },
     audio:     { color: '#06b6d4', label: 'AUDIO',   icon: '♪' },
@@ -417,6 +418,56 @@ async function handleDownloadClick(appId, btnElement) {
 }
 
 // ─────────────────────────────────────────────
+// 6b. MANGA — Chapter Read Handler
+// نفس نمط handleDownloadClick لكن يستدعي get_chapter_file_url
+// ─────────────────────────────────────────────
+async function handleChapterRead(chapterId, btnElement) {
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '⏳ ...';
+    btnElement.style.pointerEvents = 'none';
+
+    const { data, error } = await supabaseClient.rpc('get_chapter_file_url', { p_chapter_id: chapterId });
+
+    btnElement.innerHTML = originalText;
+    btnElement.style.pointerEvents = 'auto';
+
+    if (error) {
+        if (error.message.includes('اشتراك مطلوب')) {
+            alert('اشتراك مطلوب للقراءة. يرجى الاشتراك أولًا.');
+        } else if (error.message.includes('تسجيل الدخول')) {
+            alert('يجب تسجيل الدخول أولاً.');
+            document.getElementById('loginModal')?.classList.add('active');
+        } else {
+            alert('حدث خطأ، حاول مرة أخرى.');
+        }
+        return;
+    }
+
+    if (!data) {
+        alert('الرابط غير متوفر حاليًا.');
+        return;
+    }
+
+    // استخدام عارض PDF المدمج إن وُجد، وإلا فتح تبويب جديد
+    const pdfFrame = document.getElementById('mangaPdfFrame');
+    const pdfSection = document.getElementById('mangaPdfSection');
+    if (pdfFrame && pdfSection) {
+        pdfFrame.src = data + '#toolbar=1';
+        pdfSection.style.display = 'block';
+        pdfSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // تحديث عنوان الفصل النشط
+        const activeTitle = document.getElementById('mangaPdfActiveTitle');
+        if (activeTitle) {
+            const chapterBtn = btnElement.closest('.manga-chapter-card');
+            const titleEl = chapterBtn?.querySelector('.manga-chapter-title');
+            if (titleEl) activeTitle.textContent = titleEl.textContent;
+        }
+    } else {
+        window.open(data, '_blank', 'noopener');
+    }
+}
+
+// ─────────────────────────────────────────────
 // 7. PRODUCT PAGE — Detail Loader
 // ─────────────────────────────────────────────
 function loadProductDetails() {
@@ -461,24 +512,66 @@ function loadProductDetails() {
             </div>
         </div>` : '';
 
+    // ── هل هذا المنتج من نوع مانجا؟ ──
+    const isManga = product.type === 'books' && (product.category || '').toLowerCase() === 'manga';
+
+    // إذا كان مانجا، استبدل cfg بإعدادات مانجا
+    const effectiveCfg = isManga ? TYPE_CONFIG.manga : cfg;
+
     // ── أزرار الإجراء + عارض PDF حسب النوع ──
     let actionsHTML  = '';
     let viewerHTML    = '';
+    let mangaSectionHTML = '';
 
-    if (product.type === 'books') {
-        // عرض PDF inline بدل التحميل المباشر
+    if (isManga) {
+        // للمانجا: لا أزرار Read/Download عامة — فقط قسم الفصول سيُبنى لاحقًا بعد التحميل
+        actionsHTML = `
+            <div class="pd-actions-row">
+                <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${effectiveCfg.color}">
+                    🔗 ${getTranslation('share', 'Share')}
+                </button>
+            </div>`;
+        // عارض PDF للمانجا (مخفي بالبداية، يظهر عند الضغط على فصل)
         viewerHTML = `
-            <div class="pd-pdf-section">
-                <h3 class="pd-section-title">${getTranslation('read_online', 'Read Online')}</h3>
+            <div class="pd-pdf-section" id="mangaPdfSection" style="display:none">
+                <div class="manga-pdf-header">
+                    <h3 class="pd-section-title" style="border-color:${effectiveCfg.color}33; margin-bottom:4px">
+                        ◉ Reading: <span id="mangaPdfActiveTitle">—</span>
+                    </h3>
+                    <button class="manga-pdf-close" onclick="document.getElementById('mangaPdfSection').style.display='none'; document.getElementById('mangaPdfFrame').src=''">✕ Close</button>
+                </div>
                 <div class="pd-pdf-wrap">
-                    <iframe src="${product.downloadUrl}#toolbar=1" class="pd-pdf-frame" loading="lazy"></iframe>
+                    <iframe id="mangaPdfFrame" src="" class="pd-pdf-frame" loading="lazy"></iframe>
+                </div>
+            </div>`;
+        // قسم الفصول (placeholder، يُملأ بعد async fetch)
+        mangaSectionHTML = `
+            <div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>
+            <div class="manga-chapters-section" id="mangaChaptersSection">
+                <h3 class="pd-section-title" style="border-color:${effectiveCfg.color}33">
+                    ◉ Chapters
+                </h3>
+                <div class="manga-chapters-grid" id="mangaChaptersGrid">
+                    <div class="manga-chapters-loading">⏳ Loading chapters...</div>
+                </div>
+            </div>`;
+    } else if (product.type === 'books') {
+        // كتاب عادي: عارض PDF يُحمَّل ديناميكيًا عبر RPC (لا يعتمد على product.downloadUrl)
+        viewerHTML = `
+            <div class="pd-pdf-section" id="regularPdfSection">
+                <h3 class="pd-section-title">${getTranslation('read_online', 'Read Online')}</h3>
+                <div class="pd-pdf-wrap" id="regularPdfWrap">
+                    <div class="pdf-loading-placeholder" id="pdfPlaceholder" style="display:flex; align-items:center; justify-content:center; height:200px; color:var(--blue-accent); font-family:'Orbitron',sans-serif; font-size:0.8rem; letter-spacing:2px;">
+                        📖 Press "Read Now" to load the book...
+                    </div>
+                    <iframe id="regularPdfFrame" src="" class="pd-pdf-frame" loading="lazy" style="display:none"></iframe>
                 </div>
             </div>`;
         actionsHTML = `
             <div class="pd-actions-row">
-                <a href="#pdfViewer" onclick="document.querySelector('.pd-pdf-wrap').scrollIntoView({behavior:'smooth'})" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button id="readNowBtn" onclick="handleReadOnlineClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📖 ${getTranslation('read_now', 'Read Now')}
-                </a>
+                </button>
                 <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download', 'Download')}
                 </button>
@@ -534,15 +627,15 @@ function loadProductDetails() {
 
             <div class="pd-header">
                 <img src="${product.image}" alt="${product.title}" class="pd-app-icon"
-                     style="box-shadow: 0 0 24px ${cfg.color}44, 0 8px 32px rgba(0,0,0,0.55)"
-                     onerror="this.src='https://via.placeholder.com/120/0a1628/${cfg.color.replace('#','')}?text=N'">
+                     style="box-shadow: 0 0 24px ${effectiveCfg.color}44, 0 8px 32px rgba(0,0,0,0.55)"
+                     onerror="this.src='https://via.placeholder.com/120/0a1628/${effectiveCfg.color.replace('#','')}?text=N'">
                 <div class="pd-header-info">
-                    <span class="nc-badge" style="--type-color:${cfg.color}; font-size:0.75rem; padding:4px 14px;">
-                        ${cfg.icon} ${cfg.label}
+                    <span class="nc-badge" style="--type-color:${effectiveCfg.color}; font-size:0.75rem; padding:4px 14px;">
+                        ${effectiveCfg.icon} ${effectiveCfg.label}
                     </span>
                     <h1 class="pd-app-name">${product.title}</h1>
                     <div class="pd-badges-row">
-                        <span class="pd-category-tag" style="border-color:${cfg.color}44; color:${cfg.color}">
+                        <span class="pd-category-tag" style="border-color:${effectiveCfg.color}44; color:${effectiveCfg.color}">
                             ${product.category ? product.category.toUpperCase() : ''}
                         </span>
                         ${product.size       ? `<span class="pd-size-tag">💾 ${product.size}</span>` : ''}
@@ -558,18 +651,20 @@ function loadProductDetails() {
                 </div>
             </div>
 
-            <div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${cfg.color}44, transparent)"></div>
+            <div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>
             ${screenshotsHTML}
-            ${screenshotsHTML ? `<div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${cfg.color}44, transparent)"></div>` : ''}
+            ${screenshotsHTML ? `<div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>` : ''}
 
             <div class="pd-description-section">
-                <h3 class="pd-section-title" style="border-color:${cfg.color}33">
-                    ${cfg.icon} ${getTranslation('about', 'About')}
+                <h3 class="pd-section-title" style="border-color:${effectiveCfg.color}33">
+                    ${effectiveCfg.icon} ${getTranslation('about', 'About')}
                 </h3>
                 <p class="pd-description-text">${formattedDesc}</p>
             </div>
 
-            ${viewerHTML ? `<div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${cfg.color}44, transparent)"></div>${viewerHTML}` : ''}
+            ${mangaSectionHTML}
+
+            ${viewerHTML ? `<div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>${viewerHTML}` : ''}
         </div>
 
         <div class="lb-overlay" id="lbOverlay" onclick="closeLightbox()">
@@ -583,6 +678,108 @@ function loadProductDetails() {
 
     window._lbScreenshots = shots;
     window._lbIndex = 0;
+
+    // ── إذا كانت مانجا: جلب الفصول بشكل async وعرضها ──
+    if (isManga) {
+        loadMangaChapters(product.id, effectiveCfg.color);
+    }
+}
+
+// ─────────────────────────────────────────────
+// 6c. REGULAR BOOK — Read Online via RPC
+// يستبدل الاعتماد على product.downloadUrl المحذوف
+// ─────────────────────────────────────────────
+async function handleReadOnlineClick(appId, btnElement) {
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '⏳ ...';
+    btnElement.style.pointerEvents = 'none';
+
+    const { data, error } = await supabaseClient.rpc('get_download_url', { p_app_id: appId });
+
+    btnElement.innerHTML = originalText;
+    btnElement.style.pointerEvents = 'auto';
+
+    if (error) {
+        if (error.message.includes('اشتراك مطلوب')) {
+            alert('هذا المحتوى مدفوع. يرجى الاشتراك أولًا للقراءة.');
+        } else if (error.message.includes('تسجيل الدخول')) {
+            alert('يجب تسجيل الدخول أولاً.');
+            document.getElementById('loginModal')?.classList.add('active');
+        } else {
+            alert('حدث خطأ، حاول مرة أخرى.');
+        }
+        return;
+    }
+
+    if (!data) {
+        alert('الرابط غير متوفر حاليًا.');
+        return;
+    }
+
+    // تعبئة الـ iframe ديناميكيًا بعد نجاح RPC
+    const placeholder = document.getElementById('pdfPlaceholder');
+    const frame = document.getElementById('regularPdfFrame');
+    const section = document.getElementById('regularPdfSection');
+    if (frame) {
+        frame.src = data + '#toolbar=1';
+        frame.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+        // تعطيل الزر بعد التحميل الناجح
+        btnElement.innerHTML = '✅ Loaded';
+        btnElement.style.pointerEvents = 'none';
+        btnElement.style.opacity = '0.7';
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// ─────────────────────────────────────────────
+// 6d. MANGA — Chapters Loader
+// ─────────────────────────────────────────────
+async function loadMangaChapters(mangaProductId, accentColor) {
+    const grid = document.getElementById('mangaChaptersGrid');
+    if (!grid) return;
+
+    const { data: chapters, error } = await supabaseClient
+        .from('manga_chapters')
+        .select('*')
+        .eq('manga_app_id', mangaProductId)
+        .order('chapter_number', { ascending: true });
+
+    if (error) {
+        grid.innerHTML = `<div class="manga-chapters-error">⚠️ Could not load chapters. Please try again later.</div>`;
+        console.error('NOXTARY — Manga chapters load error:', error);
+        return;
+    }
+
+    if (!chapters || chapters.length === 0) {
+        grid.innerHTML = `<div class="manga-chapters-empty">📭 No chapters available yet. Check back soon!</div>`;
+        return;
+    }
+
+    grid.innerHTML = chapters.map(ch => `
+        <div class="manga-chapter-card" data-chapter-id="${ch.id}">
+            <div class="manga-chapter-cover-wrap">
+                <img
+                    src="${ch.cover_image || ''}"
+                    alt="Chapter ${ch.chapter_number} cover"
+                    class="manga-chapter-cover"
+                    onerror="this.src='https://via.placeholder.com/180x260/0d0020/e040fb?text=Ch.${ch.chapter_number}'"
+                    loading="lazy"
+                >
+                <div class="manga-chapter-number-badge">Ch.${ch.chapter_number}</div>
+            </div>
+            <div class="manga-chapter-info">
+                <p class="manga-chapter-title">Chapter ${ch.chapter_number}${ch.title ? ': ' + ch.title : ''}</p>
+                <button
+                    class="manga-read-btn"
+                    style="--manga-color:${accentColor}"
+                    onclick="handleChapterRead(${ch.id}, this)"
+                >
+                    📖 Read Now
+                </button>
+            </div>
+        </div>
+    `).join('');
 }
 
 
