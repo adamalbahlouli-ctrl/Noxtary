@@ -47,7 +47,7 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px 20px;
+            gap: 8px 10px;
             margin-bottom: 16px;
         }
 
@@ -56,15 +56,39 @@
             text-decoration: none;
             font-size: 0.82rem;
             font-family: var(--font-body, 'Cairo', sans-serif);
-            transition: color 0.25s ease;
+            transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+            padding: 5px 13px;
+            border-radius: 20px;
+            border: 1px solid rgba(66,165,245,0.18);
+            display: inline-block;
         }
         .footer-links a:hover {
             color: var(--blue-accent, #64b5f6);
+            border-color: var(--blue-accent, #64b5f6);
+            background: rgba(66,165,245,0.06);
         }
-
-        .footer-sep {
-            color: rgba(255, 255, 255, 0.18);
-            font-size: 0.75rem;
+        .footer-links .footer-publish-btn {
+            background: rgba(21,101,192,0.14);
+            border-color: rgba(66,165,245,0.38);
+            color: var(--blue-accent, #64b5f6);
+            font-weight: 700;
+        }
+        .footer-links .footer-publish-btn:hover {
+            background: rgba(21,101,192,0.3);
+            border-color: var(--blue-shine, #42a5f5);
+            color: #fff;
+        }
+        body.theme-neo-light .footer-links a {
+            color: #374151;
+            border-color: rgba(0,0,0,0.12);
+        }
+        body.theme-neo-light .footer-links a:hover {
+            color: #1d4ed8;
+            border-color: #1d4ed8;
+            background: rgba(37,99,235,0.05);
+        }
+        body.theme-neo-light .footer-copy {
+            color: #6b7280;
         }
 
         .footer-copy {
@@ -186,12 +210,10 @@
     <footer class="site-footer">
         <div class="footer-links">
             <a href="terms.html" data-i18n="terms_of_service">Terms of Service</a>
-            <span class="footer-sep">·</span>
             <a href="privacy.html" data-i18n="privacy_policy">Privacy Policy</a>
-            <span class="footer-sep">·</span>
             <a href="refund.html" data-i18n="refund_policy">Refund Policy</a>
-            <span class="footer-sep">·</span>
             <a href="mailto:Noxtary.contact@gmail.com" data-i18n="contact_us">Contact Us</a>
+            <a href="publish.html" class="footer-publish-btn" data-i18n="publish_on_noxtary">🚀 Publish on Noxtary</a>
         </div>
         <p class="footer-copy" data-i18n="all_rights_reserved">© 2026 Noxtary. All rights reserved.</p>
     </footer>

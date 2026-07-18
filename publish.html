@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Your Work — Noxtary</title>
+    <meta name="description" content="Publish your apps, games, books, mods, music and more on Noxtary. Reach a wider audience with free or paid publishing options.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>emailjs.init("LQnmFTXdf1e3jfTU0");</script>
+
+    <style>
+        /* ── Publish Page Layout ── */
+        .publish-wrapper {
+            width: 100%;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 110px 24px 80px;
+            box-sizing: border-box;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* ── Hero Section ── */
+        .pub-hero {
+            text-align: center;
+            margin-bottom: 56px;
+            animation: fadeUp 0.7s ease both;
+        }
+        .pub-hero__eyebrow {
+            display: inline-block;
+            font-family: var(--font-title);
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--blue-accent);
+            background: rgba(66,165,245,0.08);
+            border: 1px solid rgba(66,165,245,0.22);
+            padding: 5px 16px;
+            border-radius: 999px;
+            margin-bottom: 18px;
+        }
+        .pub-hero__title {
+            font-family: var(--font-title);
+            font-size: 2.6rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 2px;
+            line-height: 1.15;
+            margin: 0 0 16px;
+            text-shadow: 0 0 30px rgba(66,165,245,0.4);
+        }
+        .pub-hero__sub {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto;
+            line-height: 1.85;
+        }
+
+        /* ── Divider ── */
+        .pub-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(66,165,245,0.25), transparent);
+            margin: 40px 0;
+        }
+
+        /* ── What is Noxtary section ── */
+        .pub-section {
+            margin-bottom: 44px;
+            animation: fadeUp 0.7s ease both;
+        }
+        .pub-section__title {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--blue-accent);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pub-section__title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background: var(--blue-accent);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .pub-section__body {
+            font-size: 0.97rem;
+            color: var(--text-muted);
+            line-height: 1.85;
+        }
+        .pub-section__body p { margin-bottom: 12px; }
+        .pub-section__body p:last-child { margin-bottom: 0; }
+
+        /* ── Creator Types Grid ── */
+        .pub-for-creators {
+            display: inline-block;
+            font-family: var(--font-title);
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: rgba(66,165,245,0.1);
+            border: 1px solid rgba(66,165,245,0.22);
+            color: var(--blue-accent);
+            margin: 4px 4px 4px 0;
+        }
+
+        /* ── Options Cards ── */
+        .pub-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .pub-option-card {
+            background: linear-gradient(145deg, var(--card-bg), rgba(255,255,255,0.02));
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 22px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        .pub-option-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--opt-color, var(--blue-accent));
+            border-radius: 18px 18px 0 0;
+        }
+        .pub-option-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--opt-color, var(--blue-accent));
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 20px rgba(66,165,245,0.1);
+        }
+        .pub-option-card__icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .pub-option-card__name {
+            font-family: var(--font-title);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--opt-color, var(--blue-accent));
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .pub-option-card__desc {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── Requirements block ── */
+        .pub-requirements {
+            background: linear-gradient(135deg, rgba(66,165,245,0.05), rgba(255,255,255,0.02));
+            border: 1px solid rgba(66,165,245,0.18);
+            border-left: 4px solid var(--blue-accent);
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-top: 20px;
+        }
+        .pub-requirements p {
+            font-size: 0.93rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        .pub-requirements p:last-child { margin-bottom: 0; }
+
+        /* ── Why Noxtary ── */
+        .pub-why-box {
+            background: linear-gradient(135deg, rgba(21,101,192,0.12), rgba(100,181,246,0.05));
+            border: 1px solid rgba(66,165,245,0.2);
+            border-radius: 18px;
+            padding: 28px;
+            margin-top: 20px;
+        }
+        .pub-why-box p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.85;
+            margin: 0;
+        }
+
+        /* ── Contact Section ── */
+        .pub-contact-section {
+            margin-top: 60px;
+            animation: fadeUp 0.7s ease 0.1s both;
+        }
+        .pub-contact-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .pub-contact-header .section-tag {
+            display: inline-block;
+            font-family: var(--font-title);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--blue-accent);
+            background: rgba(66,165,245,0.08);
+            border: 1px solid rgba(66,165,245,0.2);
+            padding: 5px 14px;
+            border-radius: 999px;
+            margin-bottom: 12px;
+        }
+        .pub-contact-header h2 {
+            font-family: var(--font-title);
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 2px;
+            margin: 0 0 10px;
+        }
+        .pub-contact-header p {
+            color: var(--text-muted);
+            font-size: 0.93rem;
+            line-height: 1.7;
+        }
+
+        /* ── Contact Grid ── */
+        .pub-contact-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* ── Form ── */
+        .pub-form-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(12px);
+        }
+        .pub-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .pub-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .pub-form-group:last-of-type { margin-bottom: 0; }
+        .pub-form-label {
+            font-family: var(--font-title);
+            font-size: 0.65rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--blue-accent);
+            font-weight: 700;
+        }
+        .pub-form-input,
+        .pub-form-select,
+        .pub-form-textarea {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(66,165,245,0.2);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .pub-form-input::placeholder,
+        .pub-form-textarea::placeholder { color: rgba(255,255,255,0.3); }
+        .pub-form-input:focus,
+        .pub-form-select:focus,
+        .pub-form-textarea:focus {
+            border-color: var(--blue-shine);
+            background: rgba(21,101,192,0.08);
+            box-shadow: 0 0 12px rgba(66,165,245,0.18);
+        }
+        .pub-form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2364b5f6' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+            cursor: pointer;
+        }
+        .pub-form-select option { background: #0a1628; color: #fff; }
+        .pub-form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        .pub-btn-submit {
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--blue-glow) 0%, var(--blue-bright) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: var(--font-title);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 18px rgba(21,101,192,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .pub-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(30,136,229,0.55);
+        }
+        .pub-btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .pub-form-success {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(16,185,129,0.12);
+            border: 1px solid rgba(16,185,129,0.35);
+            color: #34d399;
+            font-size: 0.85rem;
+            font-family: var(--font-body);
+            line-height: 1.5;
+        }
+        .pub-form-error {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #f87171;
+            font-size: 0.85rem;
+            font-family: var(--font-body);
+            line-height: 1.5;
+        }
+
+        /* ── Contact Info Sidebar ── */
+        .pub-contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .pub-contact-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 18px 20px;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .pub-contact-card:hover {
+            border-color: rgba(66,165,245,0.35);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        }
+        .pub-contact-card__label {
+            font-family: var(--font-title);
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--blue-accent);
+            margin-bottom: 8px;
+        }
+        .pub-contact-card__links {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .pub-contact-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.83rem;
+            transition: color 0.2s;
+            word-break: break-all;
+        }
+        .pub-contact-link:hover { color: var(--blue-accent); }
+        .pub-contact-link__icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(66,165,245,0.1);
+            border: 1px solid rgba(66,165,245,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        /* ── Light mode overrides ── */
+        body.theme-neo-light .pub-hero__title,
+        body.theme-neo-light .pub-contact-header h2 {
+            color: #111827;
+            text-shadow: none;
+        }
+        body.theme-neo-light .pub-form-input,
+        body.theme-neo-light .pub-form-select,
+        body.theme-neo-light .pub-form-textarea {
+            background: #fff;
+            color: #111827;
+            border-color: rgba(0,0,0,0.12);
+        }
+        body.theme-neo-light .pub-form-input::placeholder,
+        body.theme-neo-light .pub-form-textarea::placeholder { color: rgba(0,0,0,0.35); }
+        body.theme-neo-light .pub-form-select option { background: #fff; color: #111827; }
+        body.theme-neo-light .pub-section__body,
+        body.theme-neo-light .pub-hero__sub,
+        body.theme-neo-light .pub-contact-header p,
+        body.theme-neo-light .pub-requirements p,
+        body.theme-neo-light .pub-why-box p,
+        body.theme-neo-light .pub-option-card__desc {
+            color: #4b5563;
+        }
+        body.theme-neo-light .pub-option-card,
+        body.theme-neo-light .pub-form-wrapper,
+        body.theme-neo-light .pub-contact-card {
+            background: rgba(255,255,255,0.9);
+            border-color: rgba(0,0,0,0.08);
+        }
+        body.theme-neo-light .pub-contact-link { color: #4b5563; }
+        body.theme-neo-light .pub-requirements {
+            background: rgba(37,99,235,0.05);
+            border-color: rgba(37,99,235,0.18);
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            width: 100%;
+            border-top: 1px solid rgba(66, 165, 245, 0.12);
+            padding: 32px 24px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+            margin-top: 40px;
+            box-sizing: border-box;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-bottom: 16px;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-family: var(--font-body);
+            transition: color 0.25s ease;
+            padding: 5px 13px;
+            border-radius: 20px;
+            border: 1px solid rgba(66,165,245,0.2);
+            display: inline-block;
+        }
+        .footer-links a:hover {
+            color: var(--blue-accent);
+            border-color: var(--blue-accent);
+            background: rgba(66,165,245,0.06);
+        }
+        .footer-sep {
+            color: rgba(255, 255, 255, 0.18);
+            font-size: 0.75rem;
+        }
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-family: var(--font-body);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .pub-hero__title { font-size: 1.9rem; }
+            .pub-contact-grid { grid-template-columns: 1fr; }
+            .pub-form-row { grid-template-columns: 1fr; }
+            .pub-options-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .publish-wrapper { padding: 90px 14px 60px; }
+            .pub-hero__title { font-size: 1.5rem; }
+            .pub-form-wrapper { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ══ NAVBAR ══ -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="back-home" title="Back to Home">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <img src="https://i.ibb.co/Rpkk0N6g/1000105011.png" alt="Noxtary Logo" class="mini-logo">
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <!-- Translate -->
+            <div class="translate-wrapper">
+                <button class="translate-btn" id="translateBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span id="currentLang">EN</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="EN" data-label="English">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="AR" data-label="العربية">🇸🇦 العربية</button>
+                </div>
+            </div>
+
+            <!-- Theme -->
+            <div class="theme-wrapper">
+                <button class="theme-btn-instant" id="themeBtn" title="Toggle theme" data-current="cyber-dark">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sun-icon">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="moon-icon">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <a href="index.html#" class="login-btn" id="loginBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Login</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <div class="publish-wrapper">
+
+        <!-- Hero -->
+        <div class="pub-hero">
+            <span class="pub-hero__eyebrow">For Creators &amp; Publishers</span>
+            <h1 class="pub-hero__title">Publish Your Work<br>on Noxtary</h1>
+            <p class="pub-hero__sub">
+                Noxtary is a digital platform designed for discovering and distributing digital content.
+                Users can download apps, games, and mods, read books, manga, and manhwa, listen to music,
+                and much more — all in one place.
+            </p>
+        </div>
+
+        <div class="pub-divider"></div>
+
+        <!-- What is Noxtary -->
+        <div class="pub-section">
+            <h2 class="pub-section__title">Built for Creators</h2>
+            <div class="pub-section__body">
+                <p>Noxtary isn't just for users — it's also built for creators. Whether you're an app or game developer, author, mod creator, musician, website owner, platform owner, or digital content creator, we invite you to publish your work on Noxtary and reach a wider audience.</p>
+                <p>
+                    <span class="pub-for-creators">📱 App Developers</span>
+                    <span class="pub-for-creators">🎮 Game Developers</span>
+                    <span class="pub-for-creators">📚 Authors</span>
+                    <span class="pub-for-creators">⚙️ Mod Creators</span>
+                    <span class="pub-for-creators">🎵 Musicians</span>
+                    <span class="pub-for-creators">🌐 Website Owners</span>
+                    <span class="pub-for-creators">🚀 Platform Owners</span>
+                    <span class="pub-for-creators">✨ Content Creators</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Publishing Options -->
+        <div class="pub-section">
+            <h2 class="pub-section__title">Choose Your Path</h2>
+            <div class="pub-options-grid">
+                <div class="pub-option-card" style="--opt-color: #34d399;">
+                    <span class="pub-option-card__icon">🆓</span>
+                    <div class="pub-option-card__name">Free Publishing</div>
+                    <p class="pub-option-card__desc">Grow your audience and increase visibility. Share your work with the Noxtary community at no cost.</p>
+                </div>
+                <div class="pub-option-card" style="--opt-color: #fbbf24;">
+                    <span class="pub-option-card__icon">💰</span>
+                    <div class="pub-option-card__name">Paid Publishing</div>
+                    <p class="pub-option-card__desc">Sell your content and earn revenue directly from your work through Noxtary's marketplace.</p>
+                </div>
+                <div class="pub-option-card" style="--opt-color: #818cf8;">
+                    <span class="pub-option-card__icon">📢</span>
+                    <div class="pub-option-card__name">Advertising & Promotion</div>
+                    <p class="pub-option-card__desc">Showcase your products, services, or projects to a larger, targeted audience on Noxtary.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements -->
+        <div class="pub-section">
+            <h2 class="pub-section__title">Publishing Requirements</h2>
+            <div class="pub-requirements">
+                <p>The only requirement is that the submitted content must be <strong style="color: var(--blue-accent);">100% owned by you</strong>, or that you hold all the legal rights required to distribute it.</p>
+                <p>Once your submission is received, our team will review and verify ownership within <strong style="color: var(--blue-accent);">3–6 business days</strong> before publication.</p>
+            </div>
+        </div>
+
+        <!-- Why Noxtary -->
+        <div class="pub-section">
+            <h2 class="pub-section__title">Why Noxtary?</h2>
+            <div class="pub-why-box">
+                <p>We're continuously building new features and services to support creators and provide opportunities you won't find anywhere else. We're not just a platform — we're a growing ecosystem dedicated to digital creators. <strong style="color: var(--blue-accent);">Discover what makes Noxtary different.</strong></p>
+            </div>
+        </div>
+
+        <div class="pub-divider"></div>
+
+        <!-- Contact / Order Form -->
+        <div class="pub-contact-section" id="contact">
+            <div class="pub-contact-header">
+                <span class="section-tag">Submit Your Request</span>
+                <h2>Let's Work Together</h2>
+                <p>Choose the service that fits your goals and fill in your details.<br>We'll get back to you as soon as possible.</p>
+            </div>
+
+            <div class="pub-contact-grid">
+                <!-- Form -->
+                <div class="pub-form-wrapper">
+                    <form id="pub-contact-form" novalidate>
+                        <div class="pub-form-row">
+                            <div class="pub-form-group">
+                                <label for="pub-name" class="pub-form-label">Full Name</label>
+                                <input type="text" id="pub-name" name="name" class="pub-form-input" placeholder="Your name" required autocomplete="name">
+                            </div>
+                            <div class="pub-form-group">
+                                <label for="pub-email" class="pub-form-label">Email Address</label>
+                                <input type="email" id="pub-email" name="email" class="pub-form-input" placeholder="you@example.com" required autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="pub-form-group">
+                            <label for="pub-service" class="pub-form-label">Publishing Option / Service</label>
+                            <select id="pub-service" name="service" class="pub-form-select pub-form-input">
+                                <option value="">Select an option...</option>
+                                <option value="Free Publishing">🆓 Free Publishing</option>
+                                <option value="Paid Publishing">💰 Paid Publishing</option>
+                                <option value="Advertising &amp; Promotion">📢 Advertising &amp; Promotion</option>
+                                <option value="App / Game Submission">📱 App / Game Submission</option>
+                                <option value="Book / Manga Submission">📚 Book / Manga Submission</option>
+                                <option value="Music / Audio Submission">🎵 Music / Audio Submission</option>
+                                <option value="Mod Submission">⚙️ Mod Submission</option>
+                                <option value="Other Inquiry">💬 Other Inquiry</option>
+                            </select>
+                        </div>
+
+                        <div class="pub-form-group">
+                            <label for="pub-message" class="pub-form-label">Your Message / Details</label>
+                            <textarea id="pub-message" name="message" class="pub-form-textarea" placeholder="Tell us about your work, your goals, and any details we should know..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="pub-btn-submit" id="pub-submit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            Send Request
+                        </button>
+
+                        <div class="pub-form-success" id="pub-success" style="display:none;" role="status">
+                            ✅ Your request has been sent successfully! We'll get back to you soon.
+                        </div>
+                        <div class="pub-form-error" id="pub-error" style="display:none;" role="alert">
+                            ❌ Failed to send. Please try again or contact us directly.
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="pub-contact-info">
+                    <!-- Noxtary Contacts -->
+                    <div class="pub-contact-card">
+                        <div class="pub-contact-card__label">📌 Noxtary Contacts</div>
+                        <div class="pub-contact-card__links">
+                            <a href="https://wa.me/212625164763" target="_blank" rel="noopener" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">💬</span>
+                                WhatsApp: +212 625 164 763
+                            </a>
+                            <a href="https://www.instagram.com/noxtary_" target="_blank" rel="noopener" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">📸</span>
+                                @noxtary_ (Instagram)
+                            </a>
+                            <a href="mailto:Noxtary.contact@gmail.com" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">✉️</span>
+                                Noxtary.contact@gmail.com
+                            </a>
+                            <a href="mailto:Contact@noxtary.com" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">✉️</span>
+                                Contact@noxtary.com
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Adam El Bahlouli -->
+                    <div class="pub-contact-card">
+                        <div class="pub-contact-card__label">👤 Adam El Bahlouli (Founder)</div>
+                        <div class="pub-contact-card__links">
+                            <a href="mailto:adamalbahlouli@gmail.com" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">✉️</span>
+                                adamalbahlouli@gmail.com
+                            </a>
+                            <a href="https://x.com/EL_Bahlouli77" target="_blank" rel="noopener" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">𝕏</span>
+                                @EL_Bahlouli77 (X / Twitter)
+                            </a>
+                            <a href="https://www.linkedin.com/in/adam-el-bahlouli-4b8435385" target="_blank" rel="noopener" class="pub-contact-link">
+                                <span class="pub-contact-link__icon">🔗</span>
+                                LinkedIn Profile
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Response time note -->
+                    <div class="pub-contact-card" style="border-color: rgba(66,165,245,0.22); background: rgba(66,165,245,0.05);">
+                        <div class="pub-contact-card__label">⏱ Response Time</div>
+                        <p style="font-size: 0.83rem; color: var(--text-muted); margin: 6px 0 0; line-height: 1.6;">
+                            We typically respond within <strong style="color: var(--blue-accent);">24–48 hours</strong>. For publishing reviews, expect <strong style="color: var(--blue-accent);">3–6 business days</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="terms.html">Terms of Service</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="refund.html">Refund Policy</a>
+            <a href="mailto:Noxtary.contact@gmail.com">Contact Us</a>
+            <a href="publish.html">Publish on Noxtary</a>
+        </div>
+        <p class="footer-copy">© 2026 Noxtary. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <script>
+    // ── EmailJS Form Handler ──
+    (function() {
+        const form = document.getElementById('pub-contact-form');
+        const submitBtn = document.getElementById('pub-submit');
+        const successEl = document.getElementById('pub-success');
+        const errorEl = document.getElementById('pub-error');
+
+        if (!form) return;
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('pub-name').value.trim();
+            const email = document.getElementById('pub-email').value.trim();
+            const service = document.getElementById('pub-service').value;
+            const message = document.getElementById('pub-message').value.trim();
+
+            if (!name || !email || !message) {
+                errorEl.textContent = '⚠️ Please fill in all required fields.';
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+                    <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.2-4.5"/>
+                </svg>
+                Sending...`;
+
+            const templateParams = { name, email, service: service || 'Not specified', message };
+
+            try {
+                await emailjs.send('service_AdamNoxtary20085', 'template_79xyy3w', templateParams);
+                successEl.style.display = 'block';
+                errorEl.style.display = 'none';
+                form.reset();
+                submitBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Sent Successfully!`;
+                setTimeout(() => {
+                    submitBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                        Send Request`;
+                    submitBtn.disabled = false;
+                }, 3500);
+            } catch (err) {
+                console.error('EmailJS error:', err);
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                submitBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                    Send Request`;
+                submitBtn.disabled = false;
+            }
+        });
+    })();
+
+    // spin animation for loading
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+    </script>
+</body>
+</html>

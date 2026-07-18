@@ -842,7 +842,7 @@ const TRANSLATIONS = {
         login: "Login",
         theme: "Theme",
         brand_title: "Noxtary",
-        tagline: "Noxtary is a massive digital hub built to give users fast and easy access to apps, eBooks, Minecraft mods, tools, and unique digital content — all organized in one modern experience designed for discovery, creativity, and endless exploration.",
+        tagline: "A premium digital platform bringing apps, ebooks, mods, audio, and services together in one elegant, fast experience designed for discovery.",
         get_started: "Get Started",
         search_placeholder: "Search apps, mods, books...",
         tab_all: "All",
@@ -872,6 +872,9 @@ const TRANSLATIONS = {
         privacy_policy: "Privacy Policy",
         refund_policy: "Refund Policy",
         contact_us: "Contact Us",
+        publish_on_noxtary: "🚀 Publish on Noxtary",
+        sign_in_google: "Sign in with Google",
+        logout: "تسجيل الخروج / Logout",
         all_rights_reserved: "© 2026 Noxtary. All rights reserved."
     },
     AR: {
@@ -908,6 +911,9 @@ const TRANSLATIONS = {
         privacy_policy: "سياسة الخصوصية",
         refund_policy: "سياسة الاسترجاع",
         contact_us: "اتصل بنا",
+        publish_on_noxtary: "🚀 انشر على نوكستاري",
+        sign_in_google: "تسجيل الدخول بـ Google",
+        logout: "تسجيل الخروج",
         all_rights_reserved: "© 2026 نوكستاري. جميع الحقوق محفوظة."
     }
 };
@@ -1259,8 +1265,22 @@ function updateAuthUI(session) {
     }
 
     if (session && session.user) {
-        const name = session.user.user_metadata?.full_name || session.user.email || 'User';
-        loginBtn.innerHTML = `<span>👤 ${name}</span>`;
+        const user = session.user;
+        const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+        const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'User';
+        const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+        if (avatarUrl) {
+            loginBtn.innerHTML = `
+                <img src="${avatarUrl}" alt="${name}"
+                     style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(100,181,246,0.6);flex-shrink:0;"
+                     onerror="this.style.display='none'; this.nextSibling.style.display='flex';"/>
+                <span style="display:none;width:26px;height:26px;border-radius:50%;background:var(--blue-glow);color:#fff;font-size:0.7rem;font-weight:700;align-items:center;justify-content:center;flex-shrink:0;">${initials}</span>`;
+        } else {
+            loginBtn.innerHTML = `
+                <span style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--blue-glow),var(--blue-bright));color:#fff;font-size:0.7rem;font-weight:700;align-items:center;justify-content:center;flex-shrink:0;">${initials}</span>`;
+        }
+        loginBtn.title = name;
         if (loginModal) loginModal.classList.remove('active');
         if (dropdown) dropdown.classList.remove('show');
     } else {
@@ -1270,7 +1290,14 @@ function updateAuthUI(session) {
                 <circle cx="12" cy="7" r="4"/>
             </svg>
             <span data-i18n="login">Login</span>`;
+        loginBtn.title = '';
         if (dropdown) dropdown.classList.remove('show');
+        // Re-apply translation for login text
+        const savedLang = localStorage.getItem('noxtary_lang') || 'EN';
+        const loginSpan = loginBtn.querySelector('[data-i18n="login"]');
+        if (loginSpan && TRANSLATIONS[savedLang]?.login) {
+            loginSpan.textContent = TRANSLATIONS[savedLang].login;
+        }
     }
 }
 

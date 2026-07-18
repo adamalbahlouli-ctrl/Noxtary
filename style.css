@@ -19,20 +19,20 @@
 }
 
 :root, body.theme-cyber-dark {
-    --blue-dark:   #0a1628;
-    --blue-mid:    #0d2040;
-    --bg-deep:     #020509;
+    --blue-dark:   #060c1e;
+    --blue-mid:    #0a1832;
+    --bg-deep:     #020407;
     --blue-glow:   #1565c0;
-    --blue-bright: #1e88e5;
+    --blue-bright: #1976d2;
     --blue-shine:  #42a5f5;
     --blue-accent: #64b5f6;
     --white-glow:  rgba(255,255,255,0.92);
-    --nav-bg:      rgba(5, 12, 30, 0.72);
-    --card-bg:         rgba(10, 22, 40, 0.78);
-    --card-border:     rgba(255,255,255,0.06);
-    --card-shadow:     0 4px 20px rgba(0,0,0,0.45);
-    --text-color:      #e0e0e0;
-    --text-muted:      rgba(255,255,255,0.55);
+    --nav-bg:      rgba(4, 10, 24, 0.78);
+    --card-bg:         rgba(8, 18, 36, 0.82);
+    --card-border:     rgba(100,181,246,0.08);
+    --card-shadow:     0 4px 24px rgba(0,0,0,0.55);
+    --text-color:      #e8eaf6;
+    --text-muted:      rgba(232,234,246,0.55);
     --logo-glow:       rgba(30,136,229,0.55);
 }
 
@@ -214,6 +214,9 @@ body {
     text-transform: uppercase;
     flex-shrink: 0;
     white-space: nowrap;
+    /* For avatar state — auto-adjusts */
+    min-width: 36px;
+    min-height: 36px;
 }
 .login-btn:hover {
     background: rgba(21,101,192,0.4);
@@ -2204,14 +2207,15 @@ body.theme-neo-light .translate-btn,
 body.theme-neo-light .theme-btn,
 body.theme-neo-light .login-btn {
     background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.14);
     color: #111827;
 }
 body.theme-neo-light .translate-btn:hover,
 body.theme-neo-light .theme-btn:hover,
 body.theme-neo-light .login-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--blue-bright);
+    background: rgba(37, 99, 235, 0.08);
+    color: #1d4ed8;
+    border-color: rgba(37,99,235,0.35);
 }
 body.theme-neo-light .search-container input {
     background: rgba(0,0,0,0.04);
@@ -2281,6 +2285,26 @@ body.theme-neo-light .feature-card h3,
 body.theme-neo-light .catalog-hero h2 {
     color: #111827;
 }
+
+/* Extra neo-light overrides for readability */
+body.theme-neo-light .feature-list li { color: #374151; }
+body.theme-neo-light .stat-card strong { color: #111827; }
+body.theme-neo-light .stat-card span { color: #6b7280; }
+body.theme-neo-light .hero-pill-subtitle { color: #374151; background: rgba(37,99,235,0.06); border-color: rgba(37,99,235,0.2); }
+body.theme-neo-light .tab-btn { color: #2563eb; background: rgba(37,99,235,0.05); border-color: rgba(37,99,235,0.18); }
+body.theme-neo-light .tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+body.theme-neo-light .tab-btn:hover { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.35); }
+body.theme-neo-light .search-icon { color: #6b7280; }
+body.theme-neo-light .back-home { color: #2563eb; }
+body.theme-neo-light .section-eyebrow { color: #6b7280; }
+body.theme-neo-light .nc-card { background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.07); }
+body.theme-neo-light .nc-unified { background: rgba(255,255,255,0.88); border-color: rgba(0,0,0,0.07); }
+body.theme-neo-light .lang-dropdown { background: rgba(255,255,255,0.97); border-color: rgba(0,0,0,0.12); }
+body.theme-neo-light .lang-option { color: #374151; }
+body.theme-neo-light .lang-option:hover, body.theme-neo-light .lang-option.active { background: rgba(37,99,235,0.1); color: #1d4ed8; }
+body.theme-neo-light #userDropdown { background: rgba(255,255,255,0.97); border-color: rgba(0,0,0,0.12); }
+body.theme-neo-light .user-dropdown-item { color: #374151; }
+body.theme-neo-light .user-dropdown-item:hover { background: rgba(37,99,235,0.1); color: #1d4ed8; }
 
 /* ══ USER PROFILE DROPDOWN ══ */
 #userDropdown {
