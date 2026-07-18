@@ -400,12 +400,12 @@ async function handleDownloadClick(appId, btnElement) {
 
     if (error) {
         if (error.message.includes('اشتراك مطلوب')) {
-            alert('هذا المحتوى مدفوع. يرجى الاشتراك أولًا للتحميل.');
+            alert(getTranslation('premium_required', 'This content is premium. Please subscribe to download.'));
         } else if (error.message.includes('تسجيل الدخول')) {
-            alert('يرجى تسجيل الدخول أولًا.');
+            alert(getTranslation('login_required', 'Please sign in first.'));
             document.getElementById('loginModal')?.classList.add('active');
         } else {
-            alert('حدث خطأ، حاول مرة أخرى.');
+            alert(getTranslation('generic_error', 'Something went wrong. Please try again.'));
         }
         return;
     }
@@ -413,7 +413,7 @@ async function handleDownloadClick(appId, btnElement) {
     if (data) {
         window.open(data, '_blank', 'noopener');
     } else {
-        alert('الرابط غير متوفر حاليًا.');
+        alert(getTranslation('link_unavailable', 'Link is currently unavailable.'));
     }
 }
 
@@ -433,18 +433,18 @@ async function handleChapterRead(chapterId, btnElement) {
 
     if (error) {
         if (error.message.includes('اشتراك مطلوب')) {
-            alert('اشتراك مطلوب للقراءة. يرجى الاشتراك أولًا.');
+            alert(getTranslation('premium_required_read', 'This content is premium. Please subscribe to read.'));
         } else if (error.message.includes('تسجيل الدخول')) {
-            alert('يجب تسجيل الدخول أولاً.');
+            alert(getTranslation('login_required', 'Please sign in first.'));
             document.getElementById('loginModal')?.classList.add('active');
         } else {
-            alert('حدث خطأ، حاول مرة أخرى.');
+            alert(getTranslation('generic_error', 'Something went wrong. Please try again.'));
         }
         return;
     }
 
     if (!data) {
-        alert('الرابط غير متوفر حاليًا.');
+        alert(getTranslation('link_unavailable', 'Link is currently unavailable.'));
         return;
     }
 
@@ -691,18 +691,18 @@ async function handleReadOnline(appId, btnElement) {
 
     if (error) {
         if (error.message.includes('اشتراك مطلوب')) {
-            alert('هذا المحتوى مدفوع. يرجى الاشتراك أولًا للقراءة.');
+            alert(getTranslation('premium_required_read', 'This content is premium. Please subscribe to read.'));
         } else if (error.message.includes('تسجيل الدخول')) {
-            alert('يرجى تسجيل الدخول أولًا.');
+            alert(getTranslation('login_required', 'Please sign in first.'));
             document.getElementById('loginModal')?.classList.add('active');
         } else {
-            alert('حدث خطأ، حاول مرة أخرى.');
+            alert(getTranslation('generic_error', 'Something went wrong. Please try again.'));
         }
         return;
     }
 
     if (!data) {
-        alert('الرابط غير متوفر حاليًا.');
+        alert(getTranslation('link_unavailable', 'Link is currently unavailable.'));
         return;
     }
 
@@ -875,7 +875,12 @@ const TRANSLATIONS = {
         publish_on_noxtary: "🚀 Publish on Noxtary",
         sign_in_google: "Sign in with Google",
         logout: "تسجيل الخروج / Logout",
-        all_rights_reserved: "© 2026 Noxtary. All rights reserved."
+        all_rights_reserved: "© 2026 Noxtary. All rights reserved.",
+        premium_required: "This content is premium. Please subscribe to download.",
+        premium_required_read: "This content is premium. Please subscribe to read.",
+        login_required: "Please sign in first.",
+        generic_error: "Something went wrong. Please try again.",
+        link_unavailable: "Link is currently unavailable."
     },
     AR: {
         login: "تسجيل الدخول",
@@ -914,7 +919,12 @@ const TRANSLATIONS = {
         publish_on_noxtary: "🚀 انشر على نوكستاري",
         sign_in_google: "تسجيل الدخول بـ Google",
         logout: "تسجيل الخروج",
-        all_rights_reserved: "© 2026 نوكستاري. جميع الحقوق محفوظة."
+        all_rights_reserved: "© 2026 نوكستاري. جميع الحقوق محفوظة.",
+        premium_required: "هذا المحتوى مدفوع. يرجى الاشتراك أولًا للتحميل.",
+        premium_required_read: "هذا المحتوى مدفوع. يرجى الاشتراك أولًا للقراءة.",
+        login_required: "يرجى تسجيل الدخول أولًا.",
+        generic_error: "حدث خطأ، حاول مرة أخرى.",
+        link_unavailable: "الرابط غير متوفر حاليًا."
     }
 };
 
@@ -1003,13 +1013,22 @@ function applyTranslations(lang) {
 const THEME_SEQUENCE = ['cyber-dark', 'neo-light'];
 let currentThemeIndex = 0;
 
+// Returns true if the current page is the landing/start screen (index.html)
+function isStartScreen() {
+    const path = window.location.pathname;
+    return path === '/' || path.endsWith('/index.html') || path === '';
+}
+
 function applyTheme(themeName) {
-    // Remove all theme classes first
-    document.body.classList.remove('theme-cyber-dark', 'theme-neon-purple', 'theme-emerald-green', 'theme-sunset-orange', 'theme-neo-light');
-    document.body.classList.add('theme-' + themeName);
-    
-    // Save to local storage
+    // Save to local storage (always — so other pages pick it up)
     localStorage.setItem('noxtary_theme', themeName);
+
+    // ── شاشة البداية (index.html) تبقى كما هي بغض النظر عن الثيم ──
+    if (!isStartScreen()) {
+        // Remove all theme classes first
+        document.body.classList.remove('theme-cyber-dark', 'theme-neon-purple', 'theme-emerald-green', 'theme-sunset-orange', 'theme-neo-light');
+        document.body.classList.add('theme-' + themeName);
+    }
 
     // Update all theme button icons on page (sun = dark mode, moon = light mode)
     document.querySelectorAll('.theme-btn-instant').forEach(btn => {
@@ -1063,15 +1082,46 @@ function setupLanguageDropdown() {
     const langBtn = document.getElementById('translateBtn');
     const langDropdown = document.getElementById('langDropdown');
     
-    if (langBtn && langDropdown) {
+    if (langBtn) {
         langBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            langDropdown.classList.toggle('show');
-            langBtn.classList.toggle('open');
+            
+            // Toggle language directly on click
+            const currentLang = localStorage.getItem('noxtary_lang') || 'EN';
+            const nextLang = currentLang === 'EN' ? 'AR' : 'EN';
+            localStorage.setItem('noxtary_lang', nextLang);
+            
+            // Update active state
+            document.querySelectorAll('.lang-option').forEach(o => {
+                if (o.getAttribute('data-lang') === nextLang) {
+                    o.classList.add('active');
+                } else {
+                    o.classList.remove('active');
+                }
+            });
+            
+            const currentLangEl = document.getElementById('currentLang');
+            if (currentLangEl) currentLangEl.textContent = nextLang;
+            
+            applyTranslations(nextLang);
+            
+            // Redraw cards if on home page
+            const activeFilter = document.querySelector('.tab-btn.active')?.dataset.filter || 'all';
+            const searchVal = document.getElementById('searchInput')?.value || '';
+            renderItems(activeFilter, searchVal);
+            
+            // Redraw details if on product details page
+            loadProductDetails();
+            
+            if (langDropdown) {
+                langDropdown.classList.remove('show');
+            }
+            langBtn.classList.remove('open');
         });
         
         document.querySelectorAll('.lang-option').forEach(opt => {
-            opt.addEventListener('click', () => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const lang = opt.getAttribute('data-lang');
                 localStorage.setItem('noxtary_lang', lang);
                 
@@ -1092,7 +1142,9 @@ function setupLanguageDropdown() {
                 // Redraw details if on product details page
                 loadProductDetails();
                 
-                langDropdown.classList.remove('show');
+                if (langDropdown) {
+                    langDropdown.classList.remove('show');
+                }
                 langBtn.classList.remove('open');
             });
         });
@@ -1336,6 +1388,7 @@ function initializeCore() {
     const savedTheme = localStorage.getItem('noxtary_theme') || 'cyber-dark';
     // Clamp to valid themes in new 2-theme sequence
     const validTheme = THEME_SEQUENCE.includes(savedTheme) ? savedTheme : 'cyber-dark';
+    // شاشة البداية (index.html) لا تتأثر بالثيم — applyTheme تتولى ذلك تلقائيًا
     applyTheme(validTheme);
 
     // 2. Setup Language
