@@ -2602,3 +2602,261 @@ body.theme-neo-light #pdfPlaceholder {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     }
 }
+
+/* =====================================================
+   REVIEWS SYSTEM
+   ===================================================== */
+
+.reviews-section {
+    margin-top: 8px;
+    padding-top: 4px;
+}
+
+.reviews-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.reviews-avg {
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 1rem;
+    text-shadow: 0 0 10px rgba(251,191,36,0.5);
+}
+
+.reviews-count {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ── نموذج التقييم ── */
+.review-form {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--card-shadow);
+}
+
+/* ── نجوم الاختيار ── */
+.star-input {
+    display: flex;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.star-input span {
+    font-size: 2rem;
+    color: var(--text-muted);
+    transition: color 0.18s ease, transform 0.18s ease, text-shadow 0.18s ease;
+    line-height: 1;
+}
+
+.star-input span:hover,
+.star-input span.active {
+    color: #fbbf24;
+    transform: scale(1.15);
+    text-shadow: 0 0 12px rgba(251,191,36,0.65);
+}
+
+/* ── textarea التعليق ── */
+.review-textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: vertical;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--text-color);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-textarea:focus {
+    border-color: var(--blue-shine);
+    box-shadow: 0 0 0 2px rgba(66,165,245,0.15);
+}
+
+.review-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* ── زر الإرسال ── */
+.review-submit-btn {
+    align-self: flex-start;
+    background: linear-gradient(135deg, var(--blue-glow), var(--blue-bright));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    letter-spacing: 0.3px;
+}
+
+.review-submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(21,101,192,0.45), 0 0 16px var(--blue-glow);
+    filter: brightness(1.1);
+}
+
+.review-submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+
+.review-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── رسالة تسجيل الدخول ── */
+.review-login-prompt {
+    background: rgba(0,0,0,0.18);
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* ── قائمة التقييمات ── */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.reviews-loading {
+    text-align: center;
+    font-size: 1.4rem;
+    padding: 24px;
+    color: var(--text-muted);
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+}
+
+.no-reviews {
+    text-align: center;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 28px 16px;
+    background: rgba(0,0,0,0.12);
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 12px;
+}
+
+/* ── بطاقة تقييم واحدة ── */
+.review-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    backdrop-filter: blur(8px);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: revealCard 0.3s ease both;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+}
+
+@keyframes revealCard {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.review-user {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--blue-accent);
+    letter-spacing: 0.2px;
+}
+
+.review-stars {
+    font-size: 1.1rem;
+    color: #fbbf24;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(251,191,36,0.4);
+}
+
+.review-comment {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-color);
+    line-height: 1.65;
+    opacity: 0.88;
+}
+
+.review-date {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .review-form {
+        padding: 16px;
+    }
+    .star-input span {
+        font-size: 1.7rem;
+    }
+    .review-submit-btn {
+        width: 100%;
+        text-align: center;
+    }
+    .reviews-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

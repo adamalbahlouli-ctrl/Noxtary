@@ -655,6 +655,36 @@ function loadProductDetails() {
             ${mangaSectionHTML}
 
             ${viewerHTML ? `<div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>${viewerHTML}` : ''}
+
+            <div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>
+
+            <section class="reviews-section" id="reviewsSection">
+                <h3 class="reviews-title pd-section-title" style="border-color:${effectiveCfg.color}33">
+                    ⭐ ${getTranslation('reviews', 'Reviews')}
+                    <span class="reviews-summary">
+                        ${product.average_rating ? `<span class="reviews-avg" id="avgRatingDisplay">★ ${parseFloat(product.average_rating).toFixed(1)}</span>` : '<span id="avgRatingDisplay"></span>'}
+                        ${product.reviews_count ? `<span class="reviews-count" id="reviewsCountDisplay">(${product.reviews_count})</span>` : '<span id="reviewsCountDisplay"></span>'}
+                    </span>
+                </h3>
+
+                <div id="reviewFormContainer" class="review-form" style="display:none;">
+                    <div class="star-input" id="starInput">
+                        <span data-value="1">☆</span>
+                        <span data-value="2">☆</span>
+                        <span data-value="3">☆</span>
+                        <span data-value="4">☆</span>
+                        <span data-value="5">☆</span>
+                    </div>
+                    <textarea id="reviewCommentInput" class="review-textarea" placeholder="${getTranslation('review_comment_placeholder', 'Write your comment (optional)...')}"></textarea>
+                    <button id="submitReviewBtn" class="review-submit-btn" style="--type-color:${effectiveCfg.color}">${getTranslation('review_submit', 'Submit Review')}</button>
+                </div>
+
+                <p id="reviewLoginPrompt" class="review-login-prompt" style="display:none;">
+                    ${getTranslation('review_login_prompt', 'Sign in to rate this product.')}
+                </p>
+
+                <div id="reviewsList" class="reviews-list"></div>
+            </section>
         </div>
 
         <div class="lb-overlay" id="lbOverlay" onclick="closeLightbox()">
@@ -673,6 +703,10 @@ function loadProductDetails() {
     if (isManga) {
         loadMangaChapters(product.id, effectiveCfg.color);
     }
+
+    // ── تحميل التقييمات وتهيئة نموذج التقييم ──
+    loadReviews(product.id);
+    initReviewForm(product.id);
 }
 
 // ─────────────────────────────────────────────
@@ -834,6 +868,196 @@ function shareProduct(title) {
 
 
 // ─────────────────────────────────────────────
+// REVIEWS SYSTEM
+// ─────────────────────────────────────────────
+
+/**
+ * تنظيف النص من HTML لمنع XSS عند حقن نصوص المستخدم في DOM
+ */
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+/**
+ * جلب التقييمات من Supabase وعرضها
+ */
+async function loadReviews(appId) {
+    const container = document.getElementById('reviewsList');
+    if (!container) return;
+
+    container.innerHTML = '<div class="reviews-loading">⏳</div>';
+
+    const { data: reviews, error } = await supabaseClient
+        .from('reviews')
+        .select('*')
+        .eq('app_id', appId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.warn('Error loading reviews:', error);
+        container.innerHTML = '';
+        return;
+    }
+
+    renderReviews(reviews);
+}
+
+/**
+ * عرض قائمة التقييمات في DOM
+ */
+function renderReviews(reviews) {
+    const container = document.getElementById('reviewsList');
+    if (!container) return;
+
+    if (!reviews || reviews.length === 0) {
+        container.innerHTML = `<p class="no-reviews">${getTranslation('no_reviews', 'No reviews yet. Be the first to review!')}</p>`;
+        return;
+    }
+
+    container.innerHTML = reviews.map(r => {
+        const starsHtml = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        const dateStr = new Date(r.created_at).toLocaleDateString();
+        const commentHtml = r.comment
+            ? `<p class="review-comment">${escapeHtml(r.comment)}</p>`
+            : '';
+        return `
+        <div class="review-card">
+            <div class="review-header">
+                <span class="review-user">${escapeHtml(r.user_name || 'User')}</span>
+                <span class="review-stars" aria-label="${r.rating} out of 5 stars">${starsHtml}</span>
+            </div>
+            ${commentHtml}
+            <span class="review-date">${dateStr}</span>
+        </div>`;
+    }).join('');
+}
+
+/**
+ * إرسال تقييم جديد أو تحديث تقييم موجود (upsert)
+ */
+async function submitReview(appId, rating, comment) {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (!session || !session.user) {
+        alert(getTranslation('login_required', 'Please sign in first.'));
+        return;
+    }
+
+    const userName = session.user.user_metadata?.full_name
+        || session.user.user_metadata?.name
+        || session.user.email
+        || 'User';
+
+    const { error } = await supabaseClient
+        .from('reviews')
+        .upsert({
+            app_id: appId,
+            user_id: session.user.id,
+            user_name: userName,
+            rating: rating,
+            comment: comment || null
+        }, { onConflict: 'app_id,user_id' });
+
+    if (error) {
+        console.error('Error submitting review:', error);
+        alert(getTranslation('review_error', 'An error occurred while submitting your review.'));
+        return;
+    }
+
+    // إعادة تحميل التقييمات وتحديث بيانات المنتج
+    await loadReviews(appId);
+    loadProductDetails();
+}
+
+/**
+ * تحديث حالة النجوم المرئية في نموذج التقييم
+ */
+function updateReviewStars(stars, count) {
+    stars.forEach((star, index) => {
+        if (index < count) {
+            star.textContent = '★';
+            star.classList.add('active');
+        } else {
+            star.textContent = '☆';
+            star.classList.remove('active');
+        }
+    });
+}
+
+/**
+ * تهيئة نموذج التقييم: إظهار/إخفاء حسب حالة تسجيل الدخول،
+ * وربط تفاعل النجوم وزر الإرسال
+ */
+function initReviewForm(productId) {
+    const formContainer = document.getElementById('reviewFormContainer');
+    const loginPrompt  = document.getElementById('reviewLoginPrompt');
+
+    // تحديث حالة الجلسة → إظهار الفورم أو الرسالة
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session && session.user) {
+            if (formContainer) formContainer.style.display = 'block';
+            if (loginPrompt)  loginPrompt.style.display  = 'none';
+        } else {
+            if (formContainer) formContainer.style.display = 'none';
+            if (loginPrompt)  loginPrompt.style.display  = 'block';
+        }
+    });
+
+    // تفاعل النجوم
+    let selectedRating = 0;
+    const starInput = document.getElementById('starInput');
+    if (starInput) {
+        const stars = Array.from(starInput.querySelectorAll('span'));
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                selectedRating = index + 1;
+                updateReviewStars(stars, selectedRating);
+            });
+            star.addEventListener('mouseover', () => {
+                updateReviewStars(stars, index + 1);
+            });
+        });
+
+        starInput.addEventListener('mouseleave', () => {
+            updateReviewStars(stars, selectedRating);
+        });
+    }
+
+    // زر الإرسال
+    const submitBtn = document.getElementById('submitReviewBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+            if (selectedRating === 0) {
+                alert(getTranslation('review_select_stars', 'Please select a star rating first.'));
+                return;
+            }
+            const comment = (document.getElementById('reviewCommentInput')?.value || '').trim();
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ ...';
+            try {
+                await submitReview(productId, selectedRating, comment);
+                // إعادة تعيين النموذج بعد النجاح
+                selectedRating = 0;
+                const starInputEl = document.getElementById('starInput');
+                if (starInputEl) {
+                    updateReviewStars(Array.from(starInputEl.querySelectorAll('span')), 0);
+                }
+                const commentInput = document.getElementById('reviewCommentInput');
+                if (commentInput) commentInput.value = '';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    }
+}
+
+// ─────────────────────────────────────────────
 // TRANSLATION & THEME ENGINE & MOCK LOGIN SETUP
 // ─────────────────────────────────────────────
 
@@ -880,7 +1104,13 @@ const TRANSLATIONS = {
         premium_required_read: "This content is premium. Please subscribe to read.",
         login_required: "Please sign in first.",
         generic_error: "Something went wrong. Please try again.",
-        link_unavailable: "Link is currently unavailable."
+        link_unavailable: "Link is currently unavailable.",
+        reviews: "Reviews",
+        no_reviews: "No reviews yet. Be the first to review!",
+        review_login_prompt: "Sign in to rate this product.",
+        review_submit: "Submit Review",
+        review_select_stars: "Please select a star rating first.",
+        review_error: "An error occurred while submitting your review."
     },
     AR: {
         login: "تسجيل الدخول",
@@ -924,7 +1154,13 @@ const TRANSLATIONS = {
         premium_required_read: "هذا المحتوى مدفوع. يرجى الاشتراك أولًا للقراءة.",
         login_required: "يرجى تسجيل الدخول أولًا.",
         generic_error: "حدث خطأ، حاول مرة أخرى.",
-        link_unavailable: "الرابط غير متوفر حاليًا."
+        link_unavailable: "الرابط غير متوفر حاليًا.",
+        reviews: "التقييمات",
+        no_reviews: "لا توجد تقييمات بعد. كن أول من يقيّم!",
+        review_login_prompt: "سجّل دخولك لتتمكن من تقييم هذا المنتج.",
+        review_submit: "إرسال التقييم",
+        review_select_stars: "يرجى اختيار تقييم بالنجوم أولاً.",
+        review_error: "حدث خطأ أثناء إرسال التقييم."
     }
 };
 
