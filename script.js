@@ -468,6 +468,25 @@ async function handleChapterRead(chapterId, btnElement) {
 }
 
 // ─────────────────────────────────────────────
+// 6e. SUBSCRIPTION — Lemon Squeezy Checkout Handler
+// ─────────────────────────────────────────────
+async function handleSubscribeClick() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (!session || !session.user) {
+        alert('يجب تسجيل الدخول أولاً للشراء');
+        return;
+    }
+
+    const baseCheckoutUrl = 'https://noxtary.lemonsqueezy.com/checkout/buy/9cc9d855-a775-4e03-8e2c-8f7bf567a2d1';
+
+    const checkoutUrl = `${baseCheckoutUrl}?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
+
+    window.location.href = checkoutUrl;
+}
+window.handleSubscribeClick = handleSubscribeClick;
+
+// ─────────────────────────────────────────────
 // 7. PRODUCT PAGE — Detail Loader
 // ─────────────────────────────────────────────
 function loadProductDetails() {
@@ -524,9 +543,12 @@ function loadProductDetails() {
     let mangaSectionHTML = '';
 
     if (isManga) {
-        // للمانجا: لا أزرار Read/Download عامة — فقط قسم الفصول سيُبنى لاحقًا بعد التحميل
+        // للمانجا: زر الاشتراك وزر المشاركة
         actionsHTML = `
             <div class="pd-actions-row">
+                <button onclick="handleSubscribeClick()" class="pd-download-btn pd-subscribe-btn" style="--type-color:${effectiveCfg.color}">
+                    ⭐ ${getTranslation('subscribe', 'Subscribe')}
+                </button>
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${effectiveCfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
@@ -1092,6 +1114,7 @@ const TRANSLATIONS = {
         about: "About",
         screenshots: "Screenshots",
         view: "View",
+        subscribe: "Subscribe",
         terms_of_service: "Terms of Service",
         privacy_policy: "Privacy Policy",
         refund_policy: "Refund Policy",
@@ -1141,6 +1164,7 @@ const TRANSLATIONS = {
         about: "حول",
         screenshots: "لقطات الشاشة",
         view: "عرض",
+        subscribe: "اشتراك",
         terms_of_service: "شروط الخدمة",
         privacy_policy: "سياسة الخصوصية",
         refund_policy: "سياسة الاسترجاع",
@@ -1645,9 +1669,19 @@ function initializeCore() {
     setupDropdowns();
     setupLoginModal();
     setupAuthListener();
+    setupSubscribeListeners();
 
     // 4. Navbar hide-on-scroll
     setupNavbarScrollBehavior();
+}
+
+function setupSubscribeListeners() {
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#subscribeBtn, .subscribe-btn, .pd-subscribe-btn, [data-action="subscribe"]');
+        if (btn && !btn.getAttribute('onclick')) {
+            handleSubscribeClick();
+        }
+    });
 }
 
 // ─────────────────────────────────────────────

@@ -417,6 +417,25 @@ async function handleDownloadClick(appId, btnElement) {
 }
 
 // ─────────────────────────────────────────────
+// 6e. SUBSCRIPTION — Lemon Squeezy Checkout Handler
+// ─────────────────────────────────────────────
+async function handleSubscribeClick() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (!session || !session.user) {
+        alert('يجب تسجيل الدخول أولاً للشراء');
+        return;
+    }
+
+    const baseCheckoutUrl = 'https://noxtary.lemonsqueezy.com/checkout/buy/9cc9d855-a775-4e03-8e2c-8f7bf567a2d1';
+
+    const checkoutUrl = `${baseCheckoutUrl}?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
+
+    window.location.href = checkoutUrl;
+}
+window.handleSubscribeClick = handleSubscribeClick;
+
+// ─────────────────────────────────────────────
 // 7. PRODUCT PAGE — Detail Loader
 // ─────────────────────────────────────────────
 function loadProductDetails() {
