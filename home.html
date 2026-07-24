@@ -8,28 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* ── Tabs responsive layout ── */
-        @media (min-width: 600px) {
-            .tabs-container {
-                display: flex;
-                flex-direction: row;
-                flex-wrap: nowrap;
-                gap: 10px;
-                overflow-x: auto;
-            }
-        }
-        @media (max-width: 599px) {
-            .tabs-container {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .tabs-container .tab-btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
         /* ── Footer Styles ── */
         .site-footer {
             width: 100%;
@@ -177,9 +155,6 @@
 
     <!-- ══ MAIN CONTENT ══ -->
     <div class="content-wrapper">
-
-
-
         <!-- Tabs -->
         <div class="tabs-container">
             <button class="tab-btn active" data-filter="all" data-i18n="tab_all">All</button>
@@ -192,8 +167,8 @@
 
         <!-- Cards Grid — populated by script.js renderItems() -->
         <div class="items-grid" id="itemsGrid"></div>
-
     </div>
+
 
     <!-- ══ FOOTER ══ -->
     <footer class="site-footer">

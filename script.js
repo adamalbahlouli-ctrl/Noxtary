@@ -361,18 +361,20 @@ function initHomePage() {
         btn.addEventListener('click', () => {
             tabBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            renderItems(btn.dataset.filter, searchInput ? searchInput.value : '');
+            renderItemsAnimated(btn.dataset.filter, searchInput ? searchInput.value : '');
         });
     });
 
     if (searchInput) {
         searchInput.addEventListener('input', e => {
             const activeFilter = document.querySelector('.tab-btn.active')?.dataset.filter || 'all';
-            renderItems(activeFilter, e.target.value);
+            renderItemsAnimated(activeFilter, e.target.value);
         });
     }
 
     renderItems();
+    initScrollToTop();
+    initCategoryDragScroll();
 }
 
 
@@ -1691,3 +1693,156 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCore();
     initApp();
 });
+
+
+// ─────────────────────────────────────────────
+// UX ENHANCEMENTS — Added by UI/UX Polish Pass
+// ─────────────────────────────────────────────
+
+/**
+ * Smooth animated category switching:
+ * fade-out + slide-down → swap content → fade-in + slide-up
+ */
+function renderItemsAnimated(filter = 'all', query = '') {
+    const grid = document.getElementById('itemsGrid');
+    if (!grid) { renderItems(filter, query); return; }
+
+    // Fade out
+    grid.classList.add('grid-switching-out');
+    grid.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+    grid.style.opacity = '0';
+    grid.style.transform = 'translateY(12px)';
+    grid.style.pointerEvents = 'none';
+
+    setTimeout(() => {
+        // Swap content
+        renderItems(filter, query);
+
+        // Prepare for fade-in
+        grid.style.transition = 'none';
+        grid.style.opacity = '0';
+        grid.style.transform = 'translateY(12px)';
+
+        // Force reflow so browser registers the reset
+        void grid.offsetHeight;
+
+        // Fade in
+        grid.style.transition = 'opacity 0.28s ease-out, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)';
+        grid.style.opacity = '1';
+        grid.style.transform = 'translateY(0)';
+        grid.style.pointerEvents = '';
+        grid.classList.remove('grid-switching-out');
+    }, 200);
+}
+
+
+/**
+ * Scroll-To-Top floating button:
+ * – appears after 300px of scroll
+ * – smooth scroll + arrow animation on click
+ */
+function initScrollToTop() {
+    // Only inject if on a page that has sufficient content
+    if (document.getElementById('scrollTopBtn')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'scrollTopBtn';
+    btn.className = 'scroll-top-btn';
+    btn.setAttribute('aria-label', 'Scroll to top');
+    btn.title = 'Back to top';
+    btn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"/>
+        </svg>`;
+    document.body.appendChild(btn);
+
+    // Show / hide based on scroll position
+    const THRESHOLD = 300;
+    let ticking = false;
+
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                if (window.scrollY > THRESHOLD) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Click: animate arrow then scroll to top
+    btn.addEventListener('click', () => {
+        btn.classList.add('clicking');
+        setTimeout(() => btn.classList.remove('clicking'), 350);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+
+/**
+ * Horizontal drag-scroll for categories bar:
+ * – Mouse drag to scroll left/right on desktop
+ * – Mouse wheel scroll horizontally
+ * – Prevent click trigger if user dragged
+ */
+function initCategoryDragScroll() {
+    const container = document.querySelector('.tabs-container');
+    if (!container) return;
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let didDrag = false;
+
+    // Desktop mouse drag
+    container.addEventListener('mousedown', (e) => {
+        isDown = true;
+        didDrag = false;
+        container.style.cursor = 'grabbing';
+        startX = e.pageX - container.getBoundingClientRect().left;
+        scrollLeft = container.scrollLeft;
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDown = false;
+        if (container) container.style.cursor = '';
+    });
+
+    document.addEventListener('mouseleave', () => {
+        isDown = false;
+        if (container) container.style.cursor = '';
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.getBoundingClientRect().left;
+        const walk = (x - startX) * 1.4;
+        if (Math.abs(walk) > 4) didDrag = true;
+        container.scrollLeft = scrollLeft - walk;
+    });
+
+    // Prevent tab button click when releasing a drag
+    container.addEventListener('click', (e) => {
+        if (didDrag) {
+            e.stopPropagation();
+            didDrag = false;
+        }
+    }, true);
+
+    // Mouse wheel horizontal scroll
+    container.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            container.scrollLeft += e.deltaY * 0.85;
+        }
+    }, { passive: false });
+}
