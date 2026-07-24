@@ -1763,37 +1763,61 @@ margin-bottom: 24px;
     transform: translateY(-4px) rotate(-15deg) scale(1.15);
 }
 
-/* ── 4. VIEW Buttons Glassmorphism ── */
+/* ── 4. VIEW Buttons Theme Adaptive Glassmorphism ── */
 .nc-btn,
 .nc-unified__btn,
-.nc-btn--primary {
-    background: rgba(255, 255, 255, 0.12) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.28) !important;
-    color: #ffffff !important;
+.nc-btn--primary,
+.nc-card__btn {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #ffffff;
     font-family: var(--font-title, 'Orbitron', sans-serif);
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: background 0.28s ease, border-color 0.28s ease, color 0.28s ease, box-shadow 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nc-btn:hover,
 .nc-unified__btn:hover,
-.nc-btn--primary:hover {
-    background: rgba(255, 255, 255, 0.22) !important;
-    border-color: rgba(255, 255, 255, 0.6) !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) scale(1.02) !important;
-    box-shadow: 0 6px 22px rgba(255, 255, 255, 0.25), 0 0 18px rgba(66, 165, 245, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+.nc-btn--primary:hover,
+.nc-card__btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #ffffff;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 22px rgba(255, 255, 255, 0.25), 0 0 18px rgba(66, 165, 245, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .nc-btn:active,
 .nc-unified__btn:active,
-.nc-btn--primary:active {
-    transform: translateY(0) scale(0.98) !important;
+.nc-btn--primary:active,
+.nc-card__btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Light Mode Overrides for VIEW Buttons */
+body.theme-neo-light .nc-btn,
+body.theme-neo-light .nc-unified__btn,
+body.theme-neo-light .nc-btn--primary,
+body.theme-neo-light .nc-card__btn {
+    background: rgba(37, 99, 235, 0.1) !important;
+    border: 1px solid rgba(37, 99, 235, 0.3) !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+body.theme-neo-light .nc-btn:hover,
+body.theme-neo-light .nc-unified__btn:hover,
+body.theme-neo-light .nc-btn--primary:hover,
+body.theme-neo-light .nc-card__btn:hover {
+    background: #1d4ed8 !important;
+    border-color: #1e40af !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(29, 78, 216, 0.35) !important;
 }
 
 /* ── 5. Product Card Hover Lift & Icon Enlarge ── */
