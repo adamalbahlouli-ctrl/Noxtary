@@ -480,7 +480,7 @@ async function handleSubscribeClick() {
         return;
     }
 
-    const baseCheckoutUrl = 'https://noxtary.lemonsqueezy.com/checkout/buy/9cc9d855-a775-4e03-8e2c-8f7bf567a2d1';
+    const baseCheckoutUrl = 'https://noxtary.lemonsqueezy.com/checkout/buy/d903071e-8acc-4f74-834c-0f861aae9804';
 
     const checkoutUrl = `${baseCheckoutUrl}?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
 
