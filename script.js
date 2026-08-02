@@ -480,7 +480,7 @@ async function handleSubscribeClick() {
         return;
     }
 
-    const baseCheckoutUrl = 'https://noxtary.lemonsqueezy.com/checkout/buy/d903071e-8acc-4f74-834c-0f861aae9804';
+    const baseCheckoutUrl = 'https://noxtary.lemonsqueezy.com/checkout/buy/9cc9d855-a775-4e03-8e2c-8f7bf567a2d1';
 
     const checkoutUrl = `${baseCheckoutUrl}?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
 
@@ -489,9 +489,31 @@ async function handleSubscribeClick() {
 window.handleSubscribeClick = handleSubscribeClick;
 
 // ─────────────────────────────────────────────
+// 6f. SUBSCRIPTION — Check if current user is subscribed to a product_group
+// ─────────────────────────────────────────────
+async function checkSubscriptionStatus(productGroup) {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !session.user || !productGroup) return false;
+
+    const { data, error } = await supabaseClient
+        .from('subscriptions')
+        .select('status, expires_at')
+        .eq('user_id', session.user.id)
+        .eq('product_group', productGroup)
+        .eq('status', 'active')
+        .maybeSingle();
+
+    if (error || !data) return false;
+
+    if (data.expires_at && new Date(data.expires_at) < new Date()) return false;
+
+    return true;
+}
+
+// ─────────────────────────────────────────────
 // 7. PRODUCT PAGE — Detail Loader
 // ─────────────────────────────────────────────
-function loadProductDetails() {
+async function loadProductDetails() {
     const container = document.getElementById('product-load-container');
     if (!container) return;
 
@@ -539,22 +561,25 @@ function loadProductDetails() {
     // إذا كان مانجا، استبدل cfg بإعدادات مانجا
     const effectiveCfg = isManga ? TYPE_CONFIG.manga : cfg;
 
-    // ── أزرار الإجراء + عارض PDF حسب النوع ──
-    let actionsHTML  = '';
-    let viewerHTML    = '';
-    let mangaSectionHTML = '';
+    // ── التحقق من حالة الاشتراك إذا كان المنتج مرتبطًا بـ product_group ──
+    let isSubscribed = false;
+    if (product.product_group) {
+        isSubscribed = await checkSubscriptionStatus(product.product_group);
+    }
 
     if (isManga) {
-        // للمانجا: زر الاشتراك وزر المشاركة
+        // للمانجا: زر الاشتراك (أو "مشترك بالفعل") وزر المشاركة
+        const subscribeBtn = isSubscribed
+            ? `<button class="pd-download-btn pd-btn--subscribed" disabled style="background:#475569; color:#cbd5e1; cursor:default; opacity:0.8;">✓ Subscribed</button>`
+            : `<button onclick="handleSubscribeClick()" class="pd-download-btn pd-subscribe-btn" style="--type-color:${effectiveCfg.color}">⭐ ${getTranslation('subscribe', 'Subscribe')}</button>`;
         actionsHTML = `
             <div class="pd-actions-row">
-                <button onclick="handleSubscribeClick()" class="pd-download-btn pd-subscribe-btn" style="--type-color:${effectiveCfg.color}">
-                    ⭐ ${getTranslation('subscribe', 'Subscribe')}
-                </button>
+                ${subscribeBtn}
                 <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${effectiveCfg.color}">
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
             </div>`;
+
         // عارض PDF للمانجا (مخفي بالبداية، يظهر عند الضغط على فصل)
         viewerHTML = `
             <div class="pd-pdf-section" id="mangaPdfSection" style="display:none">
