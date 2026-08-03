@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noxtary - Official Website</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -13,6 +14,21 @@
             width: 100%; height: 100%;
             z-index: 0;
             background: #000008;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999 !important;
+        }
+        .modal-overlay.active {
+            display: flex !important;
         }
 
         /* ── Footer Styles ── */
@@ -459,5 +475,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // When clicking "Get Started" or links to /, mark welcome seen so user enters catalog
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        if (getStartedBtn) {
+            getStartedBtn.addEventListener('click', function() {
+                localStorage.setItem('noxtary_has_logged_in', 'true');
+            });
+        }
+        document.querySelectorAll('a[href="/"]').forEach(function(link) {
+            link.addEventListener('click', function() {
+                localStorage.setItem('noxtary_has_logged_in', 'true');
+            });
+        });
+
+        // Ensure login button on welcome page opens login modal
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('loginModal');
+        if (loginBtn && loginModal) {
+            loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.currentSession && window.currentSession.user) {
+                    if (typeof toggleUserDropdown === 'function') toggleUserDropdown();
+                } else {
+                    loginModal.classList.add('active');
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>
