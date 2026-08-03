@@ -567,6 +567,12 @@ async function loadProductDetails() {
         isSubscribed = await checkSubscriptionStatus(product.product_group);
     }
 
+    // ── أزرار الإجراء + عارض PDF حسب النوع ──
+    // مُعرَّفة هنا بقيم افتراضية فارغة لضمان توفرها في كل نطاقات الشرط
+    let actionsHTML      = '';
+    let viewerHTML       = '';
+    let mangaSectionHTML = '';
+
     if (isManga) {
         // للمانجا: زر الاشتراك (أو "مشترك بالفعل") وزر المشاركة
         const subscribeBtn = isSubscribed
