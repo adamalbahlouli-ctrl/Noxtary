@@ -69,7 +69,7 @@ async function initApp() {
         const grid = document.getElementById('itemsGrid');
         if (grid) grid.innerHTML = `<div class="coming-soon-card">⚠️ Could not load content. Please try again later.</div>`;
         const container = document.getElementById('product-load-container');
-        if (container) container.innerHTML = `<div class="pd-error"><p>⚠️ Could not load data.</p><a href="home.html" class="pd-back-link">← Go Back</a></div>`;
+        if (container) container.innerHTML = `<div class="pd-error"><p>⚠️ Could not load data.</p><a href="/" class="pd-back-link">← Go Back</a></div>`;
     }
 }
 
@@ -521,13 +521,13 @@ async function loadProductDetails() {
     const selectedId = params.get('id');
 
     if (!selectedId) {
-        container.innerHTML = `<div class="pd-error"><p>No product selected.</p><a href="home.html" class="pd-back-link">← Go Back</a></div>`;
+        container.innerHTML = `<div class="pd-error"><p>No product selected.</p><a href="/" class="pd-back-link">← Go Back</a></div>`;
         return;
     }
 
     const product = productsData.find(p => p.app_id === selectedId);
     if (!product) {
-        container.innerHTML = `<div class="pd-error"><p>Product not found.</p><a href="home.html" class="pd-back-link">← Go Back</a></div>`;
+        container.innerHTML = `<div class="pd-error"><p>Product not found.</p><a href="/" class="pd-back-link">← Go Back</a></div>`;
         return;
     }
 
@@ -668,7 +668,7 @@ async function loadProductDetails() {
 
     container.innerHTML = `
         <div class="pd-wrapper">
-            <a href="home.html" class="pd-back-link">← Back to Home</a>
+            <a href="/" class="pd-back-link">← Back to Home</a>
 
             <div class="pd-header">
                 <img src="${product.image}" alt="${product.title}" class="pd-app-icon"
@@ -1304,10 +1304,10 @@ function applyTranslations(lang) {
 const THEME_SEQUENCE = ['cyber-dark', 'neo-light'];
 let currentThemeIndex = 0;
 
-// Returns true if the current page is the landing/start screen (index.html)
+// Returns true if the current page is the welcome screen (welcome.html)
 function isStartScreen() {
     const path = window.location.pathname;
-    return path === '/' || path.endsWith('/index.html') || path === '';
+    return path.endsWith('/welcome.html');
 }
 
 function applyTheme(themeName) {
@@ -1608,6 +1608,11 @@ function updateAuthUI(session) {
     }
 
     if (session && session.user) {
+        localStorage.setItem('noxtary_has_logged_in', 'true');
+        if (window.location.pathname.endsWith('/welcome.html')) {
+            window.location.replace('/');
+            return;
+        }
         const user = session.user;
         const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
         const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'User';
