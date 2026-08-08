@@ -21,13 +21,14 @@ let authListenerInitialized = false;
 // ملاحظة: 'books' و 'articles' كلاهما يُعرضان في تبويب "books_articles"
 // ─────────────────────────────────────────────
 const TYPE_CONFIG = {
-    apps:      { color: '#00d4ff', label: 'APP',     icon: '⬡' },
-    books:     { color: '#a855f7', label: 'BOOK',    icon: '▣' },
-    manga:     { color: '#e040fb', label: 'MANGA',   icon: '◉' },
-    mods:      { color: '#f97316', label: 'MOD',     icon: '⚙' },
-    articles:  { color: '#22c55e', label: 'ARTICLE', icon: '✦' },
-    audio:     { color: '#06b6d4', label: 'AUDIO',   icon: '♪' },
-    services:  { color: '#eab308', label: 'SERVICE', icon: '★' },
+    apps:      { color: '#00d4ff', label: 'APP',      icon: '⬡' },
+    books:     { color: '#a855f7', label: 'BOOK',     icon: '▣' },
+    manga:     { color: '#e040fb', label: 'MANGA',    icon: '◉' },
+    mods:      { color: '#f97316', label: 'MOD',      icon: '⚙' },
+    articles:  { color: '#22c55e', label: 'ARTICLE',  icon: '✦' },
+    audio:     { color: '#06b6d4', label: 'AUDIO',    icon: '♪' },
+    services:  { color: '#eab308', label: 'SERVICE',  icon: '★' },
+    templates: { color: '#f472b6', label: 'TEMPLATE', icon: '▦' },
 };
 
 // مجموعات التبويبات — أي data-filter يطابق أي أنواع type
@@ -38,6 +39,7 @@ const TAB_GROUPS = {
     mods:           ['mods'],
     audio:          ['audio'],
     services:       ['services'],
+    templates:      ['templates'],
 };
 
 function getTypeConfig(type) {
@@ -78,17 +80,36 @@ async function initApp() {
 // 2. CARD BUILDERS
 // ─────────────────────────────────────────────
 
+// ── مساعد: يبني HTML نجوم التقييم بنفس منطق صفحة المنتج ──
+// المصدر: item.average_rating (رقم) + item.reviews_count (عدد)
+function buildCardRatingHTML(item) {
+    if (!item.average_rating) return '';
+    const avg = parseFloat(item.average_rating);
+    const fullStars  = Math.floor(avg);
+    const halfStar   = (avg - fullStars) >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    const starsStr   = '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars);
+    const countStr   = item.reviews_count ? `(${item.reviews_count})` : '';
+    return `
+        <div class="nc-card__rating">
+            <span class="nc-card__stars">${starsStr}</span>
+            <span class="nc-card__rating-val">${avg.toFixed(1)}</span>
+            ${countStr ? `<span class="nc-card__rating-count">${countStr}</span>` : ''}
+        </div>`;
+}
+
 // ── الكارت الموحد لقسم All ──────────────────
 // نفس الزر "View" في كل الأنواع بدون استثناء
 function getUnifiedHint(type) {
     switch (type) {
-        case 'apps': return 'Launch ready';
-        case 'books': return 'Knowledge';
-        case 'articles': return 'Insight';
-        case 'mods': return 'Game ready';
-        case 'audio': return 'Audio experience';
-        case 'services': return 'On demand';
-        default: return 'Curated item';
+        case 'apps':      return 'Launch ready';
+        case 'books':     return 'Knowledge';
+        case 'articles':  return 'Insight';
+        case 'mods':      return 'Game ready';
+        case 'audio':     return 'Audio experience';
+        case 'services':  return 'On demand';
+        case 'templates': return 'Ready to use';
+        default:          return 'Curated item';
     }
 }
 
@@ -97,29 +118,44 @@ function buildUnifiedCard(item) {
     const div = document.createElement('div');
     div.className = `nc-unified nc-unified--${item.type || 'item'}`;
     div.style.setProperty('--type-color', cfg.color);
+
+    // ── نجوم التقييم بنفس منطق صفحة المنتج ──
+    // الحقول: item.average_rating و item.reviews_count
+    let starsHTML = '';
+    if (item.average_rating) {
+        const avg = parseFloat(item.average_rating);
+        const fullStars  = Math.floor(avg);
+        const halfStar   = (avg - fullStars) >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+        const starsStr   = '★'.repeat(fullStars) + (halfStar ? '½' : '') + '☆'.repeat(emptyStars);
+        const countStr   = item.reviews_count ? `(${item.reviews_count})` : '';
+        starsHTML = `
+            <div class="nc-unified__rating">
+                <span class="nc-unified__stars">${starsStr}</span>
+                <span class="nc-unified__rating-val">${avg.toFixed(1)}</span>
+                ${countStr ? `<span class="nc-unified__rating-count">${countStr}</span>` : ''}
+            </div>`;
+    }
+
     div.innerHTML = `
-        <div class="nc-unified__top">
+        <h3 class="nc-unified__title">${item.title}</h3>
+        <div class="nc-unified__img-wrap">
             <img src="${item.image}" alt="${item.title}" class="nc-unified__img"
-                 onerror="this.src='https://via.placeholder.com/56/111827/ffffff?text=N'">
-            <div class="nc-unified__body">
-                <div class="nc-unified__meta">
-                    <span class="nc-unified__type-chip" style="--type-color:${cfg.color}">
-                        ${cfg.icon} ${cfg.label}
-                    </span>
-                    <span class="nc-unified__hint">${getUnifiedHint(item.type)}</span>
-                </div>
-                <h3 class="nc-unified__title">${item.title}</h3>
-                <p class="nc-unified__desc">${item.description || ''}</p>
-            </div>
+                 onerror="this.src='https://via.placeholder.com/400x280/111827/ffffff?text=N'">
+            <span class="nc-unified__type-chip" style="--type-color:${cfg.color}">
+                ${cfg.icon} ${cfg.label}
+            </span>
         </div>
+        ${starsHTML}
         <button class="nc-unified__btn nc-btn"
                 style="--type-color:${cfg.color}"
                 onclick="viewProduct('${item.app_id}')">
-            ${getTranslation('view', 'View')}
+            👁 ${getTranslation('view', 'View')}
         </button>
     `;
     return div;
 }
+
 
 // ── App Card ─── زر واحد: View (يفتح صفحة التفاصيل) ──
 function buildAppCard(item) {
@@ -145,11 +181,9 @@ function buildAppCard(item) {
     return div;
 }
 
-// ── Book / Article Card — تصميم موحد جديد ──────
-// كلاهما type 'books' أو 'articles' يستخدمان نفس الكارت
-// الفرق فقط في البادج واللون والـ meta
+// ── Book / Article / Template Card — صورة كبيرة + تقييم ──────
 function buildBookArticleCard(item) {
-    const isBook = item.type === 'books';
+    const isBook = item.type === 'books' || item.type === 'templates';
     const cfg    = getTypeConfig(item.type);
     const div    = document.createElement('div');
     div.className = 'nc-card nc-ba';
@@ -171,7 +205,7 @@ function buildBookArticleCard(item) {
         <div class="nc-ba__body">
             <h3 class="nc-card__title">${item.title}</h3>
             <div class="nc-ba__meta-row">${metaHTML}</div>
-            <p class="nc-card__desc">${item.description || ''}</p>
+            ${buildCardRatingHTML(item)}
             <div class="nc-card__actions">
                 <button class="nc-btn nc-btn--primary nc-btn--full" style="--type-color:${cfg.color}"
                         onclick="viewProduct('${item.app_id}')">
@@ -183,35 +217,37 @@ function buildBookArticleCard(item) {
     return div;
 }
 
-// ── Mod Card — زر واحد: View ──
+// ── Mod Card — عمودي مع صورة كبيرة + تقييم ──
 function buildModCard(item) {
+    const cfg = getTypeConfig(item.type);
     const div = document.createElement('div');
     div.className = 'nc-card nc-mod';
+    div.style.setProperty('--type-color', cfg.color);
     div.innerHTML = `
-        <div class="nc-mod__left">
-            <img src="${item.image}" alt="${item.title}" class="nc-mod__icon"
-                 onerror="this.src='https://via.placeholder.com/72/1a0a00/f97316?text=MOD'">
+        <div class="nc-card__img-wrap">
+            <img src="${item.image}" alt="${item.title}" class="nc-card__cover-img"
+                 onerror="this.src='https://via.placeholder.com/400x220/1a0a00/f97316?text=MOD'">
+            <span class="nc-badge nc-card__cover-badge" style="--type-color:#f97316">⚙ MOD</span>
         </div>
         <div class="nc-mod__body">
             <div class="nc-mod__meta-row">
-                <span class="nc-badge" style="--type-color:#f97316">⚙ MOD</span>
                 ${item.game    ? `<span class="nc-meta-chip">🎮 ${item.game}</span>` : ''}
                 ${item.version ? `<span class="nc-meta-chip">v${item.version}</span>` : ''}
             </div>
             <h3 class="nc-card__title">${item.title}</h3>
-            <p class="nc-card__desc">${item.description || ''}</p>
-        </div>
-        <div class="nc-mod__actions">
-            <button class="nc-btn nc-btn--primary nc-btn--full" style="--type-color:#f97316"
-                    onclick="viewProduct('${item.app_id}')">
-                👁 ${getTranslation('view', 'View')}
-            </button>
+            ${buildCardRatingHTML(item)}
+            <div class="nc-card__actions">
+                <button class="nc-btn nc-btn--primary nc-btn--full" style="--type-color:#f97316"
+                        onclick="viewProduct('${item.app_id}')">
+                    👁 ${getTranslation('view', 'View')}
+                </button>
+            </div>
         </div>
     `;
     return div;
 }
 
-// ── Audio Card — زر واحد: View ──
+// ── Audio Card — صورة كبيرة مربعة + تقييم ──
 function buildAudioCard(item) {
     const div = document.createElement('div');
     div.className = 'nc-card nc-audio';
@@ -228,7 +264,7 @@ function buildAudioCard(item) {
                 ${item.audio_type ? `<span class="nc-meta-chip">${item.audio_type}</span>` : ''}
             </div>
             <h3 class="nc-card__title">${item.title}</h3>
-            <p class="nc-card__desc">${item.description || ''}</p>
+            ${buildCardRatingHTML(item)}
             <div class="nc-card__actions">
                 <button class="nc-btn nc-btn--primary nc-btn--full" style="--type-color:#06b6d4"
                         onclick="viewProduct('${item.app_id}')">
@@ -240,28 +276,30 @@ function buildAudioCard(item) {
     return div;
 }
 
-// ── Service Card — بانر أفقي ── زر واحد: View ──
+// ── Service Card — عمودي مع صورة كبيرة + تقييم ──
 function buildServiceCard(item) {
+    const cfg = getTypeConfig(item.type);
     const div = document.createElement('div');
     div.className = 'nc-card nc-service';
+    div.style.setProperty('--type-color', cfg.color);
     div.innerHTML = `
-        <div class="nc-service__left">
-            <img src="${item.image}" alt="${item.title}" class="nc-service__icon"
-                 onerror="this.src='https://via.placeholder.com/72/1a1500/eab308?text=★'">
+        <div class="nc-card__img-wrap">
+            <img src="${item.image}" alt="${item.title}" class="nc-card__cover-img"
+                 onerror="this.src='https://via.placeholder.com/400x220/1a1500/eab308?text=★'">
+            <span class="nc-badge nc-card__cover-badge" style="--type-color:#eab308">★ SERVICE</span>
         </div>
         <div class="nc-service__body">
             <div class="nc-service__meta-row">
-                <span class="nc-badge" style="--type-color:#eab308">★ SERVICE</span>
                 ${item.price ? `<span class="nc-meta-chip">💰 ${item.price}</span>` : ''}
             </div>
             <h3 class="nc-card__title">${item.title}</h3>
-            <p class="nc-card__desc">${item.description || ''}</p>
-        </div>
-        <div class="nc-service__actions">
-            <button class="nc-btn nc-btn--primary nc-btn--full" style="--type-color:#eab308"
-                    onclick="viewProduct('${item.app_id}')">
-                👁 ${getTranslation('view', 'View')}
-            </button>
+            ${buildCardRatingHTML(item)}
+            <div class="nc-card__actions">
+                <button class="nc-btn nc-btn--primary nc-btn--full" style="--type-color:#eab308"
+                        onclick="viewProduct('${item.app_id}')">
+                    👁 ${getTranslation('view', 'View')}
+                </button>
+            </div>
         </div>
     `;
     return div;
@@ -304,7 +342,7 @@ function renderItems(filter = 'all', query = '') {
         itemsGrid.classList.add('items-grid--list');
     } else if (filter === 'audio') {
         itemsGrid.classList.add('items-grid--covers');
-    } else if (filter === 'books_articles') {
+    } else if (filter === 'books_articles' || filter === 'templates') {
         itemsGrid.classList.add('items-grid--ba');
     } else if (filter === 'all') {
         itemsGrid.classList.add('items-grid--unified');
@@ -332,13 +370,14 @@ function renderItems(filter = 'all', query = '') {
             card = buildUnifiedCard(item);
         } else {
             switch (item.type) {
-                case 'apps':     card = buildAppCard(item);          break;
+                case 'apps':      card = buildAppCard(item);          break;
                 case 'books':
-                case 'articles': card = buildBookArticleCard(item);  break;
-                case 'mods':     card = buildModCard(item);          break;
-                case 'audio':    card = buildAudioCard(item);        break;
-                case 'services': card = buildServiceCard(item);      break;
-                default:         card = buildFallbackCard(item);
+                case 'articles':
+                case 'templates': card = buildBookArticleCard(item);  break;
+                case 'mods':      card = buildModCard(item);          break;
+                case 'audio':     card = buildAudioCard(item);        break;
+                case 'services':  card = buildServiceCard(item);      break;
+                default:          card = buildFallbackCard(item);
             }
         }
 
@@ -470,6 +509,40 @@ async function handleChapterRead(chapterId, btnElement) {
 }
 
 // ─────────────────────────────────────────────
+// 6b-2. MANGA — Chapter Download Handler
+// نفس نمط handleChapterRead لكن يستدعي get_chapter_download_url
+// ─────────────────────────────────────────────
+async function handleChapterDownload(chapterId, btnElement) {
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '⏳ ...';
+    btnElement.style.pointerEvents = 'none';
+
+    const { data, error } = await supabaseClient.rpc('get_chapter_download_url', { p_chapter_id: chapterId });
+
+    btnElement.innerHTML = originalText;
+    btnElement.style.pointerEvents = 'auto';
+
+    if (error) {
+        if (error.message.includes('اشتراك مطلوب')) {
+            alert(getTranslation('premium_required', 'This content is premium. Please subscribe to download.'));
+        } else if (error.message.includes('تسجيل الدخول')) {
+            alert(getTranslation('login_required', 'Please sign in first.'));
+            document.getElementById('loginModal')?.classList.add('active');
+        } else {
+            alert(getTranslation('generic_error', 'Something went wrong. Please try again.'));
+        }
+        return;
+    }
+
+    if (!data) {
+        alert(getTranslation('link_unavailable', 'Link is currently unavailable.'));
+        return;
+    }
+
+    window.open(data, '_blank', 'noopener');
+}
+
+// ─────────────────────────────────────────────
 // 6e. SUBSCRIPTION — Lemon Squeezy Checkout Handler
 // ─────────────────────────────────────────────
 async function handleSubscribeClick() {
@@ -573,6 +646,9 @@ async function loadProductDetails() {
     let viewerHTML       = '';
     let mangaSectionHTML = '';
 
+    // ── هل هذا المنتج من نوع قالب؟ ──
+    const isTemplate = product.type === 'templates';
+
     if (isManga) {
         // للمانجا: زر الاشتراك (أو "مشترك بالفعل") وزر المشاركة
         const subscribeBtn = isSubscribed
@@ -654,6 +730,14 @@ async function loadProductDetails() {
                     🔗 ${getTranslation('share', 'Share')}
                 </button>
             </div>`;
+    } else if (isTemplate) {
+        // القوالب: مجانية دائماً — زر مشاركة فقط، والنسخ تُعرض أسفل في قسم منفصل
+        actionsHTML = `
+            <div class="pd-actions-row">
+                <button class="pd-share-btn pd-share-main" onclick="shareProduct('${(product.title||'').replace(/'/g,"\\'")}')" style="--type-color:${cfg.color}">
+                    🔗 ${getTranslation('share', 'Share')}
+                </button>
+            </div>`;
     } else {
         actionsHTML = `
             <div class="pd-actions-row">
@@ -666,6 +750,23 @@ async function loadProductDetails() {
             </div>`;
     }
 
+    // ── شارة FREE للقوالب ──
+    const freeBadgeHTML = isTemplate
+        ? `<span class="pd-free-badge">✦ FREE</span>`
+        : '';
+
+    // ── قسم نسخ القالب placeholder (يُملأ async بعد التصيير) ──
+    const templateVariantsSectionHTML = isTemplate ? `
+        <div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${cfg.color}44, transparent)"></div>
+        <div class="template-variants-section" id="templateVariantsSection">
+            <h3 class="pd-section-title" style="border-color:${cfg.color}33">
+                ▦ Available Formats
+            </h3>
+            <div class="template-variants-grid" id="templateVariantsGrid">
+                <div class="manga-chapters-loading">⏳ Loading variants...</div>
+            </div>
+        </div>` : '';
+
     container.innerHTML = `
         <div class="pd-wrapper">
             <a href="/" class="pd-back-link">← Back to Home</a>
@@ -675,9 +776,12 @@ async function loadProductDetails() {
                      style="box-shadow: 0 0 24px ${effectiveCfg.color}44, 0 8px 32px rgba(0,0,0,0.55)"
                      onerror="this.src='https://via.placeholder.com/120/0a1628/${effectiveCfg.color.replace('#','')}?text=N'">
                 <div class="pd-header-info">
-                    <span class="nc-badge" style="--type-color:${effectiveCfg.color}; font-size:0.75rem; padding:4px 14px;">
-                        ${effectiveCfg.icon} ${effectiveCfg.label}
-                    </span>
+                    <div class="pd-type-badges-row">
+                        <span class="nc-badge" style="--type-color:${effectiveCfg.color}; font-size:0.75rem; padding:4px 14px;">
+                            ${effectiveCfg.icon} ${effectiveCfg.label}
+                        </span>
+                        ${freeBadgeHTML}
+                    </div>
                     <h1 class="pd-app-name">${product.title}</h1>
                     <div class="pd-badges-row">
                         <span class="pd-category-tag" style="border-color:${effectiveCfg.color}44; color:${effectiveCfg.color}">
@@ -708,6 +812,8 @@ async function loadProductDetails() {
             </div>
 
             ${mangaSectionHTML}
+
+            ${templateVariantsSectionHTML}
 
             ${viewerHTML ? `<div class="pd-divider" style="background: linear-gradient(90deg, transparent, ${effectiveCfg.color}44, transparent)"></div>${viewerHTML}` : ''}
 
@@ -757,6 +863,11 @@ async function loadProductDetails() {
     // ── إذا كانت مانجا: جلب الفصول بشكل async وعرضها ──
     if (isManga) {
         loadMangaChapters(product.id, effectiveCfg.color);
+    }
+
+    // ── إذا كان قالب: جلب النسخ بشكل async وعرضها ──
+    if (isTemplate) {
+        loadTemplateVariants(product.id, cfg.color);
     }
 
     // ── تحميل التقييمات وتهيئة نموذج التقييم ──
@@ -851,12 +962,66 @@ async function loadMangaChapters(mangaProductId, accentColor) {
             </div>
             <div class="manga-chapter-info">
                 <p class="manga-chapter-title">Chapter ${ch.chapter_number}${ch.title ? ': ' + ch.title : ''}</p>
-                <button
-                    class="manga-read-btn"
-                    style="--manga-color:${accentColor}"
-                    onclick="handleChapterRead(${ch.id}, this)"
-                >
-                    📖 Read Now
+                <div class="manga-chapter-btns">
+                    <button
+                        class="manga-read-btn"
+                        style="--manga-color:${accentColor}"
+                        onclick="handleChapterRead(${ch.id}, this)"
+                    >
+                        📖 Read Now
+                    </button>
+                    <button
+                        class="manga-read-btn manga-download-btn"
+                        style="--manga-color:${accentColor}"
+                        onclick="handleChapterDownload(${ch.id}, this)"
+                    >
+                        📥 Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+// ─────────────────────────────────────────────
+// 6e-2. TEMPLATES — Variants Loader
+// يجلب نسخ القالب (Letter, A4, إلخ) ويعرض بطاقة لكل نسخة
+// ─────────────────────────────────────────────
+async function loadTemplateVariants(productId, accentColor) {
+    const grid = document.getElementById('templateVariantsGrid');
+    if (!grid) return;
+
+    const { data: variants, error } = await supabaseClient
+        .from('template_variants')
+        .select('*')
+        .eq('app_id', productId);
+
+    if (error) {
+        grid.innerHTML = `<div class="manga-chapters-error">⚠️ Could not load variants. Please try again later.</div>`;
+        console.error('NOXTARY — Template variants load error:', error);
+        return;
+    }
+
+    if (!variants || variants.length === 0) {
+        grid.innerHTML = `<div class="manga-chapters-empty">📭 No variants available yet. Check back soon!</div>`;
+        return;
+    }
+
+    grid.innerHTML = variants.map(v => `
+        <div class="template-variant-card" style="--tv-color:${accentColor}">
+            <div class="template-variant-icon">▦</div>
+            <p class="template-variant-name">${v.variant_name}</p>
+            <div class="template-variant-actions">
+                <button class="template-variant-btn template-variant-btn--view"
+                        style="--tv-color:${accentColor}"
+                        onclick="window.open('${v.view_url}', '_blank', 'noopener')">
+                    📖 View
+                </button>
+                <button class="template-variant-btn template-variant-btn--download"
+                        style="--tv-color:${accentColor}"
+                        onclick="window.open('${v.download_url}', '_blank', 'noopener')">
+                    📥 Download
                 </button>
             </div>
         </div>
@@ -1130,6 +1295,7 @@ const TRANSLATIONS = {
         tab_mods: "Mods",
         tab_audio: "Audio",
         tab_services: "Services",
+        tab_templates: "Templates",
         login_title: "Cyber Authenticate",
         username: "Access Identity",
         password: "Security Code",
@@ -1180,6 +1346,7 @@ const TRANSLATIONS = {
         tab_mods: "المودات",
         tab_audio: "الصوتيات",
         tab_services: "الخدمات",
+        tab_templates: "القوالب",
         login_title: "المصادقة السيبرانية",
         username: "هوية الدخول",
         password: "رمز الأمان",

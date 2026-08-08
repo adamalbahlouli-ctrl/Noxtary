@@ -781,33 +781,58 @@ body {
     width: 100%;
 }
 
-/* All — عمود واحد عريض */
+/* All — شبكة متجاوبة متعددة الأعمدة */
 .items-grid--unified {
-    grid-template-columns: 1fr;
-    max-width: 760px;
-    margin: 0 auto;
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
 }
 
-/* Apps — أعمدة قياسية */
+/* Apps — أعمدة قياسية (لا تتغير) */
 .items-grid--apps {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
-/* Mods & Services — عمود واحد كامل (بانر) */
+/* Mods & Services — شبكة متجاوبة (أصبحت عمودية الآن) */
 .items-grid--list {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
 }
 
-/* Audio — أعمدة ضيقة */
+/* Audio — أعمدة متوسطة */
 .items-grid--covers {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
 }
 
-/* Books & Articles موحّد — أعمدة متوسطة */
+/* Books & Articles — أعمدة متوسطة */
 .items-grid--ba {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+/* Responsive: تابلت */
+@media (max-width: 768px) {
+    .items-grid--unified,
+    .items-grid--list,
+    .items-grid--covers,
+    .items-grid--ba {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+    }
+}
+
+/* Responsive: موبايل ضيق */
+@media (max-width: 480px) {
+    .items-grid--unified,
+    .items-grid--list,
+    .items-grid--covers {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .items-grid--ba {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 /* =====================================================
@@ -961,128 +986,149 @@ body {
 }
 
 /* =====================================================
-   UNIFIED CARD — قسم All
+   UNIFIED CARD — قسم All (تصميم جديد: عمودي + صورة كبيرة)
    ===================================================== */
 .nc-unified {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px 18px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    gap: 0;
+    padding: 0;
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--card-radius);
-    border-left: 4px solid var(--type-color);
     box-shadow: var(--card-shadow);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     transition: var(--card-transition);
     position: relative;
     width: 100%;
     box-sizing: border-box;
     overflow: hidden;
-}
-.nc-unified::after {
-    content: '';
-    position: absolute;
-    inset: auto -20px -24px auto;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: radial-gradient(circle, color-mix(in srgb, var(--type-color) 20%, transparent) 0%, transparent 70%);
-    pointer-events: none;
+    height: 100%;
 }
 .nc-unified:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 32px rgba(0,0,0,0.5),
-                0 0 18px color-mix(in srgb, var(--type-color) 18%, transparent);
-    border-color: color-mix(in srgb, var(--type-color) 55%, transparent);
-    border-left-color: var(--type-color);
+    transform: translateY(-6px);
+    border-color: var(--blue-shine);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6),
+                0 0 22px color-mix(in srgb, var(--type-color) 28%, transparent),
+                0 0 0 1px color-mix(in srgb, var(--type-color) 35%, transparent);
+}
+.nc-unified:hover .nc-unified__img {
+    transform: scale(1.05);
 }
 
-/* الصف العلوي — صورة + نص جنباً إلى جنب */
-.nc-unified__top {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    width: 100%;
-}
-
-.nc-unified__meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 2px;
-}
-
-.nc-unified__type-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--type-color) 13%, transparent);
-    color: var(--type-color);
-    font-size: 0.64rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    border: 1px solid color-mix(in srgb, var(--type-color) 28%, transparent);
-}
-
-.nc-unified__hint {
-    font-size: 0.69rem;
-    color: rgba(255,255,255,0.58);
-    font-weight: 600;
-}
-
-.nc-unified__img {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    object-fit: cover;
-    flex-shrink: 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-}
-
-.nc-unified__body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
+/* ── عنوان المنتج في الأعلى ── */
 .nc-unified__title {
     font-family: var(--font-title);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-color, #fff);
     margin: 0;
     line-height: 1.3;
-    /* FIXED: ينكسر بدل أن يفرض اتساعاً أفقياً مع عناوين طويلة */
     word-break: break-word;
     overflow-wrap: break-word;
-}
-
-.nc-unified__desc {
-    font-size: 0.74rem;
-    color: rgba(255,255,255,0.50);
-    margin: 0;
+    padding: 12px 12px 8px;
+    /* اقتطاع العناوين الطويلة جداً في سطرين */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.45;
-    word-break: break-word;
-    overflow-wrap: break-word;
 }
 
-/* الصف السفلي — الزر بعرض كامل، دائماً مرئي بالكامل */
-.nc-unified__btn {
+/* ── حاوية الصورة الكبيرة ── */
+.nc-unified__img-wrap {
+    position: relative;
     width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.2);
+}
+.nc-unified__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+/* ── شارة النوع فوق الصورة ── */
+.nc-unified__type-chip {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.65);
+    color: var(--type-color);
+    font-size: 0.60rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid color-mix(in srgb, var(--type-color) 45%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* ── تقييم النجوم (بطاقة All) ── */
+.nc-unified__rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px 2px;
+    flex-wrap: wrap;
+}
+.nc-unified__stars {
+    color: #facc15;
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+.nc-unified__rating-val {
+    font-family: var(--font-title);
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: #facc15;
+}
+.nc-unified__rating-count {
+    font-size: 0.66rem;
+    color: var(--text-muted, rgba(255,255,255,0.5));
+}
+
+/* ── الزر في الأسفل ── */
+.nc-unified__btn {
+    width: calc(100% - 24px);
     box-sizing: border-box;
+    margin: 8px 12px 12px;
     padding: 10px 16px !important;
-    font-size: 0.72rem !important;
+    font-size: 0.70rem !important;
+    background: color-mix(in srgb, var(--type-color) 18%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--type-color) 40%, transparent) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    transition: all 0.25s ease !important;
+}
+.nc-unified__btn:hover {
+    background: color-mix(in srgb, var(--type-color) 32%, transparent) !important;
+    border-color: var(--type-color) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--type-color) 30%, transparent) !important;
+}
+
+/* Light theme override for unified cards */
+body.theme-neo-light .nc-unified {
+    border-color: rgba(0,0,0,0.1);
+}
+body.theme-neo-light .nc-unified:hover {
+    border-color: var(--blue-shine);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15),
+                0 0 18px color-mix(in srgb, var(--type-color) 22%, transparent);
+}
+body.theme-neo-light .nc-unified__title {
+    color: #111827;
 }
 
 /* =====================================================
@@ -1112,16 +1158,17 @@ body {
 }
 
 /* =====================================================
-   BOOK + ARTICLE — كارت موحّد جديد
+   BOOK + ARTICLE — صورة غلاف كبيرة + تقييم
    ===================================================== */
 .nc-ba {
     padding: 0;
     gap: 0;
 }
 .nc-ba:hover {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5),
-                0 0 20px color-mix(in srgb, var(--type-color) 14%, transparent);
-    border-color: color-mix(in srgb, var(--type-color) 35%, transparent);
+    transform: translateY(-6px);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.55),
+                0 0 22px color-mix(in srgb, var(--type-color) 20%, transparent);
+    border-color: color-mix(in srgb, var(--type-color) 45%, transparent);
 }
 
 .nc-ba__img-wrap {
@@ -1130,7 +1177,7 @@ body {
     overflow: hidden;
     flex-shrink: 0;
 }
-/* الكتب: غلاف عمودي 3:4 — المقالات: عريض 16:9 */
+/* الكتب: غلاف شبه عمودي — المقالات: عريض */
 .nc-ba__img-wrap--book    { aspect-ratio: 3/4; }
 .nc-ba__img-wrap--article { aspect-ratio: 16/9; }
 
@@ -1139,22 +1186,24 @@ body {
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.4s ease;
+    transition: transform 0.45s ease;
 }
-.nc-ba:hover .nc-ba__img { transform: scale(1.04); }
+.nc-ba:hover .nc-ba__img { transform: scale(1.06); }
 
 .nc-ba__badge {
     position: absolute;
     top: 10px;
     left: 10px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.55) !important;
 }
 
 .nc-ba__body {
-    padding: 14px;
+    padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     flex: 1;
 }
 
@@ -1166,36 +1215,26 @@ body {
 }
 
 /* =====================================================
-   MOD CARD — بانر أفقي
+   MOD CARD — عمودي مع صورة كبيرة (مثل nc-ba)
    ===================================================== */
 .nc-mod {
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 18px;
-    border-left: 3px solid rgba(249,115,22,0.5);
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
 }
 .nc-mod:hover {
-    border-color: rgba(249,115,22,0.45);
-    border-left-color: #f97316;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.5), 0 0 20px rgba(249,115,22,0.10);
+    transform: translateY(-6px);
+    border-color: rgba(249,115,22,0.5);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.55), 0 0 22px rgba(249,115,22,0.18);
 }
-
-.nc-mod__left { flex-shrink: 0; }
-.nc-mod__icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 14px;
-    object-fit: cover;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-}
+.nc-mod:hover .nc-card__cover-img { transform: scale(1.06); }
 
 .nc-mod__body {
-    flex: 1;
-    min-width: 0;
+    padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1;
 }
 .nc-mod__meta-row {
     display: flex;
@@ -1203,41 +1242,28 @@ body {
     gap: 6px;
     flex-wrap: wrap;
 }
-.nc-mod__actions {
-    flex-shrink: 1;
-    min-width: 0;
-}
-.nc-mod__actions .nc-btn { width: auto; flex-shrink: 1; }
 
 /* =====================================================
-   SERVICE CARD — بانر أفقي (نفس بنية mod)
+   SERVICE CARD — عمودي مع صورة كبيرة (مثل nc-mod)
    ===================================================== */
 .nc-service {
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 18px;
-    border-left: 3px solid rgba(234,179,8,0.5);
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
 }
 .nc-service:hover {
-    border-color: rgba(234,179,8,0.45);
-    border-left-color: #eab308;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.5), 0 0 20px rgba(234,179,8,0.10);
+    transform: translateY(-6px);
+    border-color: rgba(234,179,8,0.5);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.55), 0 0 22px rgba(234,179,8,0.18);
 }
-.nc-service__left { flex-shrink: 0; }
-.nc-service__icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 14px;
-    object-fit: cover;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-}
+.nc-service:hover .nc-card__cover-img { transform: scale(1.06); }
+
 .nc-service__body {
-    flex: 1;
-    min-width: 0;
+    padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1;
 }
 .nc-service__meta-row {
     display: flex;
@@ -1245,16 +1271,15 @@ body {
     gap: 6px;
     flex-wrap: wrap;
 }
-.nc-service__actions { flex-shrink: 1; min-width: 0; }
-.nc-service__actions .nc-btn { width: auto; flex-shrink: 1; }
 
 /* =====================================================
-   AUDIO CARD
+   AUDIO CARD — صورة غلاف مربعة كبيرة + تقييم
    ===================================================== */
 .nc-audio { padding: 0; gap: 0; }
 .nc-audio:hover {
-    border-color: rgba(6,182,212,0.35);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(6,182,212,0.10);
+    transform: translateY(-6px);
+    border-color: rgba(6,182,212,0.45);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.55), 0 0 22px rgba(6,182,212,0.20);
 }
 
 .nc-audio__cover-wrap {
@@ -1268,9 +1293,9 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.45s ease;
 }
-.nc-audio:hover .nc-audio__cover { transform: scale(1.04); }
+.nc-audio:hover .nc-audio__cover { transform: scale(1.06); }
 
 .nc-audio__play-overlay {
     position: absolute;
@@ -1280,10 +1305,11 @@ body {
     justify-content: center;
     font-size: 2.3rem;
     color: rgba(255,255,255,0.9);
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.32);
     opacity: 0;
     transition: opacity 0.3s ease;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 .nc-audio:hover .nc-audio__play-overlay { opacity: 1; }
 
@@ -1291,7 +1317,7 @@ body {
     padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 6px;
     flex: 1;
 }
 .nc-audio__meta-row {
@@ -1299,6 +1325,69 @@ body {
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
+}
+
+/* =====================================================
+   SHARED — صورة كبيرة للمود والسيرفس (nc-card__img-wrap)
+   ===================================================== */
+.nc-card__img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.15);
+}
+.nc-card__cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease;
+}
+.nc-card__cover-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.60) !important;
+}
+
+/* =====================================================
+   SHARED — نجوم التقييم داخل البطاقات (nc-card__rating)
+   الحقول: average_rating + reviews_count
+   ===================================================== */
+.nc-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+}
+.nc-card__stars {
+    color: #facc15;
+    font-size: 0.80rem;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+.nc-card__rating-val {
+    font-family: var(--font-title);
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: #facc15;
+}
+.nc-card__rating-count {
+    font-size: 0.66rem;
+    color: var(--text-muted, rgba(255,255,255,0.5));
+}
+
+/* Light theme overrides */
+body.theme-neo-light .nc-card__rating-count {
+    color: rgba(0,0,0,0.45);
+}
+body.theme-neo-light .nc-unified__rating-count {
+    color: rgba(0,0,0,0.45);
 }
 
 /* =====================================================
@@ -3131,3 +3220,174 @@ body.home-page::before {
     }
 }
 
+
+/* ══════════════════════════════════════════════
+   TEMPLATES — FREE Badge
+   ══════════════════════════════════════════════ */
+.pd-type-badges-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.pd-free-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-family: var(--font-title, 'Orbitron', sans-serif);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border: 1px solid rgba(34, 197, 94, 0.55);
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.45), 0 2px 8px rgba(0,0,0,0.3);
+    animation: freePulse 2.8s ease-in-out infinite;
+}
+
+@keyframes freePulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(34, 197, 94, 0.45), 0 2px 8px rgba(0,0,0,0.3); }
+    50%       { box-shadow: 0 0 22px rgba(34, 197, 94, 0.75), 0 2px 12px rgba(0,0,0,0.4); }
+}
+
+/* ══════════════════════════════════════════════
+   TEMPLATES — Variants Section & Cards
+   ══════════════════════════════════════════════ */
+.template-variants-section {
+    padding: 12px 0 8px;
+}
+
+.template-variants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+@media (min-width: 600px) {
+    .template-variants-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+.template-variant-card {
+    background: var(--card-bg, rgba(8,18,36,0.82));
+    border: 1px solid rgba(244, 114, 182, 0.18);
+    border-radius: 16px;
+    padding: 24px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.template-variant-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(244, 114, 182, 0.55);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.55), 0 0 24px rgba(244, 114, 182, 0.28);
+}
+
+.template-variant-icon {
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--tv-color, #f472b6);
+    filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.6));
+}
+
+.template-variant-name {
+    font-family: var(--font-title, 'Orbitron', sans-serif);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-color, #e8eaf6);
+}
+
+.template-variant-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.template-variant-btn {
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-family: var(--font-title, 'Orbitron', sans-serif);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+
+.template-variant-btn--view {
+    background: rgba(244, 114, 182, 0.15);
+    border-color: rgba(244, 114, 182, 0.38);
+    color: #ffffff;
+}
+
+.template-variant-btn--view:hover {
+    background: rgba(244, 114, 182, 0.28);
+    border-color: #f472b6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(244, 114, 182, 0.35);
+}
+
+.template-variant-btn--download {
+    background: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.38);
+    color: #4ade80;
+}
+
+.template-variant-btn--download:hover {
+    background: rgba(34, 197, 94, 0.25);
+    border-color: #22c55e;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+}
+
+/* Light theme overrides */
+body.theme-neo-light .template-variant-card {
+    background: rgba(255,255,255,0.92);
+    border-color: rgba(244, 114, 182, 0.25);
+}
+
+body.theme-neo-light .template-variant-name {
+    color: #111827;
+}
+
+body.theme-neo-light .template-variant-btn--view {
+    color: #9d174d;
+}
+
+/* ══════════════════════════════════════════════
+   MANGA — Dual Button Layout (Read + Download)
+   ══════════════════════════════════════════════ */
+.manga-chapter-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.manga-download-btn {
+    background: rgba(34, 197, 94, 0.12) !important;
+    border-color: rgba(34, 197, 94, 0.35) !important;
+    color: #4ade80 !important;
+}
+
+.manga-download-btn:hover {
+    background: rgba(34, 197, 94, 0.25) !important;
+    border-color: #22c55e !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.4) !important;
+}
