@@ -710,8 +710,8 @@ async function loadProductDetails() {
     } else if (product.type === 'audio') {
         actionsHTML = `
             <div class="pd-actions-row">
-                <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
-                    ▶ ${getTranslation('listen_now', 'Listen Now')}
+                <button onclick="handleReadOnline('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
+                    ${getTranslation('listen_now', '▶ Listen')}
                 </button>
                 <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
                     📥 ${getTranslation('download', 'Download')}
@@ -1307,7 +1307,7 @@ const TRANSLATIONS = {
         download: "📥 Download",
         share: "🔗 Share",
         share_article: "🔗 Share Article",
-        listen_now: "▶ Listen Now",
+        listen_now: "▶ Listen",
         contact_order: "💬 Contact / Order",
         download_now: "📥 Download Now",
         about: "About",
@@ -1358,7 +1358,7 @@ const TRANSLATIONS = {
         download: "📥 تنزيل",
         share: "🔗 مشاركة",
         share_article: "🔗 مشاركة المقال",
-        listen_now: "▶ استمع الآن",
+        listen_now: "▶ استمع",
         contact_order: "💬 اتصال / طلب",
         download_now: "📥 تنزيل الآن",
         about: "حول",
