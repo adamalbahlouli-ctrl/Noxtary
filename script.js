@@ -690,7 +690,7 @@ async function loadProductDetails() {
         // كتاب عادي: لا عارض تلقائي — يُبنى فقط عند الضغط على "Read Now" عبر handleReadOnline
         actionsHTML = `
             <div class="pd-actions-row">
-                <button onclick="handleReadOnline('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleReadOnline('${product.app_id}', '${product.type}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     📖 ${getTranslation('read_now', 'Read Now')}
                 </button>
                 <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
@@ -710,7 +710,7 @@ async function loadProductDetails() {
     } else if (product.type === 'audio') {
         actionsHTML = `
             <div class="pd-actions-row">
-                <button onclick="handleReadOnline('${product.app_id}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
+                <button onclick="handleReadOnline('${product.app_id}', '${product.type}', this)" class="pd-download-btn" style="--type-color:${cfg.color}">
                     ${getTranslation('listen_now', '▶ Listen')}
                 </button>
                 <button onclick="handleDownloadClick('${product.app_id}', this)" class="pd-download-btn pd-btn--outline" style="--type-color:${cfg.color}">
@@ -876,10 +876,10 @@ async function loadProductDetails() {
 }
 
 // ─────────────────────────────────────────────
-// 6c. REGULAR BOOK — Read Online (lazy, on-demand)
-// يحقن عارض PDF فقط بعد نجاح استدعاء RPC
+// 6c. REGULAR BOOK / AUDIO — Read/Listen Online (lazy, on-demand)
+// يحقن عارض PDF للكتب أو مشغّل صوتي للصوتيات بعد نجاح استدعاء RPC
 // ─────────────────────────────────────────────
-async function handleReadOnline(appId, btnElement) {
+async function handleReadOnline(appId, productType, btnElement) {
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '⏳ ...';
     btnElement.style.pointerEvents = 'none';
@@ -906,21 +906,38 @@ async function handleReadOnline(appId, btnElement) {
         return;
     }
 
-    // حقن عارض PDF ديناميكيًا (يُنشأ مرة واحدة فقط، يُحدَّث إن وُجد)
+    // حقن العارض ديناميكيًا (يُنشأ مرة واحدة فقط، يُحدَّث إن وُجد)
     let viewerContainer = document.getElementById('inlinePdfViewer');
     if (!viewerContainer) {
         viewerContainer = document.createElement('div');
         viewerContainer.id = 'inlinePdfViewer';
         viewerContainer.className = 'pd-pdf-section';
-        viewerContainer.innerHTML = `
-            <h3 class="pd-section-title">📖 Read Online</h3>
-            <div class="pd-pdf-wrap">
-                <iframe src="${data}#toolbar=1" class="pd-pdf-frame" loading="lazy"></iframe>
-            </div>`;
         btnElement.closest('.pd-actions-row')?.insertAdjacentElement('afterend', viewerContainer);
-    } else {
-        viewerContainer.querySelector('iframe').src = `${data}#toolbar=1`;
     }
+
+    if (productType === 'audio') {
+        // ── مشغّل صوتي HTML5 للصوتيات ──
+        viewerContainer.innerHTML = `
+            <h3 class="pd-section-title">▶ ${getTranslation('now_playing', 'Now Playing')}</h3>
+            <div class="pd-pdf-wrap">
+                <audio controls autoplay style="width:100%;" src="${data}">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>`;
+    } else {
+        // ── عارض PDF للكتب وغيرها ──
+        const existingIframe = viewerContainer.querySelector('iframe');
+        if (existingIframe) {
+            existingIframe.src = `${data}#toolbar=1`;
+        } else {
+            viewerContainer.innerHTML = `
+                <h3 class="pd-section-title">📖 ${getTranslation('read_online', 'Read Online')}</h3>
+                <div class="pd-pdf-wrap">
+                    <iframe src="${data}#toolbar=1" class="pd-pdf-frame" loading="lazy"></iframe>
+                </div>`;
+        }
+    }
+
     viewerContainer.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1303,6 +1320,7 @@ const TRANSLATIONS = {
         no_account: "New operator?",
         contact_admin: "Contact admin",
         read_online: "📖 Read Online",
+        now_playing: "Now Playing",
         read_now: "📖 Read Now",
         download: "📥 Download",
         share: "🔗 Share",
@@ -1354,6 +1372,7 @@ const TRANSLATIONS = {
         no_account: "مشغل جديد؟",
         contact_admin: "اتصل بالمسؤول",
         read_online: "📖 اقرأ أونلاين",
+        now_playing: "قيد التشغيل الآن",
         read_now: "📖 اقرأ الآن",
         download: "📥 تنزيل",
         share: "🔗 مشاركة",
