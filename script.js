@@ -884,7 +884,7 @@ async function handleReadOnline(appId, productType, btnElement) {
     btnElement.innerHTML = '⏳ ...';
     btnElement.style.pointerEvents = 'none';
 
-    const { data, error } = await supabaseClient.rpc('get_download_url', { p_app_id: appId });
+    const { data, error } = await supabaseClient.rpc('get_view_url', { p_app_id: appId });
 
     btnElement.innerHTML = originalText;
     btnElement.style.pointerEvents = 'auto';
