@@ -47,13 +47,30 @@ async function initAIStudio() {
 }
 
 // ─────────────────────────────────────────────
-// Handle Subscription Checkout
+// Plan Modal & Subscription Checkout Logic
 // ─────────────────────────────────────────────
-async function handleAIStudioSubscribeClick() {
+function openAIStudioPlanModal() {
+    const modal = document.getElementById('aiStudioPlanModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeAIStudioPlanModal() {
+    const modal = document.getElementById('aiStudioPlanModal');
+    if (modal) modal.classList.remove('active');
+}
+
+// User clicked the shining button -> Open the ChatGPT Pro style plan modal
+function handleAIStudioSubscribeClick() {
+    openAIStudioPlanModal();
+}
+
+// User clicked the checkout button inside the plan modal
+async function executeAIStudioCheckout() {
     const { data: { session } } = await supabaseClient.auth.getSession();
 
     if (!session || !session.user) {
-        alert('Please sign in first to subscribe.');
+        alert('Please sign in first to complete your upgrade.');
+        closeAIStudioPlanModal();
         document.getElementById('loginModal')?.classList.add('active');
         return;
     }
@@ -73,7 +90,7 @@ async function handleAuthState(session) {
     if (!session) {
         if (creditsWrapper) {
             creditsWrapper.innerHTML = `
-                <button class="ai-unlimited-btn" id="aiStudioSubscribeBtn" onclick="handleAIStudioSubscribeClick()" type="button">
+                <button class="ai-unlimited-btn" id="aiStudioSubscribeBtn" onclick="openAIStudioPlanModal()" type="button">
                     &#10024; Unlimited Access
                 </button>`;
         }
@@ -829,4 +846,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (chatNewBtn) {
         chatNewBtn.addEventListener('click', startNewChat);
     }
+
+    // Plan Modal outside click & Escape close
+    const planModal = document.getElementById('aiStudioPlanModal');
+    if (planModal) {
+        planModal.addEventListener('click', function(e) {
+            if (e.target === planModal) {
+                closeAIStudioPlanModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAIStudioPlanModal();
+        }
+    });
 });
