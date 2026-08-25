@@ -346,11 +346,82 @@
             color: #1e40af;
         }
 
+        /* ── Tool Tabs ── */
+        .ai-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(66,165,245,0.15);
+            border-radius: 14px;
+            padding: 6px;
+        }
+        .ai-tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+        .ai-tab-btn:hover { color: var(--blue-accent); background: rgba(66,165,245,0.08); }
+        .ai-tab-btn.active {
+            background: linear-gradient(135deg, var(--blue-glow, #1565c0), var(--blue-bright, #1976d2));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(21,101,192,0.4);
+        }
+        body.theme-neo-light .ai-tabs { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
+        body.theme-neo-light .ai-tab-btn { color: #6b7280; }
+        body.theme-neo-light .ai-tab-btn:hover { color: #1d4ed8; background: rgba(37,99,235,0.06); }
+        body.theme-neo-light .ai-tab-btn.active { color: #fff; }
+
+        /* ── Select Dropdowns (AI Writer) ── */
+        .ai-select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+        .ai-select-group { display: flex; flex-direction: column; gap: 6px; }
+        .ai-select {
+            width: 100%;
+            padding: 11px 34px 11px 14px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(66,165,245,0.22);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.88rem;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364b5f6' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+        .ai-select:focus { border-color: var(--blue-shine); box-shadow: 0 0 12px rgba(66,165,245,0.2); }
+        .ai-select option { background: #0a1428; color: #e8eaf6; }
+        body.theme-neo-light .ai-select {
+            background-color: rgba(0,0,0,0.04);
+            border-color: rgba(0,0,0,0.12);
+            color: #111827;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231d4ed8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        }
+        body.theme-neo-light .ai-select option { background: #fff; color: #111827; }
+
         /* ── Responsive ── */
         @media (max-width: 600px) {
             .ai-studio-wrapper { padding: 90px 14px 40px; }
             .ai-studio-title   { font-size: 1.5rem; letter-spacing: 2px; }
             .ai-tool-card      { padding: 22px 16px; }
+            .ai-select-row     { grid-template-columns: 1fr; }
+            .ai-tab-btn        { font-size: 0.65rem; padding: 9px 10px; }
         }
     </style>
 </head>
@@ -441,9 +512,9 @@
         <!-- Section Header -->
         <div class="ai-studio-header">
             <h1 class="ai-studio-title">🧠 AI Studio</h1>
-            <p class="ai-studio-subtitle">Prompt Builder &mdash; Turn your idea into a professional AI prompt</p>
+            <p class="ai-studio-subtitle">Your AI-powered creative workspace</p>
 
-            <!-- Credits display — populated by ai-studio.js -->
+            <!-- Credits display — shared between all tools -->
             <div id="creditsWrapper" style="margin-top: 16px;">
                 <span class="ai-credits-skeleton" id="creditsSkeleton"></span>
             </div>
@@ -456,7 +527,7 @@
             <div class="ai-signin-gate" id="signinGate">
                 <div class="ai-signin-gate-icon">🔐</div>
                 <p class="ai-signin-gate-title">Authentication Required</p>
-                <p class="ai-signin-gate-text">Sign in to access AI Studio and start building professional prompts.</p>
+                <p class="ai-signin-gate-text">Sign in to access AI Studio and start building professional content.</p>
                 <button class="ai-signin-gate-btn" id="signinGateBtn">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -468,28 +539,133 @@
 
             <!-- Tool UI (visible when logged in) -->
             <div id="toolUI" style="display: none;">
-                <label class="ai-input-label" for="promptInput">&#10022; Describe your idea</label>
-                <textarea
-                    id="promptInput"
-                    class="ai-textarea"
-                    placeholder="e.g. A cinematic portrait of a cyberpunk city at night, neon reflections, dramatic lighting..."
-                    rows="5"
-                ></textarea>
 
-                <button class="ai-generate-btn" id="generateBtn" onclick="generatePrompt()">
-                    &#10024; Generate Prompt
-                </button>
-
-                <!-- Result area (hidden until generation) -->
-                <div id="resultBox" class="ai-result-box"></div>
-
-                <!-- Copy button — appears after result is shown -->
-                <div id="copyRow" style="display:none; margin-top:10px; text-align:right;">
-                    <button id="copyBtn" class="ai-copy-btn" onclick="copyResult()">
-                        &#128203; Copy
+                <!-- ── Tabs Bar ── -->
+                <div class="ai-tabs">
+                    <button class="ai-tab-btn active" id="tabPromptBuilder" onclick="switchTab('promptBuilder')">
+                        ✨ Prompt Builder
+                    </button>
+                    <button class="ai-tab-btn" id="tabAiWriter" onclick="switchTab('aiWriter')">
+                        ✍️ AI Writer
+                    </button>
+                    <button class="ai-tab-btn" id="tabImagePrompt" onclick="switchTab('imagePrompt')">
+                        🎨 Image Prompt
                     </button>
                 </div>
-            </div>
+
+                <!-- ══ PANEL 1: Prompt Builder ══ -->
+                <div id="panelPromptBuilder">
+                    <label class="ai-input-label" for="promptInput">&#10022; Describe your idea</label>
+                    <textarea
+                        id="promptInput"
+                        class="ai-textarea"
+                        placeholder="e.g. A cinematic portrait of a cyberpunk city at night, neon reflections, dramatic lighting..."
+                        rows="5"
+                    ></textarea>
+
+                    <button class="ai-generate-btn" id="generateBtn" onclick="generatePrompt()">
+                        &#10024; Generate Prompt
+                    </button>
+
+                    <!-- Result area -->
+                    <div id="resultBox" class="ai-result-box"></div>
+
+                    <!-- Copy button -->
+                    <div id="copyRow" style="display:none; margin-top:10px; text-align:right;">
+                        <button id="copyBtn" class="ai-copy-btn" onclick="copyResult()">
+                            &#128203; Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ══ PANEL 2: AI Writer ══ -->
+                <div id="panelAiWriter" style="display: none;">
+                    <label class="ai-input-label" for="writerInput">&#10022; What do you want to write about?</label>
+                    <textarea
+                        id="writerInput"
+                        class="ai-textarea"
+                        placeholder="e.g. The benefits of drinking water every morning, or a story about a lost robot in a futuristic city..."
+                        rows="5"
+                    ></textarea>
+
+                    <!-- Content Type & Tone selects -->
+                    <div class="ai-select-row">
+                        <div class="ai-select-group">
+                            <label class="ai-input-label" for="writerContentType" style="margin-bottom:0;">Content Type</label>
+                            <select id="writerContentType" class="ai-select">
+                                <option value="article">Article</option>
+                                <option value="story">Short Story</option>
+                                <option value="social_post">Social Media Post</option>
+                                <option value="email">Email</option>
+                                <option value="product_description">Product Description</option>
+                                <option value="youtube_description">YouTube Description</option>
+                                <option value="script">Script / Dialogue</option>
+                            </select>
+                        </div>
+                        <div class="ai-select-group">
+                            <label class="ai-input-label" for="writerTone" style="margin-bottom:0;">Tone</label>
+                            <select id="writerTone" class="ai-select">
+                                <option value="professional">Professional</option>
+                                <option value="casual">Casual</option>
+                                <option value="funny">Funny</option>
+                                <option value="dramatic">Dramatic</option>
+                                <option value="neutral">Neutral</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="ai-generate-btn" id="writerGenerateBtn" onclick="generateWriting()">
+                        &#9997;&#65039; Generate
+                    </button>
+
+                    <!-- Result area -->
+                    <div id="writerResultBox" class="ai-result-box"></div>
+
+                    <!-- Copy button -->
+                    <div id="writerCopyRow" style="display:none; margin-top:10px; text-align:right;">
+                        <button id="writerCopyBtn" class="ai-copy-btn" onclick="copyWriterResult()">
+                            &#128203; Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ══ PANEL 3: Image Prompt ══ -->
+                <div id="panelImagePrompt" style="display: none;">
+                    <label class="ai-input-label" for="imagePromptInput">&#10022; Describe your image idea</label>
+                    <textarea
+                        id="imagePromptInput"
+                        class="ai-textarea"
+                        placeholder="e.g. a warrior standing before a castle, dramatic lighting, stormy sky..."
+                        rows="5"
+                    ></textarea>
+
+                    <!-- Platform select -->
+                    <div class="ai-select-group" style="margin-bottom: 18px; margin-top: 16px;">
+                        <label class="ai-input-label" for="imagePromptPlatform" style="margin-bottom: 6px;">Target Platform</label>
+                        <select id="imagePromptPlatform" class="ai-select">
+                            <option value="general">General / Any Model</option>
+                            <option value="midjourney">Midjourney</option>
+                            <option value="flux">Flux</option>
+                            <option value="stable_diffusion">Stable Diffusion</option>
+                        </select>
+                    </div>
+
+                    <button class="ai-generate-btn" id="imagePromptGenerateBtn" onclick="generateImagePrompt()">
+                        🎨 Generate Image Prompt
+                    </button>
+
+                    <!-- Result area -->
+                    <div id="imagePromptResultBox" class="ai-result-box"></div>
+
+                    <!-- Copy button -->
+                    <div id="imagePromptCopyRow" style="display:none; margin-top:10px; text-align:right;">
+                        <button id="imagePromptCopyBtn" class="ai-copy-btn" onclick="copyImagePromptResult()">
+                            &#128203; Copy
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /toolUI -->
 
         </div>
     </div>
