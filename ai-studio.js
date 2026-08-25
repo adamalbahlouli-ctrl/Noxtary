@@ -212,24 +212,42 @@ function switchTab(tab) {
         const btn   = document.getElementById(btnId);
 
         if (t === tab) {
-            if (panel) panel.style.display = displayType[t];
+            if (panel) {
+                panel.style.display = displayType[t];
+                if (t === 'aiChat') {
+                    panel.style.flexDirection = 'column';
+                }
+            }
             if (btn) {
                 btn.classList.add('active');
-                // Center the active tab in the scrollable tabs bar
-                btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             }
         } else {
             if (panel) panel.style.display = 'none';
             if (btn)   btn.classList.remove('active');
         }
     });
+
+    // Safely scroll ONLY the tabs bar container horizontally without altering vertical page scroll
+    const tabsContainer = document.querySelector('.ai-tabs');
+    const activeBtn = document.getElementById({
+        promptBuilder: 'tabPromptBuilder',
+        aiWriter:      'tabAiWriter',
+        imagePrompt:   'tabImagePrompt',
+        fileAnalyzer:  'tabFileAnalyzer',
+        aiChat:        'tabAiChat'
+    }[tab]);
+
+    if (tabsContainer && activeBtn) {
+        const scrollOffset = activeBtn.offsetLeft - (tabsContainer.clientWidth / 2) + (activeBtn.clientWidth / 2);
+        tabsContainer.scrollTo({ left: Math.max(0, scrollOffset), behavior: 'smooth' });
+    }
 }
 
 /**
  * Horizontal drag-scroll for AI Studio tabs bar:
  * – Mouse drag to scroll left/right on desktop
  * – Mouse wheel scroll horizontally
- * – Prevent tab button click when releasing a drag
+ * – Does NOT interfere with touch devices
  */
 function initAITabsDragScroll() {
     const container = document.querySelector('.ai-tabs');
@@ -240,37 +258,44 @@ function initAITabsDragScroll() {
     let scrollLeft;
     let didDrag = false;
 
-    // Desktop mouse drag
+    // Desktop mouse drag ONLY
     container.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
         isDown = true;
         didDrag = false;
         container.style.cursor = 'grabbing';
-        startX = e.pageX - container.getBoundingClientRect().left;
+        startX = e.pageX - container.offsetLeft;
         scrollLeft = container.scrollLeft;
     });
 
     document.addEventListener('mouseup', () => {
+        if (!isDown) return;
         isDown = false;
         if (container) container.style.cursor = 'grab';
+        setTimeout(() => { didDrag = false; }, 60);
     });
 
     document.addEventListener('mouseleave', () => {
         isDown = false;
         if (container) container.style.cursor = 'grab';
+        didDrag = false;
     });
 
     container.addEventListener('mousemove', (e) => {
         if (!isDown) return;
         e.preventDefault();
-        const x = e.pageX - container.getBoundingClientRect().left;
-        const walk = (x - startX) * 1.4;
-        if (Math.abs(walk) > 4) didDrag = true;
-        container.scrollLeft = scrollLeft - walk;
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 6) {
+            didDrag = true;
+            container.scrollLeft = scrollLeft - walk;
+        }
     });
 
-    // Prevent tab button click when releasing a drag
+    // Prevent click on desktop ONLY if a drag gesture occurred
     container.addEventListener('click', (e) => {
         if (didDrag) {
+            e.preventDefault();
             e.stopPropagation();
             didDrag = false;
         }
@@ -283,6 +308,22 @@ function initAITabsDragScroll() {
             container.scrollLeft += e.deltaY * 0.85;
         }
     }, { passive: false });
+
+    // Explicit click listeners on tab buttons to guarantee instant response on all mobile devices
+    const tabMap = {
+        tabPromptBuilder: 'promptBuilder',
+        tabAiWriter:      'aiWriter',
+        tabImagePrompt:   'imagePrompt',
+        tabFileAnalyzer:  'fileAnalyzer',
+        tabAiChat:        'aiChat'
+    };
+
+    Object.keys(tabMap).forEach((id) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', () => switchTab(tabMap[id]));
+        }
+    });
 }
 
 // ─────────────────────────────────────────────
