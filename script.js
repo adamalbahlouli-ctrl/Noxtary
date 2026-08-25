@@ -1894,16 +1894,47 @@ function initializeCore() {
     setupLoginModal();
     setupAuthListener();
     setupSubscribeListeners();
+    setupProModal();
 
     // 4. Navbar hide-on-scroll
     setupNavbarScrollBehavior();
+}
+
+function setupProModal() {
+    const proBtns = document.querySelectorAll('.pro-upgrade-btn, #proUpgradeBtn, [data-action="open-pro-modal"]');
+    const subModal = document.getElementById('subscriptionModal');
+    const closeBtn = document.getElementById('subModalClose');
+
+    proBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (subModal) subModal.classList.add('active');
+        });
+    });
+
+    if (closeBtn && subModal) {
+        closeBtn.addEventListener('click', () => {
+            subModal.classList.remove('active');
+        });
+
+        subModal.addEventListener('click', (e) => {
+            if (e.target === subModal) {
+                subModal.classList.remove('active');
+            }
+        });
+    }
 }
 
 function setupSubscribeListeners() {
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#subscribeBtn, .subscribe-btn, .pd-subscribe-btn, [data-action="subscribe"]');
         if (btn && !btn.getAttribute('onclick')) {
-            handleSubscribeClick();
+            const subModal = document.getElementById('subscriptionModal');
+            if (subModal) {
+                subModal.classList.add('active');
+            } else {
+                handleSubscribeClick();
+            }
         }
     });
 }
