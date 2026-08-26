@@ -181,15 +181,15 @@ function showToolUI() {
 // Tab Switcher — supports all five tools
 // ─────────────────────────────────────────────
 function switchTab(tab) {
-    const tabs = ['promptBuilder', 'aiWriter', 'imagePrompt', 'fileAnalyzer', 'aiChat'];
+    const tabs = ['aiChat', 'promptBuilder', 'aiWriter', 'imagePrompt', 'fileAnalyzer'];
 
     // aiChat panel uses flex layout; all others use block
     const displayType = {
+        aiChat:        'flex',
         promptBuilder: 'block',
         aiWriter:      'block',
         imagePrompt:   'block',
-        fileAnalyzer:  'block',
-        aiChat:        'flex'
+        fileAnalyzer:  'block'
     };
 
     tabs.forEach(function (t) {
@@ -756,7 +756,7 @@ function copyFileAnalyzerResult() {
 let chatMessages = []; // { role: 'user'|'model', text: string }
 
 // Appends a bubble to the messages container and scrolls to bottom
-function appendChatBubble(role, text) {
+function appendChatBubble(role, content, isHtml = false) {
     const container = document.getElementById('chatMessagesContainer');
     if (!container) return null;
 
@@ -766,7 +766,11 @@ function appendChatBubble(role, text) {
 
     const bubble = document.createElement('div');
     bubble.className = role === 'user' ? 'chat-bubble chat-bubble--user' : 'chat-bubble chat-bubble--ai';
-    bubble.textContent = text;
+    if (isHtml) {
+        bubble.innerHTML = content;
+    } else {
+        bubble.textContent = content;
+    }
     container.appendChild(bubble);
     container.scrollTop = container.scrollHeight;
     return bubble;
@@ -797,8 +801,14 @@ async function sendChatMessage() {
     chatMessages.push({ role: 'user', text });
     appendChatBubble('user', text);
 
-    // Show typing indicator in an AI bubble
-    const typingBubble = appendChatBubble('model', '⏳ ...');
+    // Show smooth animated typing wave indicator in an AI bubble
+    const typingBubble = appendChatBubble('model', `
+        <div class="chat-typing-indicator" aria-label="Thinking...">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+        </div>
+    `, true);
 
     try {
         const { data, error } = await supabaseClient.functions.invoke('ai-chat', {
@@ -806,24 +816,33 @@ async function sendChatMessage() {
         });
 
         if (error) {
-            if (typingBubble) typingBubble.textContent = 'Something went wrong. Please try again.';
+            if (typingBubble) {
+                typingBubble.innerHTML = '';
+                typingBubble.textContent = 'Something went wrong. Please try again.';
+            }
             console.error('Edge Function error:', error);
             return;
         }
 
         if (data?.error) {
-            if (data.error.includes('\u0631\u0635\u064a\u062f \u063a\u064a\u0631 \u0643\u0627\u0641\u064d')) {
-                if (typingBubble) typingBubble.textContent = '\u26A0\uFE0F Not enough credits.';
-            } else if (data.error.includes('too long')) {
-                if (typingBubble) typingBubble.textContent = '\u26A0\uFE0F Conversation too long. Please start a new chat.';
-            } else {
-                if (typingBubble) typingBubble.textContent = '\u26A0\uFE0F ' + data.error;
+            if (typingBubble) {
+                typingBubble.innerHTML = '';
+                if (data.error.includes('\u0631\u0635\u064a\u062f \u063a\u064a\u0631 \u0643\u0627\u0641\u064d')) {
+                    typingBubble.textContent = '\u26A0\uFE0F Not enough credits.';
+                } else if (data.error.includes('too long')) {
+                    typingBubble.textContent = '\u26A0\uFE0F Conversation too long. Please start a new chat.';
+                } else {
+                    typingBubble.textContent = '\u26A0\uFE0F ' + data.error;
+                }
             }
             return;
         }
 
         // Replace typing indicator with real reply
-        if (typingBubble) typingBubble.textContent = data.result;
+        if (typingBubble) {
+            typingBubble.innerHTML = '';
+            typingBubble.textContent = data.result;
+        }
         chatMessages.push({ role: 'model', text: data.result });
 
         // Update shared credits display
@@ -842,7 +861,10 @@ async function sendChatMessage() {
 
     } catch (err) {
         console.error('AI Studio: Unexpected error', err);
-        if (typingBubble) typingBubble.textContent = 'Something went wrong. Please try again.';
+        if (typingBubble) {
+            typingBubble.innerHTML = '';
+            typingBubble.textContent = 'Something went wrong. Please try again.';
+        }
     } finally {
         input.disabled = false;
         if (sendBtn) sendBtn.disabled = false;
