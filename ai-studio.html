@@ -1326,6 +1326,19 @@
             border-color: rgba(0, 0, 0, 0.1);
             color: #0f172a;
         }
+        body.theme-neo-light #bookCreateFormCard {
+            background: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+        }
+        body.theme-neo-light #bookCreateFormCard h4 {
+            color: #0f172a !important;
+        }
+        body.theme-neo-light #bookProjectTitle {
+            color: #0f172a !important;
+        }
+        body.theme-neo-light #bookProjectsList strong {
+            color: #0f172a !important;
+        }
     </style>
 </head>
 <body class="ai-studio-page">
@@ -1390,6 +1403,18 @@
                 </button>
                 <button class="ai-tab-btn" id="tabFileAnalyzer" onclick="switchTab('fileAnalyzer')">
                     📄 File Analyzer
+                </button>
+                <button class="ai-tab-btn" id="tabNameGenerator" onclick="switchTab('nameGenerator')">
+                    🏷️ Name Generator
+                </button>
+                <button class="ai-tab-btn" id="tabCodeAssistant" onclick="switchTab('codeAssistant')">
+                    💻 Code Assistant
+                </button>
+                <button class="ai-tab-btn" id="tabBookWriter" onclick="switchTab('bookWriter')">
+                    📚 Book Writer
+                </button>
+                <button class="ai-tab-btn" id="tabHistoryFavs" onclick="switchTab('historyFavs')">
+                    📜 History &amp; Favorites
                 </button>
             </div>
 
@@ -1545,6 +1570,9 @@
                                 <button class="ai-action-btn" id="copyBtn" onclick="copyResult()">
                                     📋 Copy Master Prompt
                                 </button>
+                                <button class="ai-action-btn" id="promptSaveBtn" onclick="savePromptBuilderFavorite(this)">
+                                    ⭐ Save
+                                </button>
                                 <button class="ai-action-btn" onclick="transferPromptToImage()">
                                     🎨 Transfer to Image Prompt
                                 </button>
@@ -1637,6 +1665,9 @@
                             <div class="ai-canvas-toolbar" id="writerCopyRow" style="display: none;">
                                 <button class="ai-action-btn" id="writerCopyBtn" onclick="copyWriterResult()">
                                     📋 Copy Clean Text
+                                </button>
+                                <button class="ai-action-btn" id="writerSaveBtn" onclick="saveWriterFavorite(this)">
+                                    ⭐ Save
                                 </button>
                                 <button class="ai-action-btn" onclick="downloadWriterMarkdown()">
                                     📥 Download Markdown (.md)
@@ -1748,6 +1779,9 @@
                                 <button class="ai-action-btn" id="imagePromptCopyBtn" onclick="copyImagePromptResult()">
                                     📋 Copy Prompt
                                 </button>
+                                <button class="ai-action-btn" id="imageSaveBtn" onclick="saveImagePromptFavorite(this)">
+                                    ⭐ Save
+                                </button>
                                 <button class="ai-action-btn" onclick="copyImaginePrompt()">
                                     ⚡ Copy with /imagine
                                 </button>
@@ -1828,9 +1862,310 @@
                                 <button class="ai-action-btn" id="fileAnalyzerCopyBtn" onclick="copyFileAnalyzerResult()">
                                     📋 Copy Report
                                 </button>
+                                <button class="ai-action-btn" id="fileAnalyzerSaveBtn" onclick="saveFileAnalyzerFavorite(this)">
+                                    ⭐ Save
+                                </button>
                                 <button class="ai-action-btn" onclick="downloadFileAnalysis()">
                                     📥 Download Analysis (.txt)
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ════ PANEL 6: Name Generator (Creative Identity Matrix) ════ -->
+                <div id="panelNameGenerator" style="display: none;">
+                    <div class="ai-cockpit-grid">
+                        <!-- Left Deck: Inputs & Category Selector -->
+                        <div class="ai-deck-control">
+                            <div>
+                                <label class="ai-input-label" for="nameGenInput">
+                                    <span>&#10022; What do you need a name for?</span>
+                                    <span id="nameGenCharCount">0 chars</span>
+                                </label>
+                                <textarea
+                                    id="nameGenInput"
+                                    class="ai-textarea"
+                                    placeholder="Describe what you need a name for (e.g. 'a brave female warrior in a fantasy world' or 'a coffee shop with a cozy, minimalist vibe')"
+                                    rows="4"
+                                    oninput="onNameGenInputChanged()"
+                                ></textarea>
+                            </div>
+
+                            <!-- Category Matrix Selector -->
+                            <div>
+                                <span class="ai-chips-label">&#127991;&#65039; Name Category</span>
+                                <div class="ai-chips-grid" id="nameGenCategoryChips">
+                                    <span class="ai-chip-pill active" data-value="character" onclick="selectNameGenCategory('character')">👤 Character Name</span>
+                                    <span class="ai-chip-pill" data-value="brand" onclick="selectNameGenCategory('brand')">🏢 Brand / Company</span>
+                                    <span class="ai-chip-pill" data-value="product" onclick="selectNameGenCategory('product')">📦 Product Name</span>
+                                    <span class="ai-chip-pill" data-value="fantasy_world" onclick="selectNameGenCategory('fantasy_world')">🗺️ Fantasy World / Location</span>
+                                </div>
+                                <select id="nameGenCategory" style="display:none;">
+                                    <option value="character" selected>Character Name</option>
+                                    <option value="brand">Brand/Company Name</option>
+                                    <option value="product">Product Name</option>
+                                    <option value="fantasy_world">Fantasy World/Location</option>
+                                </select>
+                            </div>
+
+                            <button class="ai-generate-btn" id="nameGenGenerateBtn" onclick="generateNames()">
+                                &#127991;&#65039; Generate Names
+                            </button>
+                        </div>
+
+                        <!-- Right Deck: Generated Names Canvas -->
+                        <div class="ai-deck-canvas">
+                            <div class="ai-canvas-header">
+                                <span class="ai-canvas-title">🏷️ Generated Names Output</span>
+                                <div class="ai-canvas-stats">
+                                    <span id="nameGenStats">Ready</span>
+                                </div>
+                            </div>
+
+                            <div id="nameGenResultBox" class="ai-result-box empty">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                </svg>
+                                <span>Curated name candidates with rationale and style breakdown will appear here.</span>
+                            </div>
+
+                            <div class="ai-canvas-toolbar" id="nameGenCopyRow" style="display: none;">
+                                <button class="ai-action-btn" id="nameGenCopyBtn" onclick="copyNameGenResult()">
+                                    📋 Copy Names
+                                </button>
+                                <button class="ai-action-btn" id="nameGenSaveBtn" onclick="saveNameGenFavorite(this)">
+                                    ⭐ Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ════ PANEL 7: Code Assistant (Neural Developer Suite) ════ -->
+                <div id="panelCodeAssistant" style="display: none;">
+                    <div class="ai-cockpit-grid">
+                        <!-- Left Deck: Code Input & Mode Selector -->
+                        <div class="ai-deck-control">
+                            <div>
+                                <label class="ai-input-label" for="codeAssistantInput">
+                                    <span>&#10022; Source Code Payload</span>
+                                    <span id="codeAssistantCharCount">0 chars</span>
+                                </label>
+                                <textarea
+                                    id="codeAssistantInput"
+                                    class="ai-textarea"
+                                    style="font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; min-height: 220px;"
+                                    placeholder="Paste your code here..."
+                                    rows="10"
+                                    oninput="onCodeInputChanged()"
+                                ></textarea>
+                            </div>
+
+                            <!-- Mode Selector Matrix -->
+                            <div>
+                                <span class="ai-chips-label">&#128187; Operational Mode</span>
+                                <div class="ai-chips-grid" id="codeAssistantModeChips">
+                                    <span class="ai-chip-pill active" data-value="explain" onclick="selectCodeMode('explain')">🔍 Explain Code</span>
+                                    <span class="ai-chip-pill" data-value="debug" onclick="selectCodeMode('debug')">🐞 Debug / Fix</span>
+                                    <span class="ai-chip-pill" data-value="refactor" onclick="selectCodeMode('refactor')">⚡ Refactor</span>
+                                    <span class="ai-chip-pill" data-value="document" onclick="selectCodeMode('document')">📝 Add Documentation</span>
+                                    <span class="ai-chip-pill" data-value="convert" onclick="selectCodeMode('convert')">🔄 Convert Language</span>
+                                </div>
+                                <select id="codeAssistantMode" style="display:none;" onchange="onCodeModeChange(this.value)">
+                                    <option value="explain" selected>Explain Code</option>
+                                    <option value="debug">Debug / Fix</option>
+                                    <option value="refactor">Refactor</option>
+                                    <option value="document">Add Documentation</option>
+                                    <option value="convert">Convert Language</option>
+                                </select>
+                            </div>
+
+                            <!-- Dynamic Target Language Input -->
+                            <div id="codeAssistantTargetLangWrapper" style="display: none;">
+                                <label class="ai-input-label" for="codeAssistantTargetLang">
+                                    <span>&#10022; Target Language</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="codeAssistantTargetLang"
+                                    class="ai-textarea"
+                                    style="min-height: 42px; height: 42px; padding: 8px 14px; font-family: var(--font-mono); font-size: 0.85rem;"
+                                    placeholder="Target language (e.g. Python, JavaScript, Java, C++, Rust)"
+                                />
+                            </div>
+
+                            <button class="ai-generate-btn" id="codeAssistantAnalyzeBtn" onclick="analyzeCode()">
+                                💻 Analyze Code
+                            </button>
+                        </div>
+
+                        <!-- Right Deck: Code Analysis Canvas -->
+                        <div class="ai-deck-canvas">
+                            <div class="ai-canvas-header">
+                                <span class="ai-canvas-title">💻 Code Intelligence Output</span>
+                                <div class="ai-canvas-stats">
+                                    <span id="codeAssistantStats">Ready to analyze</span>
+                                </div>
+                            </div>
+
+                            <div id="codeAssistantResultBox" class="ai-result-box empty" style="font-family: var(--font-mono); white-space: pre-wrap;">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polyline points="16 18 22 12 16 6"/>
+                                    <polyline points="8 6 2 12 8 18"/>
+                                </svg>
+                                <span>Analysis, refactored code, and explanations with syntax highlights will display here.</span>
+                            </div>
+
+                            <div class="ai-canvas-toolbar" id="codeAssistantCopyRow" style="display: none;">
+                                <button class="ai-action-btn" id="codeAssistantCopyBtn" onclick="copyCodeAssistantResult()">
+                                    📋 Copy Output
+                                </button>
+                                <button class="ai-action-btn" id="codeAssistantSaveBtn" onclick="saveCodeAssistantFavorite(this)">
+                                    ⭐ Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ════ PANEL 8: Book Writer (Continuous Project Studio) ════ -->
+                <div id="panelBookWriter" style="display: none;">
+                    
+                    <!-- State 1: Projects List & Creation Deck -->
+                    <div id="bookProjectsListWrapper">
+                        <div class="ai-canvas-header" style="margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <span class="ai-canvas-title" style="font-size: 1.1rem;">📚 Book Writer Studio</span>
+                                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Create multi-page books, novels, and stories with persistent project memory.</p>
+                            </div>
+                            <button class="ai-action-btn" id="bookNewProjectBtn" onclick="toggleBookCreateForm(true)" style="background: linear-gradient(135deg, var(--blue-glow), var(--blue-bright)); color: #fff; border: none; font-weight: 700; padding: 10px 18px; border-radius: 10px;">
+                                ➕ New Project
+                            </button>
+                        </div>
+
+                        <!-- New Project Creation Card (collapsible) -->
+                        <div id="bookCreateFormCard" style="display: none; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(100, 181, 246, 0.25); border-radius: 14px; padding: 20px; margin-bottom: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <h4 style="font-family: var(--font-title); font-size: 0.95rem; color: #fff; margin: 0;">✨ Create New Book Project</h4>
+                                <button onclick="toggleBookCreateForm(false)" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem;">✕</button>
+                            </div>
+
+                            <div style="margin-bottom: 14px;">
+                                <label class="ai-input-label" for="bookNewTitle">Project Title (optional)</label>
+                                <input type="text" id="bookNewTitle" class="ai-textarea" style="min-height: 42px; height: 42px; padding: 8px 14px;" placeholder="e.g. The Chronicles of Aethelgard" />
+                            </div>
+
+                            <div style="margin-bottom: 14px;">
+                                <label class="ai-input-label" for="bookNewPrompt">Book Idea, Plot & Brief Outline</label>
+                                <textarea id="bookNewPrompt" class="ai-textarea" placeholder="Write your book idea, plot, characters, or prompt..." rows="4"></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 18px;">
+                                <div>
+                                    <label class="ai-input-label" for="bookNewType">Book Type</label>
+                                    <select id="bookNewType" class="ai-textarea" style="min-height: 42px; height: 42px; padding: 6px 12px; cursor: pointer;">
+                                        <option value="book" selected>Book</option>
+                                        <option value="novel">Novel</option>
+                                        <option value="story">Short Story</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="ai-input-label" for="bookNewLanguage">Language</label>
+                                    <input type="text" id="bookNewLanguage" class="ai-textarea" style="min-height: 42px; height: 42px; padding: 8px 14px;" value="English" placeholder="Language (e.g. English, Arabic)" />
+                                </div>
+                                <div>
+                                    <label class="ai-input-label" for="bookNewPages">Total Pages (1 - 200)</label>
+                                    <input type="number" id="bookNewPages" class="ai-textarea" style="min-height: 42px; height: 42px; padding: 8px 14px;" min="1" max="200" value="10" />
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <button class="ai-generate-btn" id="bookCreateBtn" onclick="createBookProject()" style="flex: 1;">
+                                    🚀 Create & Launch Project
+                                </button>
+                                <button class="ai-action-btn" onclick="toggleBookCreateForm(false)" style="padding: 0 18px;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Projects List Container -->
+                        <div id="bookProjectsList" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); opacity: 0.7;">
+                                ⏳ Loading your book projects...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- State 2: Open Project View (Page Generator) -->
+                    <div id="bookProjectView" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                            <button onclick="closeBookProject()" class="ai-action-btn" style="padding: 8px 16px;">
+                                ← Back to Projects
+                            </button>
+                            <div style="text-align: right;">
+                                <h3 id="bookProjectTitle" style="font-family: var(--font-title); font-size: 1.1rem; color: #fff; margin: 0;"></h3>
+                                <span id="bookProjectMeta" style="font-size: 0.8rem; color: var(--text-muted);"></span>
+                            </div>
+                        </div>
+
+                        <!-- Warning Alert Box -->
+                        <div id="bookPageWarning" style="display: none; background: rgba(124, 45, 18, 0.85); border: 1px solid rgba(249, 115, 22, 0.4); color: #fed7aa; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 0.88rem; line-height: 1.4;">
+                            ⚠️ Generating a new page will permanently replace the current page shown below in the view. Copy it first if you want to keep it!
+                        </div>
+
+                        <!-- Page Content Box -->
+                        <div id="bookPageContent" class="ai-result-box" style="white-space: pre-wrap; font-family: var(--font-body); font-size: 0.95rem; line-height: 1.8; padding: 22px; border-radius: 12px; min-height: 280px; margin-bottom: 16px; user-select: text;">
+                            No pages generated yet.
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="ai-canvas-toolbar" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="ai-action-btn" id="bookCopyBtn" onclick="copyBookPage()">
+                                📋 Copy This Page
+                            </button>
+                            <button class="ai-generate-btn" id="bookGenerateBtn" onclick="generateBookPage()" style="flex: 1; min-width: 200px;">
+                                ✨ Generate Page 1
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ════ PANEL 9: History & Favorites (Activity & Bookmarks) ════ -->
+                <div id="panelHistoryFavs" style="display: none;">
+                    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                        <div>
+                            <span class="ai-canvas-title" style="font-size: 1.15rem;">📜 History &amp; Saved Favorites</span>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Review all previous AI generations or access your saved favorites collection.</p>
+                        </div>
+                        <!-- Sub-tabs switch -->
+                        <div style="display: inline-flex; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(100, 181, 246, 0.2); padding: 4px; border-radius: 10px; gap: 4px;">
+                            <button class="ai-action-btn active" id="subTabHistory" onclick="switchHistoryFavsSubTab('history')" style="padding: 6px 16px; border-radius: 8px;">
+                                🕒 Recent Activity
+                            </button>
+                            <button class="ai-action-btn" id="subTabFavorites" onclick="switchHistoryFavsSubTab('favorites')" style="padding: 6px 16px; border-radius: 8px;">
+                                ⭐ Saved Favorites
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section 1: Recent History -->
+                    <div id="historySection">
+                        <div id="historyList" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); opacity: 0.7;">
+                                ⏳ Loading activity history...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Favorites List -->
+                    <div id="favoritesSection" style="display: none;">
+                        <div id="favoritesList" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); opacity: 0.7;">
+                                ⏳ Loading saved favorites...
                             </div>
                         </div>
                     </div>

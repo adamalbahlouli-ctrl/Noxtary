@@ -221,17 +221,21 @@ function showToolUI() {
 }
 
 // ─────────────────────────────────────────────
-// Tab Switcher — supports all five tools
+// Tab Switcher — supports all nine tools
 // ─────────────────────────────────────────────
 function switchTab(tab) {
-    const tabs = ['aiChat', 'promptBuilder', 'aiWriter', 'imagePrompt', 'fileAnalyzer'];
+    const tabs = ['aiChat', 'promptBuilder', 'aiWriter', 'imagePrompt', 'fileAnalyzer', 'nameGenerator', 'codeAssistant', 'bookWriter', 'historyFavs'];
 
     const displayType = {
         aiChat:        'flex',
         promptBuilder: 'block',
         aiWriter:      'block',
         imagePrompt:   'block',
-        fileAnalyzer:  'block'
+        fileAnalyzer:  'block',
+        nameGenerator: 'block',
+        codeAssistant: 'block',
+        bookWriter:    'block',
+        historyFavs:   'block'
     };
 
     tabs.forEach(function (t) {
@@ -240,14 +244,22 @@ function switchTab(tab) {
             promptBuilder: 'panelPromptBuilder',
             aiWriter:      'panelAiWriter',
             imagePrompt:   'panelImagePrompt',
-            fileAnalyzer:  'panelFileAnalyzer'
+            fileAnalyzer:  'panelFileAnalyzer',
+            nameGenerator: 'panelNameGenerator',
+            codeAssistant: 'panelCodeAssistant',
+            bookWriter:    'panelBookWriter',
+            historyFavs:   'panelHistoryFavs'
         }[t];
         const btnId = {
             aiChat:        'tabAiChat',
             promptBuilder: 'tabPromptBuilder',
             aiWriter:      'tabAiWriter',
             imagePrompt:   'tabImagePrompt',
-            fileAnalyzer:  'tabFileAnalyzer'
+            fileAnalyzer:  'tabFileAnalyzer',
+            nameGenerator: 'tabNameGenerator',
+            codeAssistant: 'tabCodeAssistant',
+            bookWriter:    'tabBookWriter',
+            historyFavs:   'tabHistoryFavs'
         }[t];
 
         const panel = document.getElementById(panelId);
@@ -271,12 +283,24 @@ function switchTab(tab) {
         promptBuilder: 'tabPromptBuilder',
         aiWriter:      'tabAiWriter',
         imagePrompt:   'tabImagePrompt',
-        fileAnalyzer:  'tabFileAnalyzer'
+        fileAnalyzer:  'tabFileAnalyzer',
+        nameGenerator: 'tabNameGenerator',
+        codeAssistant: 'tabCodeAssistant',
+        bookWriter:    'tabBookWriter',
+        historyFavs:   'tabHistoryFavs'
     }[tab]);
 
     if (tabsContainer && activeBtn) {
         const scrollOffset = activeBtn.offsetLeft - (tabsContainer.clientWidth / 2) + (activeBtn.clientWidth / 2);
         tabsContainer.scrollTo({ left: Math.max(0, scrollOffset), behavior: 'smooth' });
+    }
+
+    if (tab === 'bookWriter' && typeof loadBookProjects === 'function') {
+        loadBookProjects();
+    }
+    if (tab === 'historyFavs') {
+        if (typeof loadHistory === 'function') loadHistory();
+        if (typeof loadFavorites === 'function') loadFavorites();
     }
 }
 
@@ -1063,6 +1087,777 @@ function downloadFileAnalysis() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────
+// TOOL 6: 🏷️ Name Generator (Creative Identity Matrix)
+// ─────────────────────────────────────────────
+function onNameGenInputChanged() {
+    const input = document.getElementById('nameGenInput')?.value || '';
+    const charCountEl = document.getElementById('nameGenCharCount');
+    if (charCountEl) charCountEl.textContent = input.length + ' chars';
+}
+
+function selectNameGenCategory(catVal) {
+    const chips = document.querySelectorAll('#nameGenCategoryChips .ai-chip-pill');
+    chips.forEach(c => {
+        if (c.getAttribute('data-value') === catVal) c.classList.add('active');
+        else c.classList.remove('active');
+    });
+    const select = document.getElementById('nameGenCategory');
+    if (select) select.value = catVal;
+}
+
+async function generateNames() {
+    const input     = document.getElementById('nameGenInput').value.trim();
+    const category  = document.getElementById('nameGenCategory').value;
+    const resultBox = document.getElementById('nameGenResultBox');
+    const copyRow   = document.getElementById('nameGenCopyRow');
+    const btn       = document.getElementById('nameGenGenerateBtn');
+    const statsEl   = document.getElementById('nameGenStats');
+
+    if (!input) {
+        alert('Please describe what you need a name for.');
+        return;
+    }
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        alert('Please sign in first.');
+        document.getElementById('loginModal')?.classList.add('active');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '&#9203; Generating Names...';
+
+    if (resultBox) {
+        resultBox.classList.remove('empty');
+        resultBox.innerHTML = '<div class="chat-typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+    }
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('ai-name-generator', {
+            body: { input, category }
+        });
+
+        if (error) {
+            alert('Something went wrong. Please try again.');
+            console.error('Edge Function error:', error);
+            return;
+        }
+
+        if (data?.error) {
+            if (data.error.includes('رصيد غير كافٍ')) {
+                alert('Not enough credits.');
+            } else {
+                alert(data.error);
+            }
+            return;
+        }
+
+        if (resultBox) {
+            resultBox.classList.remove('empty');
+            resultBox.innerHTML = parseMarkdownToHtml(data.result);
+            if (statsEl) {
+                const lines = data.result.split('\n').filter(l => l.trim().length > 0).length;
+                statsEl.textContent = `${category.replace('_', ' ').toUpperCase()} • Generated`;
+            }
+        }
+        if (copyRow) copyRow.style.display = 'flex';
+        updateCreditsUI(data);
+
+    } catch (err) {
+        console.error('AI Studio: Unexpected error', err);
+        alert('Something went wrong. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '&#127991;&#65039; Generate Names';
+    }
+}
+
+function copyNameGenResult() {
+    const resultBox = document.getElementById('nameGenResultBox');
+    const copyBtn   = document.getElementById('nameGenCopyBtn');
+    if (!resultBox || !resultBox.textContent.trim()) return;
+    _copyText(resultBox.textContent.trim(), copyBtn);
+}
+
+// ─────────────────────────────────────────────
+// TOOL 7: 💻 Code Assistant (Neural Developer Suite)
+// ─────────────────────────────────────────────
+function onCodeInputChanged() {
+    const input = document.getElementById('codeAssistantInput')?.value || '';
+    const charCountEl = document.getElementById('codeAssistantCharCount');
+    if (charCountEl) charCountEl.textContent = input.length + ' chars';
+}
+
+function selectCodeMode(modeVal) {
+    const chips = document.querySelectorAll('#codeAssistantModeChips .ai-chip-pill');
+    chips.forEach(c => {
+        if (c.getAttribute('data-value') === modeVal) c.classList.add('active');
+        else c.classList.remove('active');
+    });
+    const select = document.getElementById('codeAssistantMode');
+    if (select) select.value = modeVal;
+    onCodeModeChange(modeVal);
+}
+
+function onCodeModeChange(modeVal) {
+    const targetWrapper = document.getElementById('codeAssistantTargetLangWrapper');
+    if (targetWrapper) {
+        targetWrapper.style.display = modeVal === 'convert' ? 'block' : 'none';
+    }
+}
+
+async function analyzeCode() {
+    const code        = document.getElementById('codeAssistantInput').value.trim();
+    const mode        = document.getElementById('codeAssistantMode').value;
+    const targetLang  = document.getElementById('codeAssistantTargetLang')?.value.trim() || '';
+    const resultBox   = document.getElementById('codeAssistantResultBox');
+    const copyRow     = document.getElementById('codeAssistantCopyRow');
+    const btn         = document.getElementById('codeAssistantAnalyzeBtn');
+    const statsEl     = document.getElementById('codeAssistantStats');
+
+    if (!code) {
+        alert('Please paste some code first.');
+        return;
+    }
+
+    if (mode === 'convert' && !targetLang) {
+        alert('Please specify the target language.');
+        return;
+    }
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        alert('Please sign in first.');
+        document.getElementById('loginModal')?.classList.add('active');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '&#9203; Analyzing Code...';
+
+    if (resultBox) {
+        resultBox.classList.remove('empty');
+        resultBox.innerHTML = '<div class="chat-typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+    }
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('ai-code-assistant', {
+            body: { code, mode, target_language: targetLang }
+        });
+
+        if (error) {
+            alert('Something went wrong. Please try again.');
+            console.error('Edge Function error:', error);
+            return;
+        }
+
+        if (data?.error) {
+            if (data.error.includes('رصيد غير كافٍ')) {
+                alert('Not enough credits.');
+            } else {
+                alert(data.error);
+            }
+            return;
+        }
+
+        if (resultBox) {
+            resultBox.classList.remove('empty');
+            resultBox.innerHTML = parseMarkdownToHtml(data.result);
+            if (statsEl) {
+                statsEl.textContent = `${mode.toUpperCase()} • Completed`;
+            }
+        }
+        if (copyRow) copyRow.style.display = 'flex';
+        updateCreditsUI(data);
+
+    } catch (err) {
+        console.error('AI Studio: Unexpected error', err);
+        alert('Something went wrong. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💻 Analyze Code';
+    }
+}
+
+function copyCodeAssistantResult() {
+    const resultBox = document.getElementById('codeAssistantResultBox');
+    const copyBtn   = document.getElementById('codeAssistantCopyBtn');
+    if (!resultBox || !resultBox.textContent.trim()) return;
+    _copyText(resultBox.textContent.trim(), copyBtn);
+}
+
+// ─────────────────────────────────────────────
+// TOOL 8: 📚 Book Writer (Continuous Project Studio)
+// ─────────────────────────────────────────────
+let currentBookProject = null;
+
+function toggleBookCreateForm(show) {
+    const formCard = document.getElementById('bookCreateFormCard');
+    if (!formCard) return;
+    if (typeof show === 'boolean') {
+        formCard.style.display = show ? 'block' : 'none';
+    } else {
+        formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+async function loadBookProjects() {
+    if (typeof supabaseClient === 'undefined') return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !session.user) return;
+
+    const listContainer = document.getElementById('bookProjectsList');
+    if (!listContainer) return;
+
+    try {
+        const { data: projects, error } = await supabaseClient
+            .from('ai_book_projects')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .order('updated_at', { ascending: false });
+
+        if (error) {
+            console.error('Book Writer: Error loading projects', error);
+            listContainer.innerHTML = '<div style="padding:30px; text-align:center; opacity:0.7;">⚠️ Could not load projects. Please try again.</div>';
+            return;
+        }
+
+        if (!projects || projects.length === 0) {
+            listContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; border: 1px dashed rgba(100, 181, 246, 0.2); border-radius: 12px; background: rgba(0,0,0,0.15);">
+                    <div style="font-size: 2.2rem; margin-bottom: 8px;">📚</div>
+                    <h4 style="font-size: 1rem; color: #fff; margin-bottom: 4px;">No Book Projects Yet</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Create your first AI book, novel, or story to start generating pages.</p>
+                    <button class="ai-action-btn" onclick="toggleBookCreateForm(true)" style="background: rgba(37,99,235,0.2); border-color: rgba(37,99,235,0.5); color:#93c5fd; padding:8px 16px;">
+                        ➕ Create First Project
+                    </button>
+                </div>`;
+            return;
+        }
+
+        listContainer.innerHTML = projects.map(p => {
+            const isComplete = p.status === 'completed' || (p.current_page_number >= p.total_pages && p.total_pages > 0);
+            const statusBadge = isComplete 
+                ? '<span style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 0.72rem; padding: 2px 8px; border-radius: 20px; font-weight: 600;">✅ Complete</span>'
+                : '<span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); font-size: 0.72rem; padding: 2px 8px; border-radius: 20px; font-weight: 600;">⚡ Active</span>';
+
+            return `
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; transition: all 0.2s ease;">
+                    <div style="flex: 1; min-width: 220px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                            <strong style="color: #fff; font-size: 1rem;">${escapeHtml(p.title || 'Untitled Project')}</strong>
+                            ${statusBadge}
+                        </div>
+                        <div style="color: var(--text-muted); font-size: 0.83rem; display: flex; gap: 12px; flex-wrap: wrap;">
+                            <span>📖 ${escapeHtml(p.book_type.toUpperCase())}</span>
+                            <span>🌐 ${escapeHtml(p.language)}</span>
+                            <span>📄 Page <strong>${p.current_page_number}</strong> of <strong>${p.total_pages}</strong></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button onclick="openBookProject(${p.id})" class="ai-action-btn" style="background: rgba(37, 99, 235, 0.2); border-color: rgba(37, 99, 235, 0.4); color: #93c5fd; padding: 8px 18px; font-weight: 600;">
+                            📖 Open
+                        </button>
+                        <button onclick="deleteBookProject(${p.id})" style="background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.35); color: #fca5a5; border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" title="Delete Project">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('Book Writer: Failed to load projects', err);
+    }
+}
+
+async function createBookProject() {
+    const brief    = document.getElementById('bookNewPrompt').value.trim();
+    const type     = document.getElementById('bookNewType').value;
+    const language = document.getElementById('bookNewLanguage').value.trim() || 'English';
+    const pages    = parseInt(document.getElementById('bookNewPages').value) || 10;
+    const title    = document.getElementById('bookNewTitle').value.trim() || 'Untitled Project';
+    const btn      = document.getElementById('bookCreateBtn');
+
+    if (!brief) {
+        alert('Please describe your book idea first.');
+        return;
+    }
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        alert('Please sign in first.');
+        document.getElementById('loginModal')?.classList.add('active');
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Creating Project...';
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('ai_book_projects')
+            .insert({
+                user_id: session.user.id,
+                title: title,
+                book_type: type,
+                language: language,
+                total_pages: pages,
+                brief_prompt: brief,
+                current_page_number: 0,
+                status: 'active'
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Book Writer creation error:', error);
+            alert('Failed to create project.');
+            return;
+        }
+
+        // Reset form
+        document.getElementById('bookNewPrompt').value = '';
+        document.getElementById('bookNewTitle').value = '';
+        toggleBookCreateForm(false);
+
+        await openBookProject(data.id);
+
+    } catch (err) {
+        console.error('Book Writer error:', err);
+        alert('Failed to create project.');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '🚀 Create & Launch Project';
+        }
+    }
+}
+
+async function deleteBookProject(projectId) {
+    if (!confirm('Delete this project permanently? This cannot be undone.')) return;
+    try {
+        const { error } = await supabaseClient
+            .from('ai_book_projects')
+            .delete()
+            .eq('id', projectId);
+
+        if (error) {
+            alert('Failed to delete project.');
+            console.error(error);
+            return;
+        }
+        await loadBookProjects();
+    } catch (err) {
+        console.error('Error deleting project:', err);
+        alert('Failed to delete project.');
+    }
+}
+
+async function openBookProject(projectId) {
+    try {
+        const { data: project, error } = await supabaseClient
+            .from('ai_book_projects')
+            .select('*')
+            .eq('id', projectId)
+            .single();
+
+        if (error || !project) {
+            alert('Failed to load project.');
+            return;
+        }
+
+        currentBookProject = project;
+        document.getElementById('bookProjectsListWrapper').style.display = 'none';
+        document.getElementById('bookProjectView').style.display = 'block';
+        document.getElementById('bookProjectTitle').textContent = project.title || 'Untitled Project';
+
+        const metaEl = document.getElementById('bookProjectMeta');
+        if (metaEl) {
+            metaEl.textContent = `${project.book_type.toUpperCase()} • ${project.language} • Page ${project.current_page_number} of ${project.total_pages}`;
+        }
+
+        const pageContentEl = document.getElementById('bookPageContent');
+        const generateBtn   = document.getElementById('bookGenerateBtn');
+        const warningEl     = document.getElementById('bookPageWarning');
+
+        if (project.current_page_number === 0) {
+            pageContentEl.textContent = 'No pages generated yet. Click "Generate Page 1" below to start writing.';
+            generateBtn.textContent = '✨ Generate Page 1';
+            generateBtn.disabled = false;
+            warningEl.style.display = 'none';
+        } else {
+            pageContentEl.textContent = project.last_page_content || 'No content found for this page.';
+            const isCompleted = project.status === 'completed' || project.current_page_number >= project.total_pages;
+            warningEl.style.display = isCompleted ? 'none' : 'block';
+            generateBtn.textContent = isCompleted
+                ? '✅ Book Complete'
+                : `✨ Generate Page ${project.current_page_number + 1}`;
+            generateBtn.disabled = isCompleted;
+        }
+
+    } catch (err) {
+        console.error('Error opening book project:', err);
+        alert('Failed to load project.');
+    }
+}
+
+function closeBookProject() {
+    currentBookProject = null;
+    document.getElementById('bookProjectView').style.display = 'none';
+    document.getElementById('bookProjectsListWrapper').style.display = 'block';
+    loadBookProjects();
+}
+
+async function generateBookPage() {
+    if (!currentBookProject) return;
+
+    const btn = document.getElementById('bookGenerateBtn');
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.innerHTML = '&#9203; Writing Page...';
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('ai-book-writer', {
+            body: { project_id: currentBookProject.id }
+        });
+
+        if (error) {
+            alert('Something went wrong. Please try again.');
+            console.error('Book Writer Edge Function error:', error);
+            btn.textContent = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        if (data?.error) {
+            if (data.error.includes('رصيد غير كافٍ')) {
+                alert('Not enough credits.');
+            } else {
+                alert(data.error);
+            }
+            btn.textContent = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        document.getElementById('bookPageContent').textContent = data.result;
+        
+        const isComplete = data.is_complete || data.page_number >= (data.total_pages || currentBookProject.total_pages);
+        document.getElementById('bookPageWarning').style.display = isComplete ? 'none' : 'block';
+        
+        btn.textContent = isComplete ? '✅ Book Complete' : `✨ Generate Page ${data.page_number + 1}`;
+        btn.disabled = isComplete;
+
+        currentBookProject.current_page_number = data.page_number;
+        currentBookProject.last_page_content   = data.result;
+        currentBookProject.status              = isComplete ? 'completed' : 'active';
+
+        const metaEl = document.getElementById('bookProjectMeta');
+        if (metaEl) {
+            metaEl.textContent = `${currentBookProject.book_type.toUpperCase()} • ${currentBookProject.language} • Page ${data.page_number} of ${data.total_pages || currentBookProject.total_pages}`;
+        }
+
+        updateCreditsUI(data);
+
+    } catch (err) {
+        console.error('Book Writer generation error:', err);
+        alert('Something went wrong. Please try again.');
+        btn.textContent = originalText;
+    } finally {
+        if (!currentBookProject || currentBookProject.status !== 'completed') {
+            btn.disabled = false;
+        }
+    }
+}
+
+function copyBookPage() {
+    const text = document.getElementById('bookPageContent')?.textContent || '';
+    if (!text.trim()) return;
+    const btn = document.getElementById('bookCopyBtn');
+    _copyText(text, btn);
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// ─────────────────────────────────────────────
+// UNIVERSAL FAVORITES & ACTIVITY LOGIC
+// ─────────────────────────────────────────────
+async function saveToFavorites(toolName, inputText, outputText, btnElement) {
+    if (typeof supabaseClient === 'undefined') return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !session.user) {
+        alert('Please sign in first.');
+        document.getElementById('loginModal')?.classList.add('active');
+        return;
+    }
+
+    if (!outputText || !outputText.trim()) {
+        alert('No output to save yet.');
+        return;
+    }
+
+    const originalText = btnElement ? btnElement.innerHTML : '⭐ Save';
+    if (btnElement) {
+        btnElement.innerHTML = '⏳';
+        btnElement.disabled = true;
+    }
+
+    try {
+        const { error } = await supabaseClient.rpc('add_to_favorites', {
+            p_tool_name: toolName,
+            p_input_text: inputText || '',
+            p_output_text: outputText
+        });
+
+        if (error) {
+            console.error('Save to favorites error:', error);
+            alert('Failed to save.');
+            if (btnElement) {
+                btnElement.innerHTML = originalText;
+                btnElement.disabled = false;
+            }
+            return;
+        }
+
+        if (btnElement) {
+            btnElement.innerHTML = '✅ Saved';
+            setTimeout(() => {
+                btnElement.innerHTML = originalText;
+                btnElement.disabled = false;
+            }, 2000);
+        }
+    } catch (err) {
+        console.error('Unexpected favorites error:', err);
+        alert('Failed to save.');
+        if (btnElement) {
+            btnElement.innerHTML = originalText;
+            btnElement.disabled = false;
+        }
+    }
+}
+
+function savePromptBuilderFavorite(btn) {
+    const input = document.getElementById('promptInput')?.value || '';
+    const output = document.getElementById('resultBox')?.textContent || '';
+    saveToFavorites('prompt_builder', input, output, btn);
+}
+
+function saveWriterFavorite(btn) {
+    const input = document.getElementById('writerTopic')?.value || '';
+    const output = document.getElementById('writerResultBox')?.textContent || '';
+    saveToFavorites('ai_writer', input, output, btn);
+}
+
+function saveImagePromptFavorite(btn) {
+    const input = document.getElementById('imageSubject')?.value || '';
+    const output = document.getElementById('imagePromptResultBox')?.textContent || '';
+    saveToFavorites('image_prompt', input, output, btn);
+}
+
+function saveFileAnalyzerFavorite(btn) {
+    const input = document.getElementById('fileQueryInput')?.value || (selectedFileData ? selectedFileData.name : 'Document Intelligence');
+    const output = document.getElementById('fileAnalyzerResultBox')?.textContent || '';
+    saveToFavorites('file_analyzer', input, output, btn);
+}
+
+function saveNameGenFavorite(btn) {
+    const input = document.getElementById('nameGenInput')?.value || '';
+    const output = document.getElementById('nameGenResultBox')?.textContent || '';
+    saveToFavorites('name_generator', input, output, btn);
+}
+
+function saveCodeAssistantFavorite(btn) {
+    const input = document.getElementById('codeAssistantInput')?.value || '';
+    const output = document.getElementById('codeAssistantResultBox')?.textContent || '';
+    saveToFavorites('code_assistant', input, output, btn);
+}
+
+// ─────────────────────────────────────────────
+// TOOL 9: 📜 History & Favorites
+// ─────────────────────────────────────────────
+function switchHistoryFavsSubTab(subTab) {
+    const historySec = document.getElementById('historySection');
+    const favsSec = document.getElementById('favoritesSection');
+    const subTabHistBtn = document.getElementById('subTabHistory');
+    const subTabFavBtn = document.getElementById('subTabFavorites');
+
+    if (subTab === 'history') {
+        if (historySec) historySec.style.display = 'block';
+        if (favsSec) favsSec.style.display = 'none';
+        if (subTabHistBtn) subTabHistBtn.classList.add('active');
+        if (subTabFavBtn) subTabFavBtn.classList.remove('active');
+        loadHistory();
+    } else {
+        if (historySec) historySec.style.display = 'none';
+        if (favsSec) favsSec.style.display = 'block';
+        if (subTabHistBtn) subTabHistBtn.classList.remove('active');
+        if (subTabFavBtn) subTabFavBtn.classList.add('active');
+        loadFavorites();
+    }
+}
+
+async function loadHistory() {
+    if (typeof supabaseClient === 'undefined') return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !session.user) return;
+
+    const container = document.getElementById('historyList');
+    if (!container) return;
+
+    try {
+        const { data: history, error } = await supabaseClient
+            .from('ai_history')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+        if (error) {
+            console.error('History load error:', error);
+            container.innerHTML = '<div style="padding:30px; text-align:center; opacity:0.7;">⚠️ Could not load history.</div>';
+            return;
+        }
+
+        if (!history || history.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; border: 1px dashed rgba(100, 181, 246, 0.2); border-radius: 12px; background: rgba(0,0,0,0.15);">
+                    <div style="font-size: 2.2rem; margin-bottom: 8px;">🕒</div>
+                    <h4 style="font-size: 1rem; color: #fff; margin-bottom: 4px;">No History Yet</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Generate content with any AI tool to see your recent activity here.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = history.map(h => {
+            const dateStr = h.created_at ? new Date(h.created_at).toLocaleString() : '';
+            const previewText = (h.output_text || '').slice(0, 300) + ((h.output_text || '').length > 300 ? '...' : '');
+            const encodedInput = encodeURIComponent(h.input_text || '');
+            const encodedOutput = encodeURIComponent(h.output_text || '');
+
+            return `
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px; transition: all 0.2s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(59, 130, 246, 0.12); padding: 2px 8px; border-radius: 6px;">
+                            ${escapeHtml(h.tool_name || 'AI TOOL')}
+                        </span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">${dateStr}</span>
+                    </div>
+                    ${h.input_text ? `<div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px; opacity: 0.85;"><strong>Input:</strong> ${escapeHtml((h.input_text).slice(0, 150))}${(h.input_text).length > 150 ? '...' : ''}</div>` : ''}
+                    <div style="font-size: 0.88rem; color: #f8fafc; white-space: pre-wrap; line-height: 1.6; max-height: 140px; overflow-y: auto; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">${escapeHtml(previewText)}</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        ${h.output_text ? `
+                            <button class="ai-action-btn" onclick="saveToFavorites('${escapeHtml(h.tool_name)}', decodeURIComponent('${encodedInput}'), decodeURIComponent('${encodedOutput}'), this)" style="padding: 4px 12px; font-size: 0.78rem;">
+                                ⭐ Save to Favorites
+                            </button>
+                            <button class="ai-action-btn" onclick="_copyText(decodeURIComponent('${encodedOutput}'), this)" style="padding: 4px 12px; font-size: 0.78rem;">
+                                📋 Copy
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('History load exception:', err);
+    }
+}
+
+async function loadFavorites() {
+    if (typeof supabaseClient === 'undefined') return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !session.user) return;
+
+    const container = document.getElementById('favoritesList');
+    if (!container) return;
+
+    try {
+        const { data: favorites, error } = await supabaseClient
+            .from('ai_favorites')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Favorites load error:', error);
+            container.innerHTML = '<div style="padding:30px; text-align:center; opacity:0.7;">⚠️ Could not load favorites.</div>';
+            return;
+        }
+
+        if (!favorites || favorites.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; border: 1px dashed rgba(100, 181, 246, 0.2); border-radius: 12px; background: rgba(0,0,0,0.15);">
+                    <div style="font-size: 2.2rem; margin-bottom: 8px;">⭐</div>
+                    <h4 style="font-size: 1rem; color: #fff; margin-bottom: 4px;">No Saved Favorites Yet</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Click the "⭐ Save" button on any generated result to bookmark it here.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = favorites.map(f => {
+            const dateStr = f.created_at ? new Date(f.created_at).toLocaleString() : '';
+            const encodedOutput = encodeURIComponent(f.output_text || '');
+
+            return `
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px 20px; transition: all 0.2s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(251, 191, 36, 0.12); padding: 2px 8px; border-radius: 6px;">
+                            ⭐ ${escapeHtml(f.tool_name || 'FAVORITE')}
+                        </span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">${dateStr}</span>
+                            <button onclick="deleteFavorite(${f.id})" style="background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.35); color: #fca5a5; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
+                                🗑️ Remove
+                            </button>
+                        </div>
+                    </div>
+                    ${f.input_text ? `<div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px; opacity: 0.85;"><strong>Input:</strong> ${escapeHtml((f.input_text).slice(0, 150))}${(f.input_text).length > 150 ? '...' : ''}</div>` : ''}
+                    <div style="font-size: 0.88rem; color: #f8fafc; white-space: pre-wrap; line-height: 1.6; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">${escapeHtml(f.output_text || '')}</div>
+                    <button class="ai-action-btn" onclick="_copyText(decodeURIComponent('${encodedOutput}'), this)" style="padding: 4px 14px; font-size: 0.8rem;">
+                        📋 Copy Output
+                    </button>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('Favorites load exception:', err);
+    }
+}
+
+async function deleteFavorite(favoriteId) {
+    if (!confirm('Remove this from favorites?')) return;
+    try {
+        const { error } = await supabaseClient
+            .from('ai_favorites')
+            .delete()
+            .eq('id', favoriteId);
+
+        if (error) {
+            alert('Failed to remove favorite.');
+            console.error(error);
+            return;
+        }
+        await loadFavorites();
+    } catch (err) {
+        console.error('Delete favorite exception:', err);
+        alert('Failed to remove favorite.');
+    }
 }
 
 // ─────────────────────────────────────────────
