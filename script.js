@@ -9,6 +9,7 @@
 // ─────────────────────────────────────────────
 const SUPABASE_URL   = 'https://sbwfrigdhivipmmkzgag.supabase.co';
 const SUPABASE_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNid2ZyaWdkaGl2aXBtbWt6Z2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNzEzNzIsImV4cCI6MjA5NDg0NzM3Mn0.tKhZOKyOjBZkyh6lJ22A77xd2TPjns3vtNaM1W5pPO8';
+const SUPABASE_TABLE = 'apps';
 const supabaseClient = (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function')
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
     : null;
@@ -53,18 +54,28 @@ function getTypeConfig(type) {
 // ─────────────────────────────────────────────
 async function initApp() {
     try {
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=*`,
-            {
-                headers: {
-                    'apikey':        SUPABASE_ANON,
-                    'Authorization': 'Bearer ' + SUPABASE_ANON,
-                    'Content-Type':  'application/json'
-                }
+        let data = null;
+        if (supabaseClient) {
+            const res = await supabaseClient.from(SUPABASE_TABLE).select('*');
+            if (!res.error && res.data) {
+                data = res.data;
             }
-        );
-        if (!response.ok) throw new Error('Supabase error — status: ' + response.status);
-        productsData = await response.json();
+        }
+        if (!data) {
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=*`,
+                {
+                    headers: {
+                        'apikey':        SUPABASE_ANON,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON,
+                        'Content-Type':  'application/json'
+                    }
+                }
+            );
+            if (!response.ok) throw new Error('Supabase error — status: ' + response.status);
+            data = await response.json();
+        }
+        productsData = data || [];
         initHomePage();
         loadProductDetails();
     } catch (error) {
