@@ -5,18 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noxtary — AI Studio</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Cairo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ── Footer Styles (same as index.html) ── */
+        /* ══════════════════════════════════════════════════════════
+           NOXTARY AI STUDIO — EXECUTIVE WORKSTATION (FULL CONTRAST)
+           ══════════════════════════════════════════════════════════ */
+
+        :root {
+            --ai-cyber-black: #02050e;
+            --ai-surface-glass: rgba(9, 16, 32, 0.78);
+            --ai-surface-canvas: rgba(4, 9, 20, 0.65);
+            --ai-border-cyan: rgba(56, 189, 248, 0.22);
+            --ai-border-subtle: rgba(148, 163, 184, 0.12);
+            --ai-neon-cyan: #38bdf8;
+            --ai-laser-blue: #2563eb;
+            --ai-neon-purple: #9333ea;
+            --ai-amber-gold: #fbbf24;
+            --ai-emerald: #10b981;
+            --font-mono: 'JetBrains Mono', monospace, Consolas;
+        }
+
+        /* ── Site Footer ── */
         .site-footer {
             width: 100%;
-            border-top: 1px solid rgba(66, 165, 245, 0.12);
-            padding: 32px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 30px 24px;
             text-align: center;
             z-index: 1;
             position: relative;
-            margin-top: 40px;
+            margin-top: 50px;
             box-sizing: border-box;
         }
         .footer-links {
@@ -24,1120 +42,1295 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px 10px;
-            margin-bottom: 16px;
+            gap: 8px 12px;
+            margin-bottom: 14px;
         }
         .footer-links a {
             color: var(--text-muted, rgba(255, 255, 255, 0.55));
             text-decoration: none;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-family: var(--font-body, 'Cairo', sans-serif);
-            transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-            padding: 5px 13px;
+            transition: all 0.25s ease;
+            padding: 4px 12px;
             border-radius: 20px;
-            border: 1px solid rgba(66,165,245,0.18);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             display: inline-block;
         }
         .footer-links a:hover {
-            color: var(--blue-accent, #64b5f6);
-            border-color: var(--blue-accent, #64b5f6);
-            background: rgba(66,165,245,0.06);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.35);
+            background: rgba(56, 189, 248, 0.06);
         }
+        body.theme-neo-light .site-footer { border-top-color: rgba(0, 0, 0, 0.08); }
         body.theme-neo-light .footer-links a { color: #374151; border-color: rgba(0,0,0,0.12); }
         body.theme-neo-light .footer-links a:hover { color: #1d4ed8; border-color: #1d4ed8; background: rgba(37,99,235,0.05); }
         body.theme-neo-light .footer-copy { color: #6b7280; }
         .footer-copy {
-            color: var(--text-muted, rgba(255, 255, 255, 0.55));
+            color: var(--text-muted, rgba(255, 255, 255, 0.5));
             font-size: 0.78rem;
             font-family: var(--font-body, 'Cairo', sans-serif);
         }
 
-        /* ══ AI Studio Page ══ */
-        .ai-studio-page { justify-content: flex-start; }
+        /* ══ Page Container ══ */
+        .ai-studio-page {
+            justify-content: flex-start;
+            background-color: #030712;
+            position: relative;
+            overflow-x: hidden;
+        }
 
         .ai-studio-wrapper {
             width: 100%;
-            max-width: 780px;
-            padding: 100px 24px 60px;
+            max-width: 1440px;
+            padding: 85px 24px 40px;
             margin: 0 auto;
             box-sizing: border-box;
             z-index: 2;
+            position: relative;
         }
 
-        /* ── Section Header ── */
-        .ai-studio-header { text-align: center; margin-bottom: 36px; }
+        /* ── Top Studio Toolbar ── */
+        .ai-studio-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
 
-        .ai-studio-title {
+        /* ── Tabs Bar ── */
+        .ai-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(10, 18, 36, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 5px 6px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(12px);
+            scrollbar-width: none;
+        }
+        .ai-tabs::-webkit-scrollbar { display: none; }
+
+        .ai-tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 50px;
+            padding: 9px 18px;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 2.2rem;
-            font-weight: 900;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .ai-tab-btn:hover {
             color: #fff;
-            letter-spacing: 3px;
-            text-shadow:
-                0 0 12px rgba(21, 101, 192, 1),
-                0 0 30px rgba(30, 136, 229, 0.8),
-                0 0 60px rgba(66, 165, 245, 0.5);
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .ai-tab-btn.active {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(56, 189, 248, 0.25) 100%);
+            border-color: rgba(56, 189, 248, 0.6);
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
         }
 
-        .ai-studio-subtitle {
-            font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.98rem;
-            color: var(--text-muted);
-            letter-spacing: 0.3px;
-            line-height: 1.6;
+        /* ── Top-Right Actions (Credits & Pro Pass Pill) ── */
+        .ai-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
         }
 
-        /* ── Credits Badge ── */
         .credits-card {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 20px;
+            gap: 6px;
+            padding: 8px 16px;
             border-radius: 50px;
-            background: rgba(21, 101, 192, 0.15);
-            border: 1px solid rgba(66, 165, 245, 0.35);
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.82rem;
+            font-size: 0.74rem;
             font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--blue-accent);
-            margin-top: 16px;
-            box-shadow: 0 0 18px rgba(21, 101, 192, 0.25), inset 0 1px 0 rgba(255,255,255,0.06);
-            transition: all 0.3s ease;
+            letter-spacing: 0.8px;
+            color: #38bdf8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
         }
-        .credits-card:hover { box-shadow: 0 0 28px rgba(30, 136, 229, 0.45); }
-        body.theme-neo-light .credits-card { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.28); color: #1d4ed8; }
-
-        /* ── Unlimited Access Badge ── */
         .credits-card--unlimited {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(123, 31, 162, 0.22) 100%) !important;
-            border-color: rgba(251, 191, 36, 0.55) !important;
-            color: #fbbf24 !important;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5) !important;
-        }
-        .credits-card--unlimited:hover {
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.6) !important;
-        }
-        body.theme-neo-light .credits-card--unlimited {
             background: rgba(245, 158, 11, 0.12) !important;
-            border-color: rgba(217, 119, 6, 0.4) !important;
-            color: #b45309 !important;
-            text-shadow: none !important;
+            border-color: rgba(251, 191, 36, 0.45) !important;
+            color: #fbbf24 !important;
         }
 
-        /* ── Shining Yellow & Blue Unlimited Button ── */
-        .ai-unlimited-btn {
+        .ai-pro-pass-btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 9px 22px;
+            gap: 6px;
+            padding: 8px 16px;
             border-radius: 50px;
-            background: linear-gradient(135deg, #1565c0 0%, #0284c7 35%, #eab308 70%, #f59e0b 100%);
-            background-size: 200% 200%;
-            color: #ffffff;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(37, 99, 235, 0.22) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.55);
+            color: #fbbf24;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
-            border: 1.5px solid rgba(253, 224, 71, 0.75);
             cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 0 16px rgba(234, 179, 8, 0.5), 0 0 24px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            animation: yellowBlueShimmer 3s ease-in-out infinite, yellowBluePulse 2s ease-in-out infinite alternate;
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.25s ease;
             white-space: nowrap;
-            margin-top: 16px;
+        }
+        .ai-pro-pass-btn:hover {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(37, 99, 235, 0.35) 100%);
+            border-color: #fbbf24;
+            color: #fff;
+            box-shadow: 0 0 16px rgba(251, 191, 36, 0.35);
+            transform: translateY(-1px);
         }
 
-        .ai-unlimited-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            animation: lightSweep 2.4s infinite;
-        }
-
-        @keyframes yellowBlueShimmer {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes yellowBluePulse {
-            0% {
-                box-shadow: 0 0 14px rgba(234, 179, 8, 0.45), 0 0 20px rgba(2, 132, 199, 0.35);
-                border-color: rgba(253, 224, 71, 0.65);
-            }
-            100% {
-                box-shadow: 0 0 26px rgba(253, 224, 71, 0.85), 0 0 36px rgba(2, 132, 199, 0.65), inset 0 0 12px rgba(255, 255, 255, 0.3);
-                border-color: #fde047;
-                transform: scale(1.03);
-            }
-        }
-
-        @keyframes lightSweep {
-            0% { left: -100%; }
-            35%, 100% { left: 160%; }
-        }
-
-        .ai-unlimited-btn:hover {
-            transform: translateY(-2px) scale(1.07);
-            box-shadow: 0 0 32px rgba(253, 224, 71, 0.95), 0 0 46px rgba(2, 132, 199, 0.85);
-            border-color: #ffffff;
-            color: #ffffff;
-        }
-
-        .ai-unlimited-btn:active {
-            transform: translateY(0) scale(0.97);
-        }
-
-        /* ── Tool Card ── */
-        .ai-tool-card {
-            background: var(--card-bg);
-            border: 1.5px solid rgba(66, 165, 245, 0.18);
+        /* ── Main Cockpit Card ── */
+        .ai-cockpit-card {
+            background: var(--ai-surface-glass);
+            border: 1px solid var(--ai-border-subtle);
             border-radius: 20px;
-            padding: 32px 28px;
-            box-shadow: var(--card-shadow), 0 0 30px rgba(21, 101, 192, 0.1);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            padding: 24px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             position: relative;
-            overflow: hidden;
-        }
-        .ai-tool-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(21, 101, 192, 0.05), transparent 60%);
-            pointer-events: none;
         }
 
-        /* ── Textarea ── */
+        /* ── 2-Column Split View Workstation Grid ── */
+        .ai-cockpit-grid {
+            display: grid;
+            grid-template-columns: minmax(360px, 1fr) minmax(420px, 1.2fr);
+            gap: 24px;
+            align-items: stretch;
+        }
+        .ai-deck-control {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .ai-deck-canvas {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: var(--ai-surface-canvas);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            min-height: 480px;
+        }
+
+        /* ── Form Inputs & Textarea ── */
         .ai-input-label {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             font-family: var(--font-title, 'Orbitron', sans-serif);
             font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--blue-accent);
+            letter-spacing: 1px;
+            color: #38bdf8;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
+        .ai-input-label span {
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.76rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.55);
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
         .ai-textarea {
             width: 100%;
-            min-height: 140px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(66, 165, 245, 0.22);
-            border-radius: 14px;
-            color: var(--text-color);
+            min-height: 135px;
+            background: rgba(2, 6, 23, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #f1f5f9;
             font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            padding: 14px 18px;
+            font-size: 0.92rem;
+            line-height: 1.65;
+            padding: 12px 16px;
             resize: vertical;
             outline: none;
             box-sizing: border-box;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .ai-textarea:focus {
-            border-color: var(--blue-shine);
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 0 14px rgba(66, 165, 245, 0.22);
+            border-color: #38bdf8;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
         }
-        .ai-textarea::placeholder { color: var(--text-muted); opacity: 0.7; }
-        body.theme-neo-light .ai-textarea { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: #111827; }
-        body.theme-neo-light .ai-textarea:focus { background: #fff; border-color: var(--blue-bright); box-shadow: 0 0 12px rgba(37,99,235,0.15); }
-        body.theme-neo-light .ai-textarea::placeholder { color: #9ca3af; }
+        .ai-textarea::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-        /* ── Generate Button ── */
-        .ai-generate-btn {
-            margin-top: 18px;
-            width: 100%;
-            padding: 15px 24px;
-            background: linear-gradient(135deg, var(--blue-glow, #1565c0) 0%, var(--blue-bright, #1976d2) 100%);
-            color: #fff;
+        /* ── Dynamic Power Meter ── */
+        .ai-power-meter-wrap {
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .ai-power-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.9rem;
+            font-size: 0.66rem;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 6px;
+        }
+        .ai-power-score {
+            color: #38bdf8;
+        }
+        .ai-power-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .ai-power-bar {
+            height: 100%;
+            width: 15%;
+            background: linear-gradient(90deg, #f43f5e 0%, #fbbf24 50%, #10b981 80%, #38bdf8 100%);
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+
+        /* ── Modifier Matrix Chips ── */
+        .ai-chips-label {
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .ai-chips-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+        .ai-chip-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .ai-chip-pill:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.3);
+            color: #fff;
+        }
+        .ai-chip-pill.active {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: #38bdf8;
+            color: #fff;
+        }
+
+        /* ── Visual Aspect Ratio Cards ── */
+        .ai-aspect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
+            gap: 8px;
+        }
+        .ai-aspect-card {
+            background: rgba(2, 6, 23, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 8px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-aspect-box {
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            border-radius: 2px;
+        }
+        .ai-aspect-box.ar-1-1  { width: 18px; height: 18px; }
+        .ai-aspect-box.ar-16-9 { width: 26px; height: 15px; }
+        .ai-aspect-box.ar-9-16 { width: 15px; height: 26px; }
+        .ai-aspect-box.ar-4-3  { width: 22px; height: 16px; }
+        .ai-aspect-box.ar-21-9 { width: 28px; height: 13px; }
+        .ai-aspect-name {
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .ai-aspect-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            background: rgba(56, 189, 248, 0.06);
+        }
+        .ai-aspect-card.active {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.14);
+        }
+        .ai-aspect-card.active .ai-aspect-box {
+            border-color: #38bdf8;
+        }
+        .ai-aspect-card.active .ai-aspect-name {
+            color: #fff;
+        }
+
+        /* ── File Drag & Drop Zone ── */
+        .ai-dropzone {
+            border: 2px dashed rgba(56, 189, 248, 0.25);
+            border-radius: 14px;
+            padding: 24px 18px;
+            text-align: center;
+            background: rgba(2, 6, 23, 0.45);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .ai-dropzone:hover, .ai-dropzone.dragover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.06);
+        }
+        .ai-dropzone-icon {
+            font-size: 2rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .ai-dropzone-title {
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .ai-dropzone-sub {
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.76rem;
+            color: var(--text-muted, #94a3b8);
+        }
+
+        /* ── Main Action Generate Button ── */
+        .ai-generate-btn {
+            width: 100%;
+            padding: 13px 24px;
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+            color: #ffffff;
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 18px rgba(21, 101, 192, 0.45), inset 0 1px 0 rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .ai-generate-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-            transition: left 0.5s ease;
+        .ai-generate-btn:hover {
+            background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+            transform: translateY(-1px);
         }
-        .ai-generate-btn:hover::before { left: 100%; }
-        .ai-generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(30, 136, 229, 0.65); }
-        .ai-generate-btn:active { transform: translateY(0) scale(0.98); }
-        .ai-generate-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
-        .ai-generate-btn:disabled::before { display: none; }
+        .ai-generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
-        /* ── Result Box ── */
+        /* ── Live Output Canvas & Results ── */
+        .ai-canvas-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+        .ai-canvas-title {
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-canvas-stats {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
         .ai-result-box {
-            display: none;
-            margin-top: 24px;
-            padding: 20px 22px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(66, 165, 245, 0.25);
-            border-radius: 14px;
-            color: var(--text-color);
+            flex: 1;
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            color: #f1f5f9;
             font-family: var(--font-body, 'Cairo', sans-serif);
             font-size: 0.92rem;
             line-height: 1.8;
             white-space: pre-wrap;
             word-break: break-word;
-            animation: resultReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+            overflow-y: auto;
+            max-height: 520px;
+            min-height: 280px;
         }
-        @keyframes resultReveal {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        body.theme-neo-light .ai-result-box { background: rgba(0,0,0,0.04); border-color: rgba(37,99,235,0.2); color: #111827; }
-        .ai-result-label {
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--blue-accent);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        /* ── Sign-in Gate ── */
-        .ai-signin-gate { display: none; text-align: center; padding: 48px 24px; }
-        .ai-signin-gate-icon { font-size: 3rem; line-height: 1; margin-bottom: 16px; }
-        .ai-signin-gate-title {
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-color);
-            letter-spacing: 1.5px;
-            margin-bottom: 10px;
-        }
-        .ai-signin-gate-text {
-            font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-        .ai-signin-gate-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 32px;
-            background: linear-gradient(135deg, var(--blue-glow, #1565c0) 0%, var(--blue-bright, #1976d2) 100%);
-            color: #fff;
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 18px rgba(21, 101, 192, 0.45);
-        }
-        .ai-signin-gate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30, 136, 229, 0.6); }
-
-        /* ── Skeleton Loader ── */
-        .ai-credits-skeleton {
-            display: inline-block;
-            width: 140px;
-            height: 38px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%);
-            background-size: 200% 100%;
-            border-radius: 50px;
-            animation: shimmer 1.5s infinite;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        /* ── Navbar AI Link ── */
-        .ai-nav-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(21,101,192,0.22);
-            color: var(--blue-accent);
-            border: 1px solid rgba(66,165,245,0.4);
-            padding: 8px 14px;
-            border-radius: 50px;
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-decoration: none;
-            text-transform: uppercase;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-        .ai-nav-link:hover { background: rgba(21,101,192,0.4); border-color: var(--blue-shine); color: #fff; box-shadow: 0 0 16px rgba(66,165,245,0.35); }
-        body.theme-neo-light .ai-nav-link { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.28); color: #1d4ed8; }
-        body.theme-neo-light .ai-nav-link:hover { background: #1d4ed8; border-color: #1e40af; color: #fff; }
-
-        /* ── Copy Button ── */
-        .ai-copy-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 18px;
-            background: rgba(66, 165, 245, 0.1);
-            color: var(--blue-accent);
-            border: 1px solid rgba(66, 165, 245, 0.3);
-            border-radius: 50px;
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .ai-copy-btn:hover {
-            background: rgba(66, 165, 245, 0.22);
-            border-color: var(--blue-shine);
-            color: #fff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(66, 165, 245, 0.25);
-        }
-        .ai-copy-btn.copied {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: rgba(34, 197, 94, 0.45);
-            color: #4ade80;
-        }
-        body.theme-neo-light .ai-copy-btn {
-            background: rgba(37,99,235,0.06);
-            border-color: rgba(37,99,235,0.22);
-            color: #1d4ed8;
-        }
-        body.theme-neo-light .ai-copy-btn:hover {
-            background: rgba(37,99,235,0.14);
-            color: #1e40af;
-        }
-
-        /* ── Tool Tabs (Horizontal Scrollable Bar) ── */
-        .ai-tabs {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 28px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(66, 165, 245, 0.18);
-            border-radius: 50px;
-            padding: 6px 8px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            user-select: none;
-            cursor: grab;
-        }
-        .ai-tabs::-webkit-scrollbar {
-            display: none;
-        }
-        .ai-tab-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            min-width: max-content;
-            padding: 9px 18px;
-            border: 1px solid transparent;
-            border-radius: 50px;
-            background: transparent;
-            color: var(--text-muted);
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.74rem;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            white-space: nowrap;
-        }
-        .ai-tab-btn:hover {
-            color: var(--blue-accent);
-            background: rgba(66, 165, 245, 0.1);
-            border-color: rgba(66, 165, 245, 0.25);
-            transform: translateY(-1px);
-        }
-        .ai-tab-btn:active {
-            transform: translateY(0) scale(0.97);
-        }
-        .ai-tab-btn.active {
-            background: linear-gradient(135deg, var(--blue-glow, #1565c0), var(--blue-bright, #1976d2));
-            color: #fff;
-            border-color: var(--blue-bright);
-            box-shadow: 0 4px 14px rgba(21, 101, 192, 0.45);
-        }
-        body.theme-neo-light .ai-tabs {
-            background: rgba(0, 0, 0, 0.04);
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-        body.theme-neo-light .ai-tab-btn {
-            color: #6b7280;
-        }
-        body.theme-neo-light .ai-tab-btn:hover {
-            color: #1d4ed8;
-            background: rgba(37, 99, 235, 0.06);
-            border-color: rgba(37, 99, 235, 0.2);
-        }
-        body.theme-neo-light .ai-tab-btn.active {
-            color: #fff;
-        }
-
-        /* ── Select Dropdowns (AI Writer) ── */
-        .ai-select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-        .ai-select-group { display: flex; flex-direction: column; gap: 6px; }
-        .ai-select {
-            width: 100%;
-            padding: 11px 34px 11px 14px;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(66,165,245,0.22);
-            border-radius: 12px;
-            color: var(--text-color);
-            font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.88rem;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364b5f6' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            box-sizing: border-box;
-        }
-        .ai-select:focus { border-color: var(--blue-shine); box-shadow: 0 0 12px rgba(66,165,245,0.2); }
-        .ai-select option { background: #0a1428; color: #e8eaf6; }
-        body.theme-neo-light .ai-select {
-            background-color: rgba(0,0,0,0.04);
-            border-color: rgba(0,0,0,0.12);
-            color: #111827;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231d4ed8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-        }
-        body.theme-neo-light .ai-select option { background: #fff; color: #111827; }
-
-        /* ── Responsive ── */
-        @media (max-width: 600px) {
-            .ai-studio-wrapper { padding: 90px 14px 40px; }
-            .ai-studio-title   { font-size: 1.5rem; letter-spacing: 2px; }
-            .ai-tool-card      { padding: 22px 16px; }
-            .ai-select-row     { grid-template-columns: 1fr; }
-            .ai-tab-btn        { font-size: 0.65rem; padding: 9px 10px; }
-            .chat-input-row    { gap: 8px; }
-        }
-
-        /* ══ AI Chat Styles ══ */
-
-        /* Panel wrapper — flex column so input sticks to bottom */
-        #panelAiChat:not([style*="display: none"]) {
+        .ai-result-box.empty {
             display: flex;
             flex-direction: column;
-            gap: 0;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.75rem;
+            letter-spacing: 0.8px;
+            gap: 10px;
+        }
+        .ai-result-box.empty svg {
+            opacity: 0.3;
         }
 
-        /* Chat top bar: title + New Chat button */
+        .ai-canvas-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 6px;
+        }
+        .ai-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: rgba(56, 189, 248, 0.08);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 50px;
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .ai-action-btn:hover {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: #38bdf8;
+            color: #fff;
+        }
+        .ai-action-btn.copied {
+            background: rgba(16, 185, 129, 0.18);
+            border-color: #10b981;
+            color: #34d399;
+        }
+
+        /* ══ AI Chat Workspace ══ */
+        .ai-chat-workspace {
+            display: flex;
+            flex-direction: column;
+            height: 640px;
+        }
         .chat-top-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         .chat-top-label {
             font-family: var(--font-title, 'Orbitron', sans-serif);
             font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--blue-accent);
+            letter-spacing: 1.2px;
+            color: #38bdf8;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .chat-new-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 14px;
-            background: rgba(239, 68, 68, 0.1);
+            padding: 5px 12px;
+            background: rgba(239, 68, 68, 0.08);
             color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(239, 68, 68, 0.25);
             border-radius: 50px;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.65rem;
+            font-size: 0.64rem;
             font-weight: 700;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
         .chat-new-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.18);
             border-color: #f87171;
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
         }
 
-        /* Scrollable messages area */
         .chat-messages {
-            min-height: 380px;
-            max-height: 460px;
+            flex: 1;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
             padding: 16px;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(66, 165, 245, 0.15);
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             scroll-behavior: smooth;
         }
-        /* Custom scrollbar */
-        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
         .chat-messages::-webkit-scrollbar-track { background: transparent; }
-        .chat-messages::-webkit-scrollbar-thumb { background: rgba(66,165,245,0.3); border-radius: 3px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.2); border-radius: 2px; }
 
-        /* Empty state hint */
-        .chat-empty-hint {
+        /* Chat Empty State Cards */
+        .chat-empty-state {
             margin: auto;
+            max-width: 600px;
             text-align: center;
-            color: var(--text-muted);
-            font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.88rem;
-            opacity: 0.6;
-            pointer-events: none;
-            user-select: none;
+            padding: 16px;
         }
-        .chat-empty-hint span { font-size: 2rem; display: block; margin-bottom: 8px; }
-
-        /* Bubbles */
-        .chat-bubble {
-            max-width: 78%;
-            padding: 11px 16px;
-            border-radius: 18px;
+        .chat-empty-icon {
+            font-size: 2.6rem;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .chat-empty-title {
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .chat-empty-subtitle {
             font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.91rem;
+            font-size: 0.85rem;
+            color: var(--text-muted, #94a3b8);
+            margin-bottom: 18px;
+        }
+        .chat-starter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .chat-starter-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chat-starter-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            background: rgba(56, 189, 248, 0.06);
+            transform: translateY(-1px);
+        }
+        .chat-starter-card strong {
+            display: block;
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.68rem;
+            color: #38bdf8;
+            margin-bottom: 2px;
+        }
+        .chat-starter-card span {
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.76rem;
+            color: #94a3b8;
+            line-height: 1.35;
+            display: block;
+        }
+
+        /* Message Bubbles */
+        .chat-bubble-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            animation: bubbleIn 0.2s ease both;
+        }
+        .chat-bubble-row.user {
+            flex-direction: row-reverse;
+        }
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .chat-avatar.user-avatar {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+        }
+        .chat-avatar.ai-avatar {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #030712;
+            font-weight: 800;
+        }
+
+        .chat-bubble {
+            max-width: 82%;
+            padding: 11px 16px;
+            border-radius: 16px;
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.92rem;
             line-height: 1.65;
             word-break: break-word;
-            white-space: pre-wrap;
-            animation: bubbleIn 0.22s ease both;
+        }
+        .chat-bubble--user {
+            background: linear-gradient(135deg, #1e40af 0%, #6b21a8 100%);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble--ai {
+            background: rgba(15, 23, 42, 0.85);
+            color: #f1f5f9;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom-left-radius: 4px;
         }
         @keyframes bubbleIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* User bubble — right-aligned, blue/purple */
-        .chat-bubble--user {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #1565c0, #7b1fa2);
-            color: #fff;
-            border-bottom-right-radius: 5px;
-            box-shadow: 0 3px 12px rgba(123, 31, 162, 0.35);
+        /* Syntax Highlighted Code Blocks inside Chat */
+        .ai-code-block {
+            background: #020617;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 8px 0;
+            overflow: hidden;
+            font-family: var(--font-mono);
         }
-        /* AI bubble — left-aligned, dark glass */
-        .chat-bubble--ai {
-            align-self: flex-start;
-            background: rgba(255, 255, 255, 0.07);
-            color: var(--text-color);
-            border: 1px solid rgba(66, 165, 245, 0.18);
-            border-bottom-left-radius: 5px;
+        .ai-code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.68rem;
+            color: #38bdf8;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .ai-code-copy {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 0.66rem;
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ai-code-copy:hover { color: #fff; }
+        .ai-code-content {
+            padding: 10px 12px;
+            overflow-x: auto;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: #e2e8f0;
+            margin: 0;
         }
 
-        /* Input row */
-        .chat-input-row {
+        /* Chat Input Deck */
+        .chat-input-deck {
             display: flex;
             gap: 10px;
             align-items: flex-end;
-        }
-        .chat-input-row textarea {
-            flex: 1;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(66, 165, 245, 0.22);
+            background: rgba(2, 6, 23, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 14px;
-            color: var(--text-color);
-            font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.93rem;
-            line-height: 1.55;
-            resize: none;
+            padding: 8px 10px;
+        }
+        .chat-input-deck textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
             outline: none;
-            max-height: 120px;
-            overflow-y: auto;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
-            box-sizing: border-box;
+            color: #f8fafc;
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.92rem;
+            line-height: 1.5;
+            resize: none;
+            max-height: 130px;
+            padding: 4px;
         }
-        .chat-input-row textarea:focus {
-            border-color: var(--blue-shine);
-            box-shadow: 0 0 12px rgba(66, 165, 245, 0.2);
-        }
-        .chat-input-row textarea::placeholder { color: var(--text-muted); opacity: 0.7; }
-        .chat-input-row textarea:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Send button */
+        .chat-input-deck textarea::placeholder { color: rgba(255, 255, 255, 0.4); }
         .chat-send-btn {
-            flex-shrink: 0;
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--blue-glow, #1565c0), var(--blue-bright, #1976d2));
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1rem;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 14px rgba(21, 101, 192, 0.4);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
-        .chat-send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(30, 136, 229, 0.55); }
-        .chat-send-btn:active { transform: translateY(0) scale(0.96); }
-        .chat-send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        /* Light theme overrides */
-        body.theme-neo-light .chat-messages {
-            background: rgba(0,0,0,0.03);
-            border-color: rgba(0,0,0,0.09);
+        .chat-send-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
         }
-        body.theme-neo-light .chat-bubble--ai {
-            background: rgba(0,0,0,0.05);
-            border-color: rgba(0,0,0,0.1);
-            color: #111827;
-        }
-        body.theme-neo-light .chat-input-row textarea {
-            background: rgba(0,0,0,0.04);
-            border-color: rgba(0,0,0,0.12);
-            color: #111827;
+        .chat-send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* ══ Chat Typing Indicator (Pulsing Wave Animation) ══ */
+        /* Typing Indicator */
         .chat-typing-indicator {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 6px;
+            gap: 5px;
+            padding: 4px 2px;
             min-height: 18px;
         }
         .typing-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #00eaff 0%, #3b82f6 100%);
+            background: #38bdf8;
             display: inline-block;
-            box-shadow: 0 0 10px rgba(0, 234, 255, 0.7);
             animation: typingWave 1.4s infinite ease-in-out both;
         }
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
         .typing-dot:nth-child(3) { animation-delay: 0s; }
-
         @keyframes typingWave {
-            0%, 80%, 100% {
-                transform: scale(0.65) translateY(0);
-                opacity: 0.35;
-            }
-            40% {
-                transform: scale(1.25) translateY(-5px);
-                opacity: 1;
-                box-shadow: 0 0 14px #00eaff, 0 0 20px rgba(59, 130, 246, 0.6);
-            }
-        }
-        body.theme-neo-light .typing-dot {
-            background: linear-gradient(135deg, #2563eb, #0284c7);
-            box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+            0%, 80%, 100% { transform: scale(0.65) translateY(0); opacity: 0.35; }
+            40% { transform: scale(1.2) translateY(-4px); opacity: 1; }
         }
 
-        /* ══ AI Studio Plan Modal (ChatGPT Pro Style) ══ */
+        /* ── Auth Sign-in Gate ── */
+        .ai-signin-gate {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .ai-signin-gate-icon { font-size: 3rem; margin-bottom: 14px; }
+        .ai-signin-gate-title {
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        .ai-signin-gate-text {
+            font-family: var(--font-body, 'Cairo', sans-serif);
+            font-size: 0.92rem;
+            color: var(--text-muted, #94a3b8);
+            margin-bottom: 24px;
+            max-width: 440px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .ai-signin-gate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+            color: #fff;
+            font-family: var(--font-title, 'Orbitron', sans-serif);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .ai-signin-gate-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+
+        /* ── Plan Modal ── */
         .ai-plan-modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(4, 9, 20, 0.85);
+            background: rgba(2, 6, 23, 0.85);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 20px;
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
         }
-        .ai-plan-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .ai-plan-modal-overlay.active { opacity: 1; pointer-events: auto; }
         .ai-plan-modal {
-            background: linear-gradient(145deg, rgba(8, 18, 36, 0.96), rgba(12, 28, 54, 0.94));
-            border: 1.5px solid rgba(66, 165, 245, 0.35);
-            border-radius: 24px;
-            padding: 32px 28px;
-            max-width: 540px;
+            background: rgba(10, 18, 38, 0.95);
+            border: 1px solid rgba(251, 191, 36, 0.45);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
             width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
             position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(21, 101, 192, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-            transform: scale(0.92) translateY(10px);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-sizing: border-box;
+            transform: scale(0.95) translateY(10px);
+            transition: transform 0.25s ease;
         }
-        .ai-plan-modal-overlay.active .ai-plan-modal {
-            transform: scale(1) translateY(0);
-        }
-
+        .ai-plan-modal-overlay.active .ai-plan-modal { transform: scale(1) translateY(0); }
         .ai-plan-modal-close {
             position: absolute;
-            top: 18px;
-            right: 18px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
+            top: 14px; right: 14px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: #fff;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 30px; height: 30px;
+            border-radius: 50%;
             cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem;
             transition: all 0.2s ease;
         }
-        .ai-plan-modal-close:hover {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: #ef4444;
-            color: #f87171;
-            transform: rotate(90deg);
-        }
-
+        .ai-plan-modal-close:hover { background: rgba(239, 68, 68, 0.25); border-color: #f87171; }
         .ai-plan-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(234, 179, 8, 0.18), rgba(2, 132, 199, 0.2));
-            border: 1px solid rgba(253, 224, 71, 0.5);
-            color: #fde047;
+            padding: 5px 12px;
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(251, 191, 36, 0.45);
+            border-radius: 50px;
+            color: #fbbf24;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.70rem;
+            font-size: 0.68rem;
             font-weight: 800;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
+            letter-spacing: 0.8px;
             margin-bottom: 12px;
-            box-shadow: 0 0 12px rgba(234, 179, 8, 0.3);
         }
-
         .ai-plan-title {
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 1.45rem;
-            font-weight: 900;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: #fff;
-            margin: 0 0 6px;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
+            margin-bottom: 4px;
         }
-
         .ai-plan-subtitle {
             font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.90rem;
-            color: var(--text-muted, rgba(255, 255, 255, 0.7));
-            margin: 0 0 20px;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            color: var(--text-muted, #94a3b8);
+            margin-bottom: 18px;
         }
-
-        /* Price card inside modal */
         .ai-plan-price-card {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(253, 224, 71, 0.35);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
+            background: rgba(2, 6, 23, 0.65);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 14px;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.12);
-        }
-        .ai-plan-price-val {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
         .ai-plan-price-val .amount {
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 900;
-            color: #fde047;
-            text-shadow: 0 0 16px rgba(253, 224, 71, 0.5);
-            line-height: 1;
+            color: #fbbf24;
         }
         .ai-plan-price-val .period {
             font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.8rem;
+            color: var(--text-muted, #94a3b8);
+            margin-left: 6px;
         }
-        .ai-plan-badge-pill {
-            display: inline-block;
-            padding: 4px 10px;
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.4);
-            color: #4ade80;
-            border-radius: 20px;
-            font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        /* Feature items list */
         .ai-plan-features {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
         }
         .ai-plan-feat-item {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
+            padding: 9px 12px;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(66, 165, 245, 0.12);
-            border-radius: 12px;
-            padding: 10px 14px;
-            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
         }
-        .ai-plan-feat-item:hover {
-            background: rgba(66, 165, 245, 0.07);
-            border-color: rgba(66, 165, 245, 0.25);
-            transform: translateX(3px);
-        }
-        .ai-plan-feat-icon {
-            font-size: 1.15rem;
-            line-height: 1.3;
-            flex-shrink: 0;
-        }
-        .ai-plan-feat-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
+        .ai-plan-feat-icon { font-size: 1.1rem; flex-shrink: 0; }
         .ai-plan-feat-text strong {
-            font-size: 0.88rem;
-            color: #fff;
+            display: block;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-weight: 700;
-            letter-spacing: 0.3px;
+            font-size: 0.74rem;
+            color: #fff;
+            margin-bottom: 2px;
         }
         .ai-plan-feat-text span {
-            font-size: 0.82rem;
-            color: var(--text-muted, rgba(255, 255, 255, 0.65));
             font-family: var(--font-body, 'Cairo', sans-serif);
-            line-height: 1.45;
+            font-size: 0.78rem;
+            color: var(--text-muted, #94a3b8);
+            line-height: 1.35;
+            display: block;
         }
-
-        /* Modal Checkout Button (Full Width, Shimmering Yellow/Blue) */
         .ai-plan-checkout-btn {
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
             padding: 14px 24px;
             border-radius: 50px;
             background: linear-gradient(135deg, #1565c0 0%, #0284c7 35%, #eab308 70%, #f59e0b 100%);
-            background-size: 200% 200%;
-            color: #ffffff;
+            color: #fff;
             font-family: var(--font-title, 'Orbitron', sans-serif);
-            font-size: 0.88rem;
-            font-weight: 900;
-            letter-spacing: 1.2px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            border: 1.5px solid rgba(253, 224, 71, 0.85);
+            border: 1px solid #fde047;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.6), 0 0 30px rgba(2, 132, 199, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            animation: yellowBlueShimmer 3s ease-in-out infinite, yellowBluePulse 2s ease-in-out infinite alternate;
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-        .ai-plan-checkout-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            animation: lightSweep 2.2s infinite;
+            box-shadow: 0 4px 18px rgba(234, 179, 8, 0.4);
+            transition: all 0.2s ease;
         }
         .ai-plan-checkout-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 0 36px rgba(253, 224, 71, 0.95), 0 0 50px rgba(2, 132, 199, 0.85);
-            border-color: #ffffff;
-        }
-        .ai-plan-checkout-btn:active {
-            transform: translateY(0) scale(0.98);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(253, 224, 71, 0.7);
         }
 
-        .ai-plan-note {
-            text-align: center;
-            font-family: var(--font-body, 'Cairo', sans-serif);
-            font-size: 0.78rem;
-            color: var(--text-muted, rgba(255, 255, 255, 0.55));
-            margin-top: 10px;
+        /* ── Responsive Optimization ── */
+        @media (max-width: 980px) {
+            .ai-cockpit-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            .ai-deck-canvas {
+                min-height: 360px;
+            }
+            .chat-starter-grid {
+                grid-template-columns: 1fr;
+            }
         }
-
-        /* Light theme modal overrides */
-        body.theme-neo-light .ai-plan-modal {
-            background: #ffffff;
-            border-color: rgba(37, 99, 235, 0.25);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        }
-        body.theme-neo-light .ai-plan-title { color: #111827; }
-        body.theme-neo-light .ai-plan-subtitle { color: #4b5563; }
-        body.theme-neo-light .ai-plan-price-card {
-            background: rgba(245, 158, 11, 0.08);
-            border-color: rgba(217, 119, 6, 0.3);
-        }
-        body.theme-neo-light .ai-plan-price-val .amount { color: #b45309; text-shadow: none; }
-        body.theme-neo-light .ai-plan-price-val .period { color: #4b5563; }
-        body.theme-neo-light .ai-plan-feat-item {
-            background: rgba(0, 0, 0, 0.02);
-            border-color: rgba(0, 0, 0, 0.08);
-        }
-        body.theme-neo-light .ai-plan-feat-text strong { color: #111827; }
-        body.theme-neo-light .ai-plan-feat-text span { color: #4b5563; }
-        body.theme-neo-light .ai-plan-modal-close {
-            background: rgba(0, 0, 0, 0.05);
-            border-color: rgba(0, 0, 0, 0.1);
-            color: #111827;
-        }
-
-        /* ── Complete Mobile & Screen Optimization ── */
-        @media (max-width: 768px) {
+        @media (max-width: 640px) {
             .ai-studio-wrapper {
-                padding: 80px 14px 40px;
-                max-width: 100%;
+                padding: 70px 12px 30px;
             }
-            .ai-studio-title {
-                font-size: 1.6rem;
-                letter-spacing: 1.5px;
+            .ai-studio-topbar {
+                gap: 10px;
             }
-            .ai-studio-subtitle {
-                font-size: 0.88rem;
-            }
-            .ai-tool-card {
-                padding: 20px 14px;
-                border-radius: 18px;
-            }
-            .ai-tabs {
-                padding: 4px 6px;
-                gap: 6px;
-                margin-bottom: 20px;
+            .ai-cockpit-card {
+                padding: 16px 12px;
+                border-radius: 16px;
             }
             .ai-tab-btn {
                 font-size: 0.68rem;
                 padding: 8px 12px;
             }
-            .ai-select-row {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .credits-card, .ai-pro-pass-btn {
+                font-size: 0.68rem;
+                padding: 6px 12px;
             }
-            .chat-messages {
-                min-height: 280px;
-                max-height: 380px;
-                padding: 12px;
-            }
-            .chat-bubble {
-                max-width: 88%;
-                font-size: 0.88rem;
-                padding: 9px 13px;
-            }
-            .ai-plan-modal {
-                padding: 24px 18px;
-                border-radius: 20px;
-            }
-            .ai-plan-title {
-                font-size: 1.25rem;
-            }
-            .ai-plan-price-card {
-                padding: 12px 14px;
-            }
-            .ai-plan-price-val .amount {
-                font-size: 1.8rem;
-            }
-            .ai-plan-features {
-                gap: 8px;
-            }
-            .ai-plan-feat-item {
-                padding: 8px 10px;
+            .ai-chat-workspace {
+                height: 520px;
             }
         }
 
-        @media (max-width: 480px) {
-            .ai-studio-wrapper {
-                padding: 72px 10px 30px;
-            }
-            .ai-studio-title {
-                font-size: 1.35rem;
-                letter-spacing: 1px;
-            }
-            .ai-tool-card {
-                padding: 16px 10px;
-            }
-            .ai-textarea {
-                font-size: 0.9rem;
-                padding: 12px 14px;
-                min-height: 120px;
-            }
-            .ai-generate-btn {
-                font-size: 0.78rem;
-                padding: 12px 16px;
-            }
-            .chat-messages {
-                min-height: 260px;
-                max-height: 340px;
-            }
-            .chat-input-row textarea {
-                font-size: 0.88rem;
-                padding: 10px 12px;
-            }
-            .chat-send-btn {
-                width: 42px;
-                height: 42px;
-            }
+        /* ══════════════════════════════════════════════════════════
+           LIGHT MODE (HIGH CONTRAST & MAXIMUM VISIBILITY)
+           ══════════════════════════════════════════════════════════ */
+        body.theme-neo-light {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-cockpit-card {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        body.theme-neo-light .ai-tabs {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        }
+        body.theme-neo-light .ai-tab-btn {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-tab-btn:hover {
+            color: #0f172a;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        body.theme-neo-light .ai-tab-btn.active {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: #2563eb;
+            color: #1d4ed8;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.15);
+        }
+        body.theme-neo-light .credits-card {
+            background: #ffffff;
+            border-color: rgba(37, 99, 235, 0.3);
+            color: #1d4ed8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        body.theme-neo-light .credits-card--unlimited {
+            background: #fffbeb !important;
+            border-color: rgba(245, 158, 11, 0.5) !important;
+            color: #b45309 !important;
+        }
+        body.theme-neo-light .ai-pro-pass-btn {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #b45309;
+        }
+        body.theme-neo-light .ai-pro-pass-btn:hover {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        body.theme-neo-light .ai-deck-canvas {
+            background: #f8fafc;
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+        body.theme-neo-light .ai-input-label {
+            color: #0284c7;
+        }
+        body.theme-neo-light .ai-input-label span {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-textarea {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.15);
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.15);
+        }
+        body.theme-neo-light .ai-textarea::placeholder {
+            color: #94a3b8;
+        }
+        body.theme-neo-light .ai-power-meter-wrap {
+            background: #f8fafc;
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+        body.theme-neo-light .ai-power-header {
+            color: #334155;
+        }
+        body.theme-neo-light .ai-power-score {
+            color: #0284c7;
+        }
+        body.theme-neo-light .ai-power-track {
+            background: rgba(0, 0, 0, 0.08);
+        }
+        body.theme-neo-light .ai-chips-label {
+            color: #334155;
+        }
+        body.theme-neo-light .ai-chip-pill {
+            background: #f1f5f9;
+            border-color: rgba(0, 0, 0, 0.12);
+            color: #334155;
+        }
+        body.theme-neo-light .ai-chip-pill:hover {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: #2563eb;
+            color: #1d4ed8;
+        }
+        body.theme-neo-light .ai-chip-pill.active {
+            background: rgba(37, 99, 235, 0.14);
+            border-color: #2563eb;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+        body.theme-neo-light .ai-aspect-card {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+        body.theme-neo-light .ai-aspect-box {
+            border-color: rgba(0, 0, 0, 0.4);
+        }
+        body.theme-neo-light .ai-aspect-name {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-aspect-card.active {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: #2563eb;
+        }
+        body.theme-neo-light .ai-aspect-card.active .ai-aspect-box {
+            border-color: #2563eb;
+        }
+        body.theme-neo-light .ai-aspect-card.active .ai-aspect-name {
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+        body.theme-neo-light .ai-dropzone {
+            background: #ffffff;
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+        body.theme-neo-light .ai-dropzone-title {
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-dropzone-sub {
+            color: #64748b;
+        }
+        body.theme-neo-light .ai-canvas-title {
+            color: #0284c7;
+        }
+        body.theme-neo-light .ai-canvas-stats {
+            color: #64748b;
+        }
+        body.theme-neo-light .ai-result-box {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-result-box.empty {
+            color: #64748b;
+        }
+        body.theme-neo-light .ai-action-btn {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: rgba(37, 99, 235, 0.25);
+            color: #1d4ed8;
+        }
+        body.theme-neo-light .ai-action-btn:hover {
+            background: rgba(37, 99, 235, 0.16);
+            color: #1e40af;
+        }
+        body.theme-neo-light .chat-top-label {
+            color: #0284c7;
+        }
+        body.theme-neo-light .chat-messages {
+            background: #f8fafc;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        body.theme-neo-light .chat-empty-title {
+            color: #0f172a;
+        }
+        body.theme-neo-light .chat-empty-subtitle {
+            color: #475569;
+        }
+        body.theme-neo-light .chat-starter-card {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        body.theme-neo-light .chat-starter-card strong {
+            color: #1d4ed8;
+        }
+        body.theme-neo-light .chat-starter-card span {
+            color: #475569;
+        }
+        body.theme-neo-light .chat-bubble--ai {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+        }
+        body.theme-neo-light .chat-input-deck {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+        body.theme-neo-light .chat-input-deck textarea {
+            color: #0f172a;
+        }
+        body.theme-neo-light .chat-input-deck textarea::placeholder {
+            color: #94a3b8;
+        }
+        body.theme-neo-light .ai-signin-gate-title {
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-signin-gate-text {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-plan-modal {
+            background: #ffffff;
+            border-color: rgba(245, 158, 11, 0.6);
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-plan-title {
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-plan-subtitle {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-plan-price-card {
+            background: #f8fafc;
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+        body.theme-neo-light .ai-plan-price-val .amount {
+            color: #b45309;
+        }
+        body.theme-neo-light .ai-plan-price-val .period {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-plan-feat-item {
+            background: #f8fafc;
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+        body.theme-neo-light .ai-plan-feat-text strong {
+            color: #0f172a;
+        }
+        body.theme-neo-light .ai-plan-feat-text span {
+            color: #475569;
+        }
+        body.theme-neo-light .ai-plan-modal-close {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #0f172a;
         }
     </style>
 </head>
 <body class="ai-studio-page">
 
-    <!-- ══ NAVBAR (copied exactly from index.html) ══ -->
+    <!-- ══ NAVBAR ══ -->
     <nav class="navbar">
         <div class="nav-left">
             <a href="/" class="back-home" title="Home">
@@ -1151,28 +1344,7 @@
         </div>
 
         <div style="display: flex; gap: 10px; align-items: center;">
-            <!-- AI Studio link (active on this page) -->
             <a href="ai-studio.html" class="ai-nav-link">🧠 AI Studio</a>
-
-            <!-- Theme Switcher -->
-            <div class="theme-wrapper">
-                <button class="theme-btn-instant" id="themeBtn" title="Toggle theme" data-current="cyber-dark">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sun-icon">
-                        <circle cx="12" cy="12" r="5"/>
-                        <line x1="12" y1="1" x2="12" y2="3"/>
-                        <line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                        <line x1="1" y1="12" x2="3" y2="12"/>
-                        <line x1="21" y1="12" x2="23" y2="12"/>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                    </svg>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="moon-icon">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
-                </button>
-            </div>
 
             <a href="#" class="login-btn" id="loginBtn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -1197,344 +1369,528 @@
         </button>
     </div>
 
-    <!-- ══ MAIN CONTENT ══ -->
+    <!-- ══ MAIN WORKSTATION COCKPIT ══ -->
     <div class="ai-studio-wrapper">
 
-        <!-- Section Header -->
-        <div class="ai-studio-header">
-            <h1 class="ai-studio-title">🧠 AI Studio</h1>
-            <p class="ai-studio-subtitle">Your AI-powered creative workspace</p>
-
-            <!-- Credits display & Unlimited Button — populated by ai-studio.js -->
-            <div id="creditsWrapper" style="margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;">
-                <span class="ai-credits-skeleton" id="creditsSkeleton"></span>
-            </div>
-        </div>
-
-        <!-- Tool Card -->
-        <div class="ai-tool-card">
-
-            <!-- Sign-in gate (visible when NOT logged in) -->
-            <div class="ai-signin-gate" id="signinGate">
-                <div class="ai-signin-gate-icon">🔐</div>
-                <p class="ai-signin-gate-title">Authentication Required</p>
-                <p class="ai-signin-gate-text">Sign in to access AI Studio and start building professional content.</p>
-                <button class="ai-signin-gate-btn" id="signinGateBtn">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    Sign in to use AI Studio
+        <!-- ── Top Studio Toolbar (Immediate Navigation & Actions) ── -->
+        <div class="ai-studio-topbar">
+            <!-- Navigation Tabs Bar -->
+            <div class="ai-tabs">
+                <button class="ai-tab-btn active" id="tabAiChat" onclick="switchTab('aiChat')">
+                    💬 AI Chat
+                </button>
+                <button class="ai-tab-btn" id="tabPromptBuilder" onclick="switchTab('promptBuilder')">
+                    ✨ Prompt Builder
+                </button>
+                <button class="ai-tab-btn" id="tabAiWriter" onclick="switchTab('aiWriter')">
+                    ✍️ AI Writer
+                </button>
+                <button class="ai-tab-btn" id="tabImagePrompt" onclick="switchTab('imagePrompt')">
+                    🎨 Image Prompt
+                </button>
+                <button class="ai-tab-btn" id="tabFileAnalyzer" onclick="switchTab('fileAnalyzer')">
+                    📄 File Analyzer
                 </button>
             </div>
 
-            <!-- Tool UI (visible when logged in) -->
+            <!-- Top-Right Actions: Credits & Pro Pass Trigger -->
+            <div class="ai-topbar-actions" id="creditsWrapper">
+                <span class="credits-card" id="creditsDisplay">⚡ Loading Credits...</span>
+                <button class="ai-pro-pass-btn" onclick="openAIStudioPlanModal()" type="button">
+                    👑 Unlimited ($15)
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Main Cockpit Card ── -->
+        <div class="ai-cockpit-card">
+
+            <!-- Sign-in Gate (When logged out) -->
+            <div class="ai-signin-gate" id="signinGate">
+                <div class="ai-signin-gate-icon">🔐</div>
+                <p class="ai-signin-gate-title">Authentication Required</p>
+                <p class="ai-signin-gate-text">Sign in with your Google account to access all Noxtary AI Studio tools.</p>
+                <button class="ai-signin-gate-btn" id="signinGateBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+            </div>
+
+            <!-- Tool UI (When logged in) -->
             <div id="toolUI" style="display: none;">
 
-                <!-- ── Tabs Bar ── -->
-                <div class="ai-tabs">
-                    <button class="ai-tab-btn active" id="tabAiChat" onclick="switchTab('aiChat')">
-                        💬 AI Chat
-                    </button>
-                    <button class="ai-tab-btn" id="tabPromptBuilder" onclick="switchTab('promptBuilder')">
-                        ✨ Prompt Builder
-                    </button>
-                    <button class="ai-tab-btn" id="tabAiWriter" onclick="switchTab('aiWriter')">
-                        ✍️ AI Writer
-                    </button>
-                    <button class="ai-tab-btn" id="tabImagePrompt" onclick="switchTab('imagePrompt')">
-                        🎨 Image Prompt
-                    </button>
-                    <button class="ai-tab-btn" id="tabFileAnalyzer" onclick="switchTab('fileAnalyzer')">
-                        📄 File Analyzer
-                    </button>
-                </div>
-
-                <!-- ══ PANEL 1: AI Chat (Default Active) ══ -->
+                <!-- ════ PANEL 1: AI Chat (Default Active) ════ -->
                 <div id="panelAiChat" style="display: flex; flex-direction: column;">
+                    <div class="ai-chat-workspace">
+                        <!-- Top bar: label + New Chat button -->
+                        <div class="chat-top-bar">
+                            <span class="chat-top-label">
+                                💬 Neural Conversation
+                            </span>
+                            <button class="chat-new-btn" id="chatNewBtn" type="button" onclick="startNewChat()">
+                                🗑️ Clear Memory
+                            </button>
+                        </div>
 
-                    <!-- Top bar: label + New Chat button -->
-                    <div class="chat-top-bar">
-                        <span class="chat-top-label">💬 AI Assistant</span>
-                        <button class="chat-new-btn" id="chatNewBtn" type="button">
-                            🗑️ New Chat
-                        </button>
-                    </div>
+                        <!-- Scrollable messages container -->
+                        <div class="chat-messages" id="chatMessagesContainer">
+                            <!-- Empty state starter cards -->
+                            <div class="chat-empty-state" id="chatEmptyHint">
+                                <div class="chat-empty-icon">🤖</div>
+                                <h3 class="chat-empty-title">Welcome to Noxtary AI Chat</h3>
+                                <p class="chat-empty-subtitle">Direct conversational intelligence powered by Gemini AI. Pick a starter or ask anything.</p>
+                                <div class="chat-starter-grid">
+                                    <div class="chat-starter-card" onclick="sendChatStarter('Explain how asynchronous event loops work in Python with clean examples.')">
+                                        <strong>💻 Python Asynchronous Core</strong>
+                                        <span>Learn async architecture, tasks, and concurrency.</span>
+                                    </div>
+                                    <div class="chat-starter-card" onclick="sendChatStarter('Analyze the business model of modern AI SaaS platforms with revenue mechanics.')">
+                                        <strong>🔍 AI Business Model Deep-Dive</strong>
+                                        <span>Explore pricing, unit economics, and growth moats.</span>
+                                    </div>
+                                    <div class="chat-starter-card" onclick="sendChatStarter('Write a dark sci-fi cyberpunk narrative about an AI waking up in 2099.')">
+                                        <strong>✍️ Sci-Fi Creative Fiction</strong>
+                                        <span>Generate immersive worldbuilding & dialogue.</span>
+                                    </div>
+                                    <div class="chat-starter-card" onclick="sendChatStarter('Help me design a high-conversion landing page structure for a digital store.')">
+                                        <strong>🎨 UI/UX Conversion Strategy</strong>
+                                        <span>Craft wireframes, call-to-actions, and visual hierarchy.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Scrollable messages area -->
-                    <div class="chat-messages" id="chatMessagesContainer">
-                        <!-- Empty state hint (removed by JS when first message arrives) -->
-                        <div class="chat-empty-hint" id="chatEmptyHint">
-                            <span>💬</span>
-                            Send a message to start chatting with AI
+                        <!-- Floating bottom input dock -->
+                        <div class="chat-input-deck">
+                            <textarea
+                                id="chatInput"
+                                placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+                                rows="1"
+                            ></textarea>
+                            <button class="chat-send-btn" id="chatSendBtn" type="button" onclick="sendChatMessage()">
+                                &#10148;
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Input row -->
-                    <div class="chat-input-row">
-                        <textarea
-                            id="chatInput"
-                            placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-                            rows="1"
-                        ></textarea>
-                        <button class="chat-send-btn" id="chatSendBtn" type="button">&#10148;</button>
-                    </div>
-
                 </div>
 
-                <!-- ══ PANEL 2: Prompt Builder ══ -->
+                <!-- ════ PANEL 2: Prompt Builder (2-Column Studio Deck) ════ -->
                 <div id="panelPromptBuilder" style="display: none;">
-                    <label class="ai-input-label" for="promptInput">&#10022; Describe your idea</label>
-                    <textarea
-                        id="promptInput"
-                        class="ai-textarea"
-                        placeholder="e.g. A cinematic portrait of a cyberpunk city at night, neon reflections, dramatic lighting..."
-                        rows="5"
-                    ></textarea>
+                    <div class="ai-cockpit-grid">
+                        <!-- Left Deck: Inputs & Dynamic Modifiers -->
+                        <div class="ai-deck-control">
+                            <div>
+                                <label class="ai-input-label" for="promptInput">
+                                    <span>&#10022; Raw Idea / Concept</span>
+                                    <span id="promptCharCount">0 chars</span>
+                                </label>
+                                <textarea
+                                    id="promptInput"
+                                    class="ai-textarea"
+                                    placeholder="e.g. A cinematic portrait of a cyberpunk bounty hunter in neon rain, reflective chrome armor, volumetric fog..."
+                                    rows="5"
+                                    oninput="onPromptInputChanged()"
+                                ></textarea>
+                            </div>
 
-                    <button class="ai-generate-btn" id="generateBtn" onclick="generatePrompt()">
-                        &#10024; Generate Prompt
-                    </button>
+                            <!-- Dynamic Power Meter -->
+                            <div class="ai-power-meter-wrap">
+                                <div class="ai-power-header">
+                                    <span>PROMPT POWER SCORE</span>
+                                    <span class="ai-power-score" id="promptPowerText">Weak (15%)</span>
+                                </div>
+                                <div class="ai-power-track">
+                                    <div class="ai-power-bar" id="promptPowerBar" style="width: 15%;"></div>
+                                </div>
+                            </div>
 
-                    <!-- Result area -->
-                    <div id="resultBox" class="ai-result-box"></div>
+                            <!-- Quick Modifier Matrix -->
+                            <div>
+                                <span class="ai-chips-label">&#10024; Quick Enhancer Modifiers</span>
+                                <div class="ai-chips-grid">
+                                    <span class="ai-chip-pill" onclick="appendPromptModifier('cinematic lighting, dramatic chiaroscuro')">💡 Cinematic Lighting</span>
+                                    <span class="ai-chip-pill" onclick="appendPromptModifier('hyper-detailed 8k, photorealistic textures')">🔍 Hyper-Detailed 8K</span>
+                                    <span class="ai-chip-pill" onclick="appendPromptModifier('unreal engine 5 render, ray tracing global illumination')">🎮 Unreal Engine 5</span>
+                                    <span class="ai-chip-pill" onclick="appendPromptModifier('shot on 35mm lens, f/1.8 shallow depth of field')">📷 35mm Film Lens</span>
+                                    <span class="ai-chip-pill" onclick="appendPromptModifier('volumetric atmospheric fog, neon cyan and magenta reflections')">🌌 Volumetric Neon</span>
+                                    <span class="ai-chip-pill" onclick="appendPromptModifier('--no blur, watermark, low quality, deformed')">🚫 Negative Filter</span>
+                                </div>
+                            </div>
 
-                    <!-- Copy button -->
-                    <div id="copyRow" style="display:none; margin-top:10px; text-align:right;">
-                        <button id="copyBtn" class="ai-copy-btn" onclick="copyResult()">
-                            &#128203; Copy
-                        </button>
+                            <button class="ai-generate-btn" id="generateBtn" onclick="generatePrompt()">
+                                &#10024; Synthesize Master Prompt
+                            </button>
+                        </div>
+
+                        <!-- Right Deck: Live Output & Analytics Canvas -->
+                        <div class="ai-deck-canvas">
+                            <div class="ai-canvas-header">
+                                <span class="ai-canvas-title">⚡ Master Prompt Output</span>
+                                <div class="ai-canvas-stats">
+                                    <span id="promptOutputStats">Ready to synthesize</span>
+                                </div>
+                            </div>
+
+                            <div id="resultBox" class="ai-result-box empty">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <span>Engineered master prompt will display here with token breakdown.</span>
+                            </div>
+
+                            <div class="ai-canvas-toolbar" id="copyRow" style="display: none;">
+                                <button class="ai-action-btn" id="copyBtn" onclick="copyResult()">
+                                    📋 Copy Master Prompt
+                                </button>
+                                <button class="ai-action-btn" onclick="transferPromptToImage()">
+                                    🎨 Transfer to Image Prompt
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ══ PANEL 3: AI Writer ══ -->
+                <!-- ════ PANEL 3: AI Writer (2-Column Long-Form Engine) ════ -->
                 <div id="panelAiWriter" style="display: none;">
-                    <label class="ai-input-label" for="writerInput">&#10022; What do you want to write about?</label>
-                    <textarea
-                        id="writerInput"
-                        class="ai-textarea"
-                        placeholder="e.g. The benefits of drinking water every morning, or a story about a lost robot in a futuristic city..."
-                        rows="5"
-                    ></textarea>
+                    <div class="ai-cockpit-grid">
+                        <!-- Left Deck: Controls & Content Selectors -->
+                        <div class="ai-deck-control">
+                            <div>
+                                <label class="ai-input-label" for="writerInput">
+                                    <span>&#10022; Content Brief / Subject</span>
+                                    <span id="writerCharCount">0 chars</span>
+                                </label>
+                                <textarea
+                                    id="writerInput"
+                                    class="ai-textarea"
+                                    placeholder="e.g. Comprehensive guide on how artificial intelligence transforms modern indie game development, with actionable tools..."
+                                    rows="4"
+                                    oninput="onWriterInputChanged()"
+                                ></textarea>
+                            </div>
 
-                    <!-- Content Type & Tone selects -->
-                    <div class="ai-select-row">
-                        <div class="ai-select-group">
-                            <label class="ai-input-label" for="writerContentType" style="margin-bottom:0;">Content Type</label>
-                            <select id="writerContentType" class="ai-select">
-                                <option value="article">Article</option>
-                                <option value="story">Short Story</option>
-                                <option value="social_post">Social Media Post</option>
-                                <option value="email">Email</option>
-                                <option value="product_description">Product Description</option>
-                                <option value="youtube_description">YouTube Description</option>
-                                <option value="script">Script / Dialogue</option>
-                            </select>
+                            <!-- Content Type Matrix -->
+                            <div>
+                                <span class="ai-chips-label">&#128196; Content Format</span>
+                                <div class="ai-chips-grid" id="writerTypeChips">
+                                    <span class="ai-chip-pill active" data-value="article" onclick="selectWriterType('article')">📄 Article / Essay</span>
+                                    <span class="ai-chip-pill" data-value="social_post" onclick="selectWriterType('social_post')">🧵 Social Thread</span>
+                                    <span class="ai-chip-pill" data-value="story" onclick="selectWriterType('story')">📖 Fiction Story</span>
+                                    <span class="ai-chip-pill" data-value="email" onclick="selectWriterType('email')">💼 Pitch / Email</span>
+                                    <span class="ai-chip-pill" data-value="product_description" onclick="selectWriterType('product_description')">📦 Product Copy</span>
+                                    <span class="ai-chip-pill" data-value="script" onclick="selectWriterType('script')">🎬 Video Script</span>
+                                </div>
+                                <select id="writerContentType" style="display:none;">
+                                    <option value="article" selected>Article</option>
+                                    <option value="social_post">Social Post</option>
+                                    <option value="story">Story</option>
+                                    <option value="email">Email</option>
+                                    <option value="product_description">Product Description</option>
+                                    <option value="script">Script</option>
+                                </select>
+                            </div>
+
+                            <!-- Tone Switcher Matrix -->
+                            <div>
+                                <span class="ai-chips-label">&#127917; Voice & Tone</span>
+                                <div class="ai-chips-grid" id="writerToneChips">
+                                    <span class="ai-chip-pill active" data-value="professional" onclick="selectWriterTone('professional')">👔 Professional</span>
+                                    <span class="ai-chip-pill" data-value="visionary" onclick="selectWriterTone('visionary')">🚀 Visionary</span>
+                                    <span class="ai-chip-pill" data-value="casual" onclick="selectWriterTone('casual')">☕ Conversational</span>
+                                    <span class="ai-chip-pill" data-value="dramatic" onclick="selectWriterTone('dramatic')">🎭 Dramatic</span>
+                                    <span class="ai-chip-pill" data-value="funny" onclick="selectWriterTone('funny')">😄 Humorous</span>
+                                </div>
+                                <select id="writerTone" style="display:none;">
+                                    <option value="professional" selected>Professional</option>
+                                    <option value="visionary">Visionary</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="dramatic">Dramatic</option>
+                                    <option value="funny">Funny</option>
+                                </select>
+                            </div>
+
+                            <button class="ai-generate-btn" id="writerGenerateBtn" onclick="generateWriting()">
+                                &#9997;&#65039; Generate Creative Copy
+                            </button>
                         </div>
-                        <div class="ai-select-group">
-                            <label class="ai-input-label" for="writerTone" style="margin-bottom:0;">Tone</label>
-                            <select id="writerTone" class="ai-select">
-                                <option value="professional">Professional</option>
-                                <option value="casual">Casual</option>
-                                <option value="funny">Funny</option>
-                                <option value="dramatic">Dramatic</option>
-                                <option value="neutral">Neutral</option>
-                            </select>
+
+                        <!-- Right Deck: Live Formatted Writer Canvas -->
+                        <div class="ai-deck-canvas">
+                            <div class="ai-canvas-header">
+                                <span class="ai-canvas-title">✍️ Literature Canvas</span>
+                                <div class="ai-canvas-stats">
+                                    <span id="writerStats">0 words | 0 min read</span>
+                                </div>
+                            </div>
+
+                            <div id="writerResultBox" class="ai-result-box empty">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                </svg>
+                                <span>Your generated copy, article, or narrative will display here.</span>
+                            </div>
+
+                            <div class="ai-canvas-toolbar" id="writerCopyRow" style="display: none;">
+                                <button class="ai-action-btn" id="writerCopyBtn" onclick="copyWriterResult()">
+                                    📋 Copy Clean Text
+                                </button>
+                                <button class="ai-action-btn" onclick="downloadWriterMarkdown()">
+                                    📥 Download Markdown (.md)
+                                </button>
+                            </div>
                         </div>
-                    </div>
-
-                    <button class="ai-generate-btn" id="writerGenerateBtn" onclick="generateWriting()">
-                        &#9997;&#65039; Generate
-                    </button>
-
-                    <!-- Result area -->
-                    <div id="writerResultBox" class="ai-result-box"></div>
-
-                    <!-- Copy button -->
-                    <div id="writerCopyRow" style="display:none; margin-top:10px; text-align:right;">
-                        <button id="writerCopyBtn" class="ai-copy-btn" onclick="copyWriterResult()">
-                            &#128203; Copy
-                        </button>
                     </div>
                 </div>
 
-                <!-- ══ PANEL 4: Image Prompt ══ -->
+                <!-- ════ PANEL 4: Image Prompt (Visual AI Engineering) ════ -->
                 <div id="panelImagePrompt" style="display: none;">
-                    <label class="ai-input-label" for="imagePromptInput">&#10022; Describe your image idea</label>
-                    <textarea
-                        id="imagePromptInput"
-                        class="ai-textarea"
-                        placeholder="e.g. a warrior standing before a castle, dramatic lighting, stormy sky..."
-                        rows="5"
-                    ></textarea>
+                    <div class="ai-cockpit-grid">
+                        <!-- Left Deck: Visual Idea & Aspect Ratio Matrix -->
+                        <div class="ai-deck-control">
+                            <div>
+                                <label class="ai-input-label" for="imagePromptInput">
+                                    <span>&#10022; Visual Concept / Idea</span>
+                                    <span id="imagePromptCharCount">0 chars</span>
+                                </label>
+                                <textarea
+                                    id="imagePromptInput"
+                                    class="ai-textarea"
+                                    placeholder="e.g. An ancient cybernetic temple floating in the clouds, illuminated by mystical purple lightning, hyper-realistic anime aesthetic..."
+                                    rows="4"
+                                    oninput="onImagePromptInputChanged()"
+                                ></textarea>
+                            </div>
 
-                    <!-- Platform select -->
-                    <div class="ai-select-group" style="margin-bottom: 18px; margin-top: 16px;">
-                        <label class="ai-input-label" for="imagePromptPlatform" style="margin-bottom: 6px;">Target Platform</label>
-                        <select id="imagePromptPlatform" class="ai-select">
-                            <option value="general">General / Any Model</option>
-                            <option value="midjourney">Midjourney</option>
-                            <option value="flux">Flux</option>
-                            <option value="stable_diffusion">Stable Diffusion</option>
-                        </select>
-                    </div>
+                            <!-- Engine Matrix -->
+                            <div>
+                                <span class="ai-chips-label">&#9881;&#65039; Target Generation Model</span>
+                                <div class="ai-chips-grid" id="imageEngineChips">
+                                    <span class="ai-chip-pill active" data-value="midjourney" onclick="selectImageEngine('midjourney')">Midjourney v6</span>
+                                    <span class="ai-chip-pill" data-value="flux" onclick="selectImageEngine('flux')">Flux.1 Dev</span>
+                                    <span class="ai-chip-pill" data-value="stable_diffusion" onclick="selectImageEngine('stable_diffusion')">Stable Diffusion XL</span>
+                                    <span class="ai-chip-pill" data-value="general" onclick="selectImageEngine('general')">General Model</span>
+                                </div>
+                                <select id="imagePromptPlatform" style="display:none;">
+                                    <option value="midjourney" selected>Midjourney</option>
+                                    <option value="flux">Flux</option>
+                                    <option value="stable_diffusion">Stable Diffusion</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
 
-                    <button class="ai-generate-btn" id="imagePromptGenerateBtn" onclick="generateImagePrompt()">
-                        🎨 Generate Image Prompt
-                    </button>
+                            <!-- Aspect Ratio Selector Cards -->
+                            <div>
+                                <span class="ai-chips-label">&#128444;&#65039; Aspect Ratio Blueprint</span>
+                                <div class="ai-aspect-grid">
+                                    <div class="ai-aspect-card" data-ar="--ar 1:1" onclick="selectAspectRatio(this, '--ar 1:1')">
+                                        <div class="ai-aspect-box ar-1-1"></div>
+                                        <span class="ai-aspect-name">1:1 Square</span>
+                                    </div>
+                                    <div class="ai-aspect-card active" data-ar="--ar 16:9" onclick="selectAspectRatio(this, '--ar 16:9')">
+                                        <div class="ai-aspect-box ar-16-9"></div>
+                                        <span class="ai-aspect-name">16:9 Cinema</span>
+                                    </div>
+                                    <div class="ai-aspect-card" data-ar="--ar 9:16" onclick="selectAspectRatio(this, '--ar 9:16')">
+                                        <div class="ai-aspect-box ar-9-16"></div>
+                                        <span class="ai-aspect-name">9:16 Reels</span>
+                                    </div>
+                                    <div class="ai-aspect-card" data-ar="--ar 4:3" onclick="selectAspectRatio(this, '--ar 4:3')">
+                                        <div class="ai-aspect-box ar-4-3"></div>
+                                        <span class="ai-aspect-name">4:3 Standard</span>
+                                    </div>
+                                    <div class="ai-aspect-card" data-ar="--ar 21:9" onclick="selectAspectRatio(this, '--ar 21:9')">
+                                        <div class="ai-aspect-box ar-21-9"></div>
+                                        <span class="ai-aspect-name">21:9 Ultrawide</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Result area -->
-                    <div id="imagePromptResultBox" class="ai-result-box"></div>
+                            <!-- Style Matrix Chips -->
+                            <div>
+                                <span class="ai-chips-label">&#127912; Style Aesthetic Matrix</span>
+                                <div class="ai-chips-grid">
+                                    <span class="ai-chip-pill" onclick="appendImageStyle('cyberpunk neon aesthetics, octane render, volumetric lighting')">🔮 Cyberpunk Neon</span>
+                                    <span class="ai-chip-pill" onclick="appendImageStyle('photorealistic 8k, raw color grading, shot on Sony A7R V')">📷 Photoreal 8K</span>
+                                    <span class="ai-chip-pill" onclick="appendImageStyle('3D isometric diorama, miniature tilt-shift, soft ambient occlusion')">📦 3D Isometric</span>
+                                    <span class="ai-chip-pill" onclick="appendImageStyle('dark fantasy oil painting, Frank Frazetta style, intense brushstrokes')">⚔️ Dark Fantasy</span>
+                                    <span class="ai-chip-pill" onclick="appendImageStyle('Makoto Shinkai anime aesthetic, lush glowing sky, vibrant colors')">🌸 Anime Shinkai</span>
+                                </div>
+                            </div>
 
-                    <!-- Copy button -->
-                    <div id="imagePromptCopyRow" style="display:none; margin-top:10px; text-align:right;">
-                        <button id="imagePromptCopyBtn" class="ai-copy-btn" onclick="copyImagePromptResult()">
-                            &#128203; Copy
-                        </button>
+                            <button class="ai-generate-btn" id="imagePromptGenerateBtn" onclick="generateImagePrompt()">
+                                🎨 Synthesize Image Prompt
+                            </button>
+                        </div>
+
+                        <!-- Right Deck: Synthesized Prompt Box -->
+                        <div class="ai-deck-canvas">
+                            <div class="ai-canvas-header">
+                                <span class="ai-canvas-title">🎨 Image Prompt Deck</span>
+                                <div class="ai-canvas-stats">
+                                    <span id="imagePromptStats">Midjourney v6 • 16:9</span>
+                                </div>
+                            </div>
+
+                            <div id="imagePromptResultBox" class="ai-result-box empty">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>Engineered prompt with model parameters will display here.</span>
+                            </div>
+
+                            <div class="ai-canvas-toolbar" id="imagePromptCopyRow" style="display: none;">
+                                <button class="ai-action-btn" id="imagePromptCopyBtn" onclick="copyImagePromptResult()">
+                                    📋 Copy Prompt
+                                </button>
+                                <button class="ai-action-btn" onclick="copyImaginePrompt()">
+                                    ⚡ Copy with /imagine
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ══ PANEL 5: File Analyzer ══ -->
+                <!-- ════ PANEL 5: File Analyzer (Document Intelligence) ════ -->
                 <div id="panelFileAnalyzer" style="display: none;">
+                    <div class="ai-cockpit-grid">
+                        <!-- Left Deck: File Dropzone & Preset Queries -->
+                        <div class="ai-deck-control">
+                            <div>
+                                <label class="ai-input-label">
+                                    <span>&#10022; Upload Document (PDF or TXT, max 8 MB)</span>
+                                </label>
+                                <input type="file" id="fileAnalyzerInput" accept=".pdf,.txt" style="display:none;" onchange="onFileChosen(this)">
 
-                    <!-- File upload area -->
-                    <label class="ai-input-label">&#10022; Upload your file (PDF or TXT, max 8 MB)</label>
-                    <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;">
-                        <!-- Hidden real input -->
-                        <input type="file" id="fileAnalyzerInput" accept=".pdf,.txt" style="display:none;"
-                               onchange="onFileChosen(this)">
-                        <!-- Styled trigger button -->
-                        <button class="ai-copy-btn" id="fileAnalyzerUploadBtn"
-                                onclick="document.getElementById('fileAnalyzerInput').click()"
-                                type="button">
-                            &#128206; Choose File
-                        </button>
-                        <!-- File name display -->
-                        <span id="fileAnalyzerFileName"
-                              style="color:var(--text-muted); font-family:var(--font-body,'Cairo',sans-serif);
-                                     font-size:0.85rem; word-break:break-all;">
-                            No file chosen
-                        </span>
-                    </div>
+                                <div class="ai-dropzone" id="fileDropzone" onclick="document.getElementById('fileAnalyzerInput').click()">
+                                    <span class="ai-dropzone-icon">📁</span>
+                                    <p class="ai-dropzone-title" id="dropzoneTitle">Drop document or click to browse</p>
+                                    <span class="ai-dropzone-sub" id="fileAnalyzerFileName">Supports PDF and TXT up to 8MB</span>
+                                </div>
+                            </div>
 
-                    <!-- Optional question -->
-                    <label class="ai-input-label" for="fileAnalyzerQuestion">
-                        &#10022; Ask a specific question <span style="opacity:0.55; text-transform:none; font-family:var(--font-body,'Cairo',sans-serif); letter-spacing:0;">(optional — leave empty for a summary)</span>
-                    </label>
-                    <textarea
-                        id="fileAnalyzerQuestion"
-                        class="ai-textarea"
-                        placeholder="e.g. What is the main topic? / Summarize the key findings..."
-                        rows="3"
-                    ></textarea>
+                            <!-- Pre-Built Intelligence Query Chips -->
+                            <div>
+                                <span class="ai-chips-label">&#128269; Intelligence Queries</span>
+                                <div class="ai-chips-grid">
+                                    <span class="ai-chip-pill" onclick="setFileQuery('Provide an executive summary of this document with key takeaways and bullet points.')">📑 Executive Summary</span>
+                                    <span class="ai-chip-pill" onclick="setFileQuery('Extract all key facts, statistics, numbers, and dates mentioned in the text.')">📊 Extract Metrics</span>
+                                    <span class="ai-chip-pill" onclick="setFileQuery('Identify potential risks, weaknesses, logical flaws, or caveats in this document.')">⚠️ Risk Analysis</span>
+                                    <span class="ai-chip-pill" onclick="setFileQuery('List clear actionable next steps and recommendations based on this document.')">💡 Action Items</span>
+                                </div>
+                            </div>
 
-                    <button class="ai-generate-btn" id="fileAnalyzerAnalyzeBtn" onclick="analyzeFile()">
-                        &#128196; Analyze
-                    </button>
+                            <!-- Custom Question -->
+                            <div>
+                                <label class="ai-input-label" for="fileAnalyzerQuestion">
+                                    <span>&#10022; Custom Analysis Focus</span>
+                                    <span>(Optional)</span>
+                                </label>
+                                <textarea
+                                    id="fileAnalyzerQuestion"
+                                    class="ai-textarea"
+                                    placeholder="e.g. What are the main conclusions and competitive advantages discussed?..."
+                                    rows="3"
+                                ></textarea>
+                            </div>
 
-                    <!-- Result area -->
-                    <div id="fileAnalyzerResultBox" class="ai-result-box"></div>
+                            <button class="ai-generate-btn" id="fileAnalyzerAnalyzeBtn" onclick="analyzeFile()">
+                                &#128196; Run Document Intelligence
+                            </button>
+                        </div>
 
-                    <!-- Copy button -->
-                    <div id="fileAnalyzerCopyRow" style="display:none; margin-top:10px; text-align:right;">
-                        <button id="fileAnalyzerCopyBtn" class="ai-copy-btn" onclick="copyFileAnalyzerResult()">
-                            &#128203; Copy
-                        </button>
+                        <!-- Right Deck: Intelligence Output Canvas -->
+                        <div class="ai-deck-canvas">
+                            <div class="ai-canvas-header">
+                                <span class="ai-canvas-title">📄 Document Intelligence Canvas</span>
+                                <div class="ai-canvas-stats">
+                                    <span id="fileAnalyzerStats">Ready</span>
+                                </div>
+                            </div>
+
+                            <div id="fileAnalyzerResultBox" class="ai-result-box empty">
+                                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10 9 9 9 8 9"/>
+                                </svg>
+                                <span>Structured document analysis and extracted findings will display here.</span>
+                            </div>
+
+                            <div class="ai-canvas-toolbar" id="fileAnalyzerCopyRow" style="display: none;">
+                                <button class="ai-action-btn" id="fileAnalyzerCopyBtn" onclick="copyFileAnalyzerResult()">
+                                    📋 Copy Report
+                                </button>
+                                <button class="ai-action-btn" onclick="downloadFileAnalysis()">
+                                    📥 Download Analysis (.txt)
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
             </div><!-- /toolUI -->
 
-        </div>
-    </div>
+        </div><!-- /ai-cockpit-card -->
 
-    <!-- ══ FOOTER ══ -->
-    <footer class="site-footer">
-        <div class="footer-links">
-            <a href="terms.html" data-i18n="terms_of_service">Terms of Service</a>
-            <a href="privacy.html" data-i18n="privacy_policy">Privacy Policy</a>
-            <a href="refund.html" data-i18n="refund_policy">Refund Policy</a>
-            <a href="mailto:Noxtary.contact@gmail.com" data-i18n="contact_us">Contact Us</a>
-        </div>
-        <p class="footer-copy" data-i18n="all_rights_reserved">&copy; 2026 Noxtary. All rights reserved.</p>
-    </footer>
+    </div><!-- /ai-studio-wrapper -->
 
-    <!-- ══ AI STUDIO PRO PLAN MODAL (ChatGPT Pro Style) ══ -->
+    <!-- ══ CHATGPT PRO STYLE SUBSCRIPTION MODAL ══ -->
     <div class="ai-plan-modal-overlay" id="aiStudioPlanModal">
         <div class="ai-plan-modal">
-            <button class="ai-plan-modal-close" id="aiPlanModalClose" onclick="closeAIStudioPlanModal()" aria-label="Close">&times;</button>
-            
-            <div class="ai-plan-badge">
-                <span>⚡ NOXTARY AI STUDIO PRO</span>
-            </div>
-            
-            <h2 class="ai-plan-title">Unlock Full AI Studio</h2>
-            <p class="ai-plan-subtitle">One-time payment • Lifetime access to all 5 AI creation tools without limits or subscriptions</p>
+            <button class="ai-plan-modal-close" onclick="closeAIStudioPlanModal()" type="button">&times;</button>
+            <span class="ai-plan-badge">👑 UNLIMITED LIFETIME PASS</span>
+            <h2 class="ai-plan-title">Noxtary AI Pro Studio</h2>
+            <p class="ai-plan-subtitle">Unlock unlimited access to every AI generation tool with zero monthly recurring fees.</p>
 
-            <!-- Price Card -->
             <div class="ai-plan-price-card">
                 <div class="ai-plan-price-val">
                     <span class="amount">$15</span>
-                    <span class="period">/ one-time payment (مرة واحدة فقط)</span>
+                    <span class="period">One-time payment • Lifetime</span>
                 </div>
-                <div class="ai-plan-badge-pill">Lifetime Pass</div>
             </div>
 
-            <!-- Features List -->
             <div class="ai-plan-features">
                 <div class="ai-plan-feat-item">
                     <div class="ai-plan-feat-icon">⚡</div>
                     <div class="ai-plan-feat-text">
-                        <strong>Unlimited Access to All 5 AI Tools</strong>
-                        <span>Prompt Builder, AI Writer, Image Prompt, File Analyzer, and AI Chat with zero restrictions.</span>
-                    </div>
-                </div>
-                <div class="ai-plan-feat-item">
-                    <div class="ai-plan-feat-icon">♾️</div>
-                    <div class="ai-plan-feat-text">
-                        <strong>Zero Credits & Token Limits</strong>
-                        <span>Generate unlimited prompts, high-converting copy, scripts, and analyses without burning credits.</span>
-                    </div>
-                </div>
-                <div class="ai-plan-feat-item">
-                    <div class="ai-plan-feat-icon">📄</div>
-                    <div class="ai-plan-feat-text">
-                        <strong>Deep Document & PDF Intelligence</strong>
-                        <span>Analyze complex PDF & TXT documents with interactive Q&A and unlimited file processing.</span>
+                        <strong>Unlimited AI Generations</strong>
+                        <span>Zero credit limits on Prompt Builder, AI Writer, Image Prompt, File Analyzer & AI Chat.</span>
                     </div>
                 </div>
                 <div class="ai-plan-feat-item">
                     <div class="ai-plan-feat-icon">🎨</div>
                     <div class="ai-plan-feat-text">
-                        <strong>Pro Image Prompt Engineering</strong>
-                        <span>Generate hyper-detailed, parameter-tuned prompts for Midjourney v6, Flux.1, and Stable Diffusion.</span>
-                    </div>
-                </div>
-                <div class="ai-plan-feat-item">
-                    <div class="ai-plan-feat-icon">💬</div>
-                    <div class="ai-plan-feat-text">
-                        <strong>Infinite AI Conversations</strong>
-                        <span>Continuous stateful chat with contextual memory powered by high-speed Gemini AI.</span>
+                        <strong>Midjourney v6 & Flux Engineering</strong>
+                        <span>Synthesize hyper-detailed visual prompts with custom aspect ratios and negative filters.</span>
                     </div>
                 </div>
                 <div class="ai-plan-feat-item">
                     <div class="ai-plan-feat-icon">🚀</div>
                     <div class="ai-plan-feat-text">
-                        <strong>Priority Processing & Lifetime Updates</strong>
-                        <span>Instant fast queue responses + every future AI tool added to Noxtary included free forever.</span>
+                        <strong>Priority Neural Queue</strong>
+                        <span>Lightning-fast inference responses powered by Gemini 2.5 Pro Neural Cores.</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Button -->
             <button class="ai-plan-checkout-btn" onclick="executeAIStudioCheckout()" type="button">
                 ⚡ Upgrade to Lifetime Unlimited ($15)
             </button>
-            <p class="ai-plan-note">🔒 100% Secure Checkout via Lemon Squeezy • Instant Activation</p>
+            <p style="text-align:center; font-family:var(--font-body,'Cairo'); font-size:0.75rem; color:var(--text-muted, #94a3b8); margin-top:8px;">
+                🔒 100% Secure Checkout via Lemon Squeezy • Instant Activation
+            </p>
         </div>
     </div>
 
-    <!-- ══ LOGIN MODAL (identical to index.html) ══ -->
+    <!-- ══ LOGIN MODAL ══ -->
     <div class="modal-overlay" id="loginModal">
         <div class="cyber-modal">
             <button class="modal-close" id="modalClose">&times;</button>
@@ -1554,11 +1910,22 @@
         </div>
     </div>
 
-    <!-- Supabase CDN — same order as other Noxtary pages -->
+    <!-- ══ SITE FOOTER ══ -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="terms.html">Terms of Service</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="refund.html">Refund Policy</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 Noxtary. All rights reserved.</p>
+    </footer>
+
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Shared script handles auth, theme, language, login modal -->
+    <!-- Shared script handles auth, system theme auto-detection, language, login modal -->
     <script src="script.js"></script>
     <!-- AI Studio logic -->
-    <script src="ai-studio.js?v=20260826_1"></script>
+    <script src="ai-studio.js?v=20260830_2"></script>
 </body>
 </html>

@@ -1486,42 +1486,22 @@ function applyTranslations(lang) {
     });
 }
 
-// THEME SEQUENCE FOR INSTANT TOGGLE — only 2 themes: dark & light
-const THEME_SEQUENCE = ['cyber-dark', 'neo-light'];
-let currentThemeIndex = 0;
-
-// Returns true if the current page is the welcome screen (welcome.html)
-function isStartScreen() {
-    const path = window.location.pathname;
-    return path.endsWith('/welcome.html');
+// ─────────────────────────────────────────────
+// SYSTEM THEME AUTO-DETECTION
+// Automatically adapts site theme to the user's OS/device preferences
+// ─────────────────────────────────────────────
+function getSystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'neo-light';
+    }
+    return 'cyber-dark';
 }
 
 function applyTheme(themeName) {
-    // Save to local storage (always — so other pages pick it up)
+    // Remove all theme classes first
+    document.body.classList.remove('theme-cyber-dark', 'theme-neon-purple', 'theme-emerald-green', 'theme-sunset-orange', 'theme-neo-light');
+    document.body.classList.add('theme-' + themeName);
     localStorage.setItem('noxtary_theme', themeName);
-
-    // ── شاشة البداية (index.html) تبقى كما هي بغض النظر عن الثيم ──
-    if (!isStartScreen()) {
-        // Remove all theme classes first
-        document.body.classList.remove('theme-cyber-dark', 'theme-neon-purple', 'theme-emerald-green', 'theme-sunset-orange', 'theme-neo-light');
-        document.body.classList.add('theme-' + themeName);
-    }
-
-    // Update all theme button icons on page (sun = dark mode, moon = light mode)
-    document.querySelectorAll('.theme-btn-instant').forEach(btn => {
-        const sunIcon  = btn.querySelector('.sun-icon');
-        const moonIcon = btn.querySelector('.moon-icon');
-        if (!sunIcon || !moonIcon) return;
-        if (themeName === 'neo-light') {
-            // Light mode → show moon (dark icon on white bg)
-            sunIcon.style.display  = 'none';
-            moonIcon.style.display = 'block';
-        } else {
-            // Dark mode → show sun
-            sunIcon.style.display  = 'block';
-            moonIcon.style.display = 'none';
-        }
-    });
 
     // Sync canvas colors
     if (window.spaceColors && THEME_CANVAS_COLORS[themeName]) {
@@ -1532,26 +1512,24 @@ function applyTheme(themeName) {
     }
 }
 
-function setupThemeToggle() {
-    const themeBtn = document.getElementById('themeBtn');
-    if (!themeBtn) return;
-    
-    // Load saved theme or default
-    const savedTheme = localStorage.getItem('noxtary_theme') || 'cyber-dark';
-    currentThemeIndex = THEME_SEQUENCE.indexOf(savedTheme);
-    if (currentThemeIndex === -1) currentThemeIndex = 0;
-    
-    themeBtn.setAttribute('data-current', savedTheme);
-    applyTheme(savedTheme);
-    
-    // Toggle theme on click
-    themeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        currentThemeIndex = (currentThemeIndex + 1) % THEME_SEQUENCE.length;
-        const nextTheme = THEME_SEQUENCE[currentThemeIndex];
-        applyTheme(nextTheme);
-        themeBtn.setAttribute('data-current', nextTheme);
-    });
+function setupSystemThemeDetection() {
+    // Detect & apply initial OS preference
+    const initialTheme = getSystemTheme();
+    applyTheme(initialTheme);
+
+    // Listen for live system theme changes (e.g. macOS/Windows/Android Dark/Light toggle)
+    if (window.matchMedia) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', (e) => {
+                applyTheme(e.matches ? 'cyber-dark' : 'neo-light');
+            });
+        } else if (mediaQuery.addListener) {
+            mediaQuery.addListener((e) => {
+                applyTheme(e.matches ? 'cyber-dark' : 'neo-light');
+            });
+        }
+    }
 }
 
 function setupLanguageDropdown() {
@@ -1866,12 +1844,8 @@ function setupNavbarScrollBehavior() {
 }
 
 function initializeCore() {
-    // 1. Setup Theme
-    const savedTheme = localStorage.getItem('noxtary_theme') || 'cyber-dark';
-    // Clamp to valid themes in new 2-theme sequence
-    const validTheme = THEME_SEQUENCE.includes(savedTheme) ? savedTheme : 'cyber-dark';
-    // شاشة البداية (index.html) لا تتأثر بالثيم — applyTheme تتولى ذلك تلقائيًا
-    applyTheme(validTheme);
+    // 1. Setup Theme Auto-Detection (System Device Theme)
+    setupSystemThemeDetection();
 
     // 2. Setup Language
     const savedLang = localStorage.getItem('noxtary_lang') || 'EN';
