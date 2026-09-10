@@ -224,77 +224,48 @@ function showToolUI() {
 // Tab Switcher — supports all nine tools
 // ─────────────────────────────────────────────
 function switchTab(tab) {
-    const tabs = ['aiChat', 'promptBuilder', 'aiWriter', 'imagePrompt', 'fileAnalyzer', 'nameGenerator', 'codeAssistant', 'bookWriter', 'historyFavs'];
-
-    const displayType = {
-        aiChat:        'flex',
-        promptBuilder: 'block',
-        aiWriter:      'block',
-        imagePrompt:   'block',
-        fileAnalyzer:  'block',
-        nameGenerator: 'block',
-        codeAssistant: 'block',
-        bookWriter:    'block',
-        historyFavs:   'block'
+    const tabMapping = {
+        aiChat:        { panel: 'panelAiChat',        btn: 'tabAiChat',        display: 'flex' },
+        promptBuilder: { panel: 'panelPromptBuilder', btn: 'tabPromptBuilder', display: 'block' },
+        aiWriter:      { panel: 'panelAiWriter',      btn: 'tabAiWriter',      display: 'block' },
+        imagePrompt:   { panel: 'panelImagePrompt',   btn: 'tabImagePrompt',   display: 'block' },
+        fileAnalyzer:  { panel: 'panelFileAnalyzer',  btn: 'tabFileAnalyzer',  display: 'block' },
+        nameGenerator: { panel: 'panelNameGenerator', btn: 'tabNameGenerator', display: 'block' },
+        codeAssistant: { panel: 'panelCodeAssistant', btn: 'tabCodeAssistant', display: 'block' },
+        bookWriter:    { panel: 'panelBookWriter',    btn: 'tabBookWriter',    display: 'block' },
+        historyFavs:   { panel: 'panelHistoryFavs',   btn: 'tabHistoryFavs',   display: 'block' }
     };
 
-    tabs.forEach(function (t) {
-        const panelId = {
-            aiChat:        'panelAiChat',
-            promptBuilder: 'panelPromptBuilder',
-            aiWriter:      'panelAiWriter',
-            imagePrompt:   'panelImagePrompt',
-            fileAnalyzer:  'panelFileAnalyzer',
-            nameGenerator: 'panelNameGenerator',
-            codeAssistant: 'panelCodeAssistant',
-            bookWriter:    'panelBookWriter',
-            historyFavs:   'panelHistoryFavs'
-        }[t];
-        const btnId = {
-            aiChat:        'tabAiChat',
-            promptBuilder: 'tabPromptBuilder',
-            aiWriter:      'tabAiWriter',
-            imagePrompt:   'tabImagePrompt',
-            fileAnalyzer:  'tabFileAnalyzer',
-            nameGenerator: 'tabNameGenerator',
-            codeAssistant: 'tabCodeAssistant',
-            bookWriter:    'tabBookWriter',
-            historyFavs:   'tabHistoryFavs'
-        }[t];
-
-        const panel = document.getElementById(panelId);
-        const btn   = document.getElementById(btnId);
-
-        if (t === tab) {
-            if (panel) {
-                panel.style.display = displayType[t];
-                if (t === 'aiChat') panel.style.flexDirection = 'column';
-            }
-            if (btn) btn.classList.add('active');
-        } else {
-            if (panel) panel.style.display = 'none';
-            if (btn)   btn.classList.remove('active');
-        }
+    // Hide all panels & deactivate all tab buttons
+    Object.keys(tabMapping).forEach(function (t) {
+        const item = tabMapping[t];
+        const panel = document.getElementById(item.panel);
+        const btn   = document.getElementById(item.btn);
+        if (panel) panel.style.display = 'none';
+        if (btn)   btn.classList.remove('active');
     });
 
-    const tabsContainer = document.querySelector('.ai-tabs');
-    const activeBtn = document.getElementById({
-        aiChat:        'tabAiChat',
-        promptBuilder: 'tabPromptBuilder',
-        aiWriter:      'tabAiWriter',
-        imagePrompt:   'tabImagePrompt',
-        fileAnalyzer:  'tabFileAnalyzer',
-        nameGenerator: 'tabNameGenerator',
-        codeAssistant: 'tabCodeAssistant',
-        bookWriter:    'tabBookWriter',
-        historyFavs:   'tabHistoryFavs'
-    }[tab]);
+    // Show target panel & activate target button
+    const target = tabMapping[tab];
+    if (target) {
+        const targetPanel = document.getElementById(target.panel);
+        const targetBtn   = document.getElementById(target.btn);
+        if (targetPanel) {
+            targetPanel.style.display = target.display;
+            if (tab === 'aiChat') targetPanel.style.flexDirection = 'column';
+        }
+        if (targetBtn) targetBtn.classList.add('active');
+    }
 
+    // Scroll active tab into view in mobile tabs container
+    const tabsContainer = document.querySelector('.ai-tabs');
+    const activeBtn = target ? document.getElementById(target.btn) : null;
     if (tabsContainer && activeBtn) {
         const scrollOffset = activeBtn.offsetLeft - (tabsContainer.clientWidth / 2) + (activeBtn.clientWidth / 2);
         tabsContainer.scrollTo({ left: Math.max(0, scrollOffset), behavior: 'smooth' });
     }
 
+    // Dynamic initializers
     if (tab === 'bookWriter' && typeof loadBookProjects === 'function') {
         loadBookProjects();
     }
@@ -303,6 +274,7 @@ function switchTab(tab) {
         if (typeof loadFavorites === 'function') loadFavorites();
     }
 }
+window.switchTab = switchTab;
 
 function initAITabsDragScroll() {
     const container = document.querySelector('.ai-tabs');
