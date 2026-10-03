@@ -36,11 +36,9 @@ const TYPE_CONFIG = {
 // مجموعات التبويبات — أي data-filter يطابق أي أنواع type
 const TAB_GROUPS = {
     all:            null, // كل شيء
-    apps:           ['apps'],
     books_articles: ['books', 'articles'],
     mods:           ['mods'],
     audio:          ['audio'],
-    services:       ['services'],
     templates:      ['templates'],
 };
 
@@ -114,12 +112,10 @@ function buildCardRatingHTML(item) {
 // نفس الزر "View" في كل الأنواع بدون استثناء
 function getUnifiedHint(type) {
     switch (type) {
-        case 'apps':      return 'Launch ready';
         case 'books':     return 'Knowledge';
         case 'articles':  return 'Insight';
         case 'mods':      return 'Game ready';
         case 'audio':     return 'Audio experience';
-        case 'services':  return 'On demand';
         case 'templates': return 'Ready to use';
         default:          return 'Curated item';
     }
@@ -350,7 +346,7 @@ function renderItems(filter = 'all', query = '') {
 
     // ضبط layout الـ grid حسب الفلتر
     itemsGrid.className = 'items-grid';
-    if (filter === 'mods' || filter === 'services') {
+    if (filter === 'mods') {
         itemsGrid.classList.add('items-grid--list');
     } else if (filter === 'audio') {
         itemsGrid.classList.add('items-grid--covers');
@@ -382,13 +378,11 @@ function renderItems(filter = 'all', query = '') {
             card = buildUnifiedCard(item);
         } else {
             switch (item.type) {
-                case 'apps':      card = buildAppCard(item);          break;
                 case 'books':
                 case 'articles':
                 case 'templates': card = buildBookArticleCard(item);  break;
                 case 'mods':      card = buildModCard(item);          break;
                 case 'audio':     card = buildAudioCard(item);        break;
-                case 'services':  card = buildServiceCard(item);      break;
                 default:          card = buildFallbackCard(item);
             }
         }
@@ -1315,15 +1309,13 @@ const TRANSLATIONS = {
         login: "Login",
         theme: "Theme",
         brand_title: "Noxtary",
-        tagline: "A premium digital platform bringing apps, ebooks, mods, audio, and services together in one elegant, fast experience designed for discovery.",
+        tagline: "Noxtary is a multidisciplinary digital creative platform dedicated to original works and digital creations — bringing together literature, manga, mods, audio, templates, and AI-powered experiences in one evolving space.",
         get_started: "Get Started",
         search_placeholder: "Search apps, mods, books...",
         tab_all: "All",
-        tab_apps: "Apps",
-        tab_books_articles: "Books & Articles",
+        tab_books_articles: "Reading",
         tab_mods: "Mods",
         tab_audio: "Audio",
-        tab_services: "Services",
         tab_templates: "Templates",
         login_title: "Cyber Authenticate",
         username: "Access Identity",
@@ -1367,15 +1359,13 @@ const TRANSLATIONS = {
         login: "تسجيل الدخول",
         theme: "المظهر",
         brand_title: "نوكستاري",
-        tagline: "نوكستاري هو مركز رقمي ضخم تم بناؤه ليمنح المستخدمين وصولاً سريعًا وسهلاً إلى التطبيقات، الكتب الإلكترونية، مودات ماين كرافت، الأدوات، والمحتوى الرقمي الفريد - كل ذلك منظم في تجربة حديثة مصممة للاكتشاف والإبداع والاستكشاف اللانهائي.",
+        tagline: "نوكستاري منصة إبداعية رقمية متعددة التخصصات، مكرّسة للأعمال الأصيلة والإبداعات الرقمية — تجمع بين الأدب ورواية القصص المصوّرة كالكتب والمانغا والشعر والمقالات، والمودات الإبداعية، والمحتوى الصوتي كالموسيقى والشعر المُلقى، والقوالب الرقمية المصنوعة بعناية، وتجارب مدعومة بالذكاء الاصطناعي.",
         get_started: "ابدأ الآن",
         search_placeholder: "ابحث عن التطبيقات والمودات والكتب...",
         tab_all: "الكل",
-        tab_apps: "التطبيقات",
-        tab_books_articles: "الكتب والمقالات",
+        tab_books_articles: "القراءة",
         tab_mods: "المودات",
         tab_audio: "الصوتيات",
-        tab_services: "الخدمات",
         tab_templates: "القوالب",
         login_title: "المصادقة السيبرانية",
         username: "هوية الدخول",
